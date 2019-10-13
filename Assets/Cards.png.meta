@@ -4,16 +4,19 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: -6555575649291838755
-    second: Cards_0
+    second: Ace
   - first:
       213: -1636742031616846006
-    second: Cards_1
+    second: Two
   - first:
       213: -7557494978891415441
-    second: Cards_2
+    second: Three
   - first:
       213: 6220208007999549204
-    second: Cards_3
+    second: Four
+  - first:
+      213: 4458593027102674584
+    second: Happy
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -122,7 +125,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Cards_0
+      name: Ace
       rect:
         serializedVersion: 2
         x: 0
@@ -130,7 +133,7 @@ TextureImporter:
         width: 32
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -143,7 +146,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cards_1
+      name: Two
       rect:
         serializedVersion: 2
         x: 32
@@ -151,7 +154,7 @@ TextureImporter:
         width: 32
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -164,7 +167,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cards_2
+      name: Three
       rect:
         serializedVersion: 2
         x: 64
@@ -172,7 +175,7 @@ TextureImporter:
         width: 32
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -185,11 +188,32 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cards_3
+      name: Four
       rect:
         serializedVersion: 2
         x: 96
         y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25fc4279915d6944ea3d10a782d299b8
+      internalID: 6220208007999549204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Happy
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 48
         width: 32
         height: 48
       alignment: 0
@@ -199,8 +223,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 25fc4279915d6944ea3d10a782d299b8
-      internalID: 6220208007999549204
+      spriteID: 412f10f0967a2954caea026ee05ced11
+      internalID: 4458593027102674584
       vertices: []
       indices: 
       edges: []

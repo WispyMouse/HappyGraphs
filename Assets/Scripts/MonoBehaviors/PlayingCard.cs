@@ -8,8 +8,11 @@ public class PlayingCard : MonoBehaviour
     public Coordinate OnCoordinate { get; private set; }
 
     public List<Sprite> CardSprites;
+    public Sprite HappySprite;
     public SpriteRenderer SpriteRenderer;
-    public bool CoordinateSet;
+
+    public bool CoordinateSet { get; set; }
+    public bool IsHappy { get; set; }
 
     public void SetCardData(CardData toCardData)
     {
@@ -30,5 +33,11 @@ public class PlayingCard : MonoBehaviour
         {
             return !CoordinateSet;
         }
+    }
+
+    public void BecomeHappy()
+    {
+        SpriteRenderer.sprite = HappySprite;
+        IsHappy = true;
     }
 }

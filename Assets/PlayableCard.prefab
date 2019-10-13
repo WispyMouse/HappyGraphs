@@ -50,7 +50,11 @@ MonoBehaviour:
   - {fileID: -1636742031616846006, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   - {fileID: -7557494978891415441, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   - {fileID: 6220208007999549204, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  HappySprite: {fileID: 4458593027102674584, guid: 10ef9490e06cfc54ea4555a8b929b06a,
+    type: 3}
   SpriteRenderer: {fileID: 2691501134619931464}
+  CoordinateSet: 0
+  IsHappy: 0
 --- !u!61 &-5605972898260574111
 BoxCollider2D:
   m_ObjectHideFlags: 0

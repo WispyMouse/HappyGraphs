@@ -75,6 +75,7 @@ public class PlayFieldManager : MonoBehaviour
     {
         card.SetCoordinate(toCoordinate);
         PlayedCards.Add(card);
+        CheckForHappyCards();
         SetPlayableSpaces();
         DealToPlayer();
     }
@@ -88,6 +89,22 @@ public class PlayFieldManager : MonoBehaviour
     {
         PlayingCard newPlayingCard = GeneratePlayingCard(DrawCard());
         newPlayingCard.transform.position = HandLocation.position;
+    }
+
+    void CheckForHappyCards()
+    {
+        foreach (PlayingCard currentCard in PlayedCards)
+        {
+            if (!currentCard.IsHappy)
+            {
+                int neighbors = currentCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
+
+                if (currentCard.RepresentingCard.FaceValue == neighbors)
+                {
+                    currentCard.BecomeHappy();
+                }
+            }
+        }
     }
 
     void SetPlayableSpaces()
@@ -107,20 +124,34 @@ public class PlayFieldManager : MonoBehaviour
 
         foreach (PlayingCard currentCard in PlayedCards)
         {
+            if (currentCard.IsHappy)
+            {
+                continue;
+            }
+
             foreach (Coordinate curNeighbor in currentCard.OnCoordinate.GetNeighbors())
             {
                 consideredCoordinates.Add(curNeighbor);
             }
         }
 
-        // For each considered Coordinate, create a PlayableSpot for it if there isn't a PlayingCard on that Coordinate already
+        // For each considered Coordinate, if all the following is true, create a Playable Spot:
+        // - there are no cards on that spot
+        // - there are no happy cards neighboring that spot
 
         foreach (Coordinate consideredCoordinate in consideredCoordinates)
         {
-            if (!PlayedCards.Any(card => card.OnCoordinate == consideredCoordinate))
+            if (PlayedCards.Any(card => card.OnCoordinate == consideredCoordinate))
             {
-                GeneratePlayableSpot(consideredCoordinate);
+                continue;
             }
+
+            if (PlayedCards.Where(card => card.IsHappy).Any(card => consideredCoordinate.GetNeighbors().Any(neighbor => neighbor == card.OnCoordinate)))
+            {
+                continue;
+            }
+
+            GeneratePlayableSpot(consideredCoordinate);
         }
     }
 
