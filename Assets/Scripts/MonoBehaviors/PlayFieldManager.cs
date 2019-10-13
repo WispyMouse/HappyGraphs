@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayFieldManager : MonoBehaviour
@@ -12,6 +13,7 @@ public class PlayFieldManager : MonoBehaviour
     public CameraManager CameraManagerInstance;
 
     public Text DeckCountLabel;
+    public Text IncompleteCardsValue;
 
     Stack<CardData> Deck;
     HashSet<PlayableSpot> PlayableSpots { get; set; } = new HashSet<PlayableSpot>();
@@ -22,6 +24,7 @@ public class PlayFieldManager : MonoBehaviour
     {
         Deck = InstantiateDeck();
 
+        IncompleteCardsValue.text = "0";
         NewPlayingField();
 
         DealToPlayer();
@@ -109,6 +112,8 @@ public class PlayFieldManager : MonoBehaviour
 
     void CheckForHappyCards()
     {
+        int incompleteCards = 0;
+
         foreach (PlayingCard currentCard in PlayedCards)
         {
             if (!currentCard.IsHappy)
@@ -119,8 +124,14 @@ public class PlayFieldManager : MonoBehaviour
                 {
                     currentCard.BecomeHappy();
                 }
+                else
+                {
+                    incompleteCards++;
+                }
             }
         }
+
+        IncompleteCardsValue.text = incompleteCards.ToString();
     }
 
     void SetPlayableSpaces()
@@ -226,8 +237,14 @@ public class PlayFieldManager : MonoBehaviour
         }
 
         PlayingCard thisCard = GeneratePlayingCard(DrawCard());
-        thisCard.SetCoordinate(new Coordinate(0, 0));
+        thisCard.SetCoordinate(new Coordinate(0, 0), DegreesOfSpeed.Instantly);
         PlayedCards.Add(thisCard);
+        CheckForHappyCards();
         SetPlayableSpaces();
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

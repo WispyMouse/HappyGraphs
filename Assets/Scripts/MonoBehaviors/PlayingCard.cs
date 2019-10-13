@@ -27,11 +27,11 @@ public class PlayingCard : MonoBehaviour
         CardSprite.sprite = CardSprites[toCardData.FaceValue - 1];
     }
 
-    public void SetCoordinate(Coordinate toCoordinate)
+    public void SetCoordinate(Coordinate toCoordinate, DegreesOfSpeed speed = DegreesOfSpeed.Slowly)
     {
         OnCoordinate = toCoordinate;
         CoordinateSet = true;
-        AnimateMovement(toCoordinate.WorldspaceCoordinate, DegreesOfSpeed.Slowly);
+        AnimateMovement(toCoordinate.WorldspaceCoordinate, speed);
     }
 
     public bool IsDraggable
