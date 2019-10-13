@@ -32,6 +32,7 @@ public class PlayingCard : MonoBehaviour
         OnCoordinate = toCoordinate;
         CoordinateSet = true;
         AnimateMovement(toCoordinate.WorldspaceCoordinate, speed);
+        CardSprite.sortingOrder = -1;
     }
 
     public bool IsDraggable

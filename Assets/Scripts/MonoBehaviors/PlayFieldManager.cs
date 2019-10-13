@@ -85,7 +85,19 @@ public class PlayFieldManager : MonoBehaviour
 
         CheckForHappyCards();
         SetPlayableSpaces();
-        DealToPlayer();
+
+        if (Deck.Count > 0)
+        {
+            DealToPlayer();
+
+            if (NoMovesArePossible())
+            {
+                NewPlayingField();
+            }
+
+            ResetCardsInHandPosition();
+        }
+
         return true;
     }
 
@@ -108,6 +120,14 @@ public class PlayFieldManager : MonoBehaviour
         {
             Debug.Log("The deck is empty!");
         }        
+    }
+
+    void ResetCardsInHandPosition()
+    {
+        foreach (PlayingCard cardInHand in CardsInHand)
+        {
+            cardInHand.transform.position = CameraManagerInstance.HandLocation;
+        }
     }
 
     void CheckForHappyCards()
@@ -225,7 +245,25 @@ public class PlayFieldManager : MonoBehaviour
 
     bool NoMovesArePossible()
     {
-        return false;
+        if (PlayableSpots.Count == 0)
+        {
+            Debug.Log("There are no valid playable spaces, so no moves are possible");
+            return true;
+        }
+
+        foreach (PlayableSpot spot in PlayableSpots)
+        {
+            foreach (PlayingCard card in CardsInHand)
+            {
+                if (IsSpotValidForCard(spot.OnCoordinate, card))
+                {
+                    return false;
+                }
+            }
+        }
+
+        Debug.Log("None of the cards in hand can validly be played in any playable space, so no moves are possible");
+        return true;
     }
 
     void NewPlayingField()
@@ -234,6 +272,19 @@ public class PlayFieldManager : MonoBehaviour
         {
             Debug.Log("Trying to make a new playing field, but the deck is empty");
             return;
+        }
+
+        if (PlayedCards.Count > 0)
+        {
+            // For now, we're going to just... jettison the PlayedCards to space.
+            // Need to figure out something more, ah, elegant than that
+            Debug.Log("Moving the existing playing field far out of the way");
+            foreach (PlayingCard card in PlayedCards)
+            {
+                card.SetCoordinate(new Coordinate(card.OnCoordinate.X + 1000, card.OnCoordinate.Y + 500), DegreesOfSpeed.Quickly);
+            }
+
+            CameraManagerInstance.ResetCamera();
         }
 
         PlayingCard thisCard = GeneratePlayingCard(DrawCard());

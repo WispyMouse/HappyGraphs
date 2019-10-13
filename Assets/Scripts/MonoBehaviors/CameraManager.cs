@@ -25,9 +25,14 @@ public class CameraManager : MonoBehaviour
     private void Awake()
     {
         AttachedCamera = GetComponent<Camera>();
-        usedPlayingArea = new Rect(0, 0, 0, 0);
         buffer = 3f;
         HandLocationOffset = new Vector3(-.5f, 1.25f, 0);
+        ResetCamera();
+    }
+
+    public void ResetCamera()
+    {
+        usedPlayingArea = new Rect(0, 0, 0, 0);
         UpdateTargetViewingArea();
         SnapCameraPosition();
     }
