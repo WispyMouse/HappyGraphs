@@ -19,6 +19,7 @@ public class PlayingCard : MonoBehaviour
 
     public void SetCoordinate(Coordinate toCoordinate)
     {
+        OnCoordinate = toCoordinate;
         transform.position = toCoordinate.WorldspaceCoordinate;
         CoordinateSet = true;
     }

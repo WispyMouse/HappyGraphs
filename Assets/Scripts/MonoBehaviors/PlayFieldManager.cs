@@ -6,10 +6,13 @@ using UnityEngine;
 public class PlayFieldManager : MonoBehaviour
 {
     public PlayingCard PlayingCardPF;
-    public Camera GameplayCamera;
+    public PlayableSpot PlayableSpotPF;
+
     public Transform HandLocation;
 
     Stack<CardData> Deck;
+    HashSet<PlayableSpot> PlayableSpots { get; set; } = new HashSet<PlayableSpot>();
+    HashSet<PlayingCard> PlayedCards { get; set; } = new HashSet<PlayingCard>();
 
     private void Awake()
     {
@@ -19,8 +22,12 @@ public class PlayFieldManager : MonoBehaviour
     private void Start()
     {
         Deck = InstantiateDeck();
-        CardData CenterCard = DrawCard();
-        PlayCard(CenterCard, new Coordinate(0, 0));
+
+        PlayingCard thisCard = GeneratePlayingCard(DrawCard());
+        thisCard.SetCoordinate(new Coordinate(0, 0));
+        PlayedCards.Add(thisCard);
+        SetPlayableSpaces();
+
         DealToPlayer();
     }
 
@@ -52,37 +59,76 @@ public class PlayFieldManager : MonoBehaviour
         }
     }
 
-    public static IEnumerable<Suit> GetAllSuits()
+    static IEnumerable<Suit> GetAllSuits()
     {
         return new Suit[] { Suit.Club, Suit.Diamond, Suit.Heart, Suit.Spade };
     }
 
-    public void PlayCard(CardData card, Coordinate toCoordinate)
-    {
-        PlayingCard thisCard = GeneratePlayingCard(card);
-        PlayCard(thisCard, toCoordinate);
-    }
-
-    public PlayingCard GeneratePlayingCard(CardData forCard)
+    PlayingCard GeneratePlayingCard(CardData forCard)
     {
         PlayingCard newCard = Instantiate(PlayingCardPF);
         newCard.SetCardData(forCard);
         return newCard;
     }
 
-    public void PlayCard(PlayingCard card, Coordinate toCoordinate)
+    public void PlayerPlaysCard(PlayingCard card, Coordinate toCoordinate)
     {
         card.SetCoordinate(toCoordinate);
+        PlayedCards.Add(card);
+        SetPlayableSpaces();
+        DealToPlayer();
     }
 
-    public CardData DrawCard()
+    CardData DrawCard()
     {
         return Deck.Pop();
     }
 
-    public void DealToPlayer()
+    void DealToPlayer()
     {
         PlayingCard newPlayingCard = GeneratePlayingCard(DrawCard());
         newPlayingCard.transform.position = HandLocation.position;
+    }
+
+    void SetPlayableSpaces()
+    {
+        // Clear out the old collection of spaces
+
+        foreach (PlayableSpot spot in PlayableSpots)
+        {
+            Destroy(spot.gameObject); // TODO: Object pool these
+        }
+
+        PlayableSpots.Clear();
+
+        // For every played card, add every neighboring coordinate to a HashSet (no duplicates)
+
+        HashSet<Coordinate> consideredCoordinates = new HashSet<Coordinate>();
+
+        foreach (PlayingCard currentCard in PlayedCards)
+        {
+            foreach (Coordinate curNeighbor in currentCard.OnCoordinate.GetNeighbors())
+            {
+                consideredCoordinates.Add(curNeighbor);
+            }
+        }
+
+        // For each considered Coordinate, create a PlayableSpot for it if there isn't a PlayingCard on that Coordinate already
+
+        foreach (Coordinate consideredCoordinate in consideredCoordinates)
+        {
+            if (!PlayedCards.Any(card => card.OnCoordinate == consideredCoordinate))
+            {
+                GeneratePlayableSpot(consideredCoordinate);
+            }
+        }
+    }
+
+    PlayableSpot GeneratePlayableSpot(Coordinate onCoordinate)
+    {
+        PlayableSpot newSpot = Instantiate(PlayableSpotPF);
+        newSpot.SetCoordinate(onCoordinate);
+        PlayableSpots.Add(newSpot);
+        return newSpot;
     }
 }

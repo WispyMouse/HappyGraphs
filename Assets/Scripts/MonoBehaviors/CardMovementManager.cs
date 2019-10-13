@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class CardMovementManager : MonoBehaviour
 {
+    public PlayFieldManager PlayFieldManagerInstance;
     public Camera MainCamera;
     public LayerMask PlayingCardLayer;
+    public LayerMask PlayableSpotLayer;
 
-    public PlayingCard DraggedCard;
-    public Vector2 DraggingOffset;
+    public PlayingCard DraggedCard { get; set; }
+    public Vector2 DraggingOffset { get; set; }
+    public Vector2 PickedUpFrom { get; set; }
 
     private void Update()
     {
@@ -20,7 +23,18 @@ public class CardMovementManager : MonoBehaviour
             }
             else
             {
-                DraggedCard = null;
+                PlayableSpot hoveredSpot = GetHoveredSpot();
+
+                if (hoveredSpot == null)
+                {
+                    DraggedCard.transform.position = PickedUpFrom;
+                    DraggedCard = null;
+                }
+                else
+                {
+                    PlayFieldManagerInstance.PlayerPlaysCard(DraggedCard, hoveredSpot.OnCoordinate);
+                    DraggedCard = null;
+                }               
             }
         }
         else
@@ -32,6 +46,7 @@ public class CardMovementManager : MonoBehaviour
                 if (hoveredCard != null && hoveredCard.IsDraggable)
                 {
                     DraggedCard = hoveredCard;
+                    PickedUpFrom = hoveredCard.transform.position;
                     DraggingOffset = (Vector2)DraggedCard.transform.position - GetMouseLocation();
                 }
             }
@@ -53,6 +68,19 @@ public class CardMovementManager : MonoBehaviour
         {
             PlayingCard hitCard = hit.collider.gameObject.GetComponent<PlayingCard>();
             return hitCard;
+        }
+
+        return null;
+    }
+
+    PlayableSpot GetHoveredSpot()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(GetMouseLocation(), Vector2.zero, float.MaxValue, PlayableSpotLayer);
+
+        if (hit.collider != null)
+        {
+            PlayableSpot hitSpot = hit.collider.gameObject.GetComponent<PlayableSpot>();
+            return hitSpot;
         }
 
         return null;

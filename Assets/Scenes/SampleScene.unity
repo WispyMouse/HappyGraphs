@@ -149,10 +149,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 000025c57c837494f9789a57118f01d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayFieldManagerInstance: {fileID: 1484028811}
   MainCamera: {fileID: 519420031}
   PlayingCardLayer:
     serializedVersion: 2
     m_Bits: 256
+  PlayableSpotLayer:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!4 &498364268
 Transform:
   m_ObjectHideFlags: 0
@@ -311,7 +315,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayingCardPF: {fileID: 8064871068835615465, guid: c3b5f5b2539df764ca635318af5f8207,
     type: 3}
-  GameplayCamera: {fileID: 519420031}
+  PlayableSpotPF: {fileID: 4820855620055150978, guid: d47edbc2c4035b548bc4d5e1ac9205f1,
+    type: 3}
   HandLocation: {fileID: 558225251}
 --- !u!4 &1484028812
 Transform:
