@@ -27,7 +27,7 @@ public class CardMovementManager : MonoBehaviour
 
                 if (hoveredSpot == null)
                 {
-                    DraggedCard.transform.position = PickedUpFrom;
+                    DraggedCard.AnimateMovement(PickedUpFrom, DegreesOfSpeed.Quickly);
                     DraggedCard = null;
                     PlayFieldManagerInstance.UpdateValidityOfPlayableSpots(null);
                 }
@@ -35,7 +35,7 @@ public class CardMovementManager : MonoBehaviour
                 {
                     if (!PlayFieldManagerInstance.TryPlayerPlaysCard(DraggedCard, hoveredSpot.OnCoordinate))
                     {
-                        DraggedCard.transform.position = PickedUpFrom;
+                        DraggedCard.AnimateMovement(PickedUpFrom, DegreesOfSpeed.Quickly);
                         PlayFieldManagerInstance.UpdateValidityOfPlayableSpots(null);
                     }
 
