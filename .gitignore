@@ -3,3 +3,4 @@
 /Temp/
 /obj/
 /Logs/Packages-Update.log
+*.csproj

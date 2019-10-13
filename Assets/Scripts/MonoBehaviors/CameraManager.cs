@@ -17,10 +17,10 @@ public class CameraManager : MonoBehaviour
     Rect targetViewingArea;
     float targetOrthographicSize;
     Vector3 targetPosition;
-
     float orthographicTransitionSpeed;
-    float positionTransitionSpeed = .5f;
     #endregion
+
+    float positionTransitionSpeed = .6f; // Camera meters per second
 
     private void Awake()
     {
@@ -67,7 +67,7 @@ public class CameraManager : MonoBehaviour
         targetPosition = new Vector3(targetViewingArea.center.x, targetViewingArea.center.y, -10);
 
         float verticalOrthographicSize = targetViewingArea.height / 2f;
-        float horizontalOrthographicSize = AttachedCamera.aspect * targetViewingArea.width / 2f;
+        float horizontalOrthographicSize = (targetViewingArea.width + buffer) / AttachedCamera.aspect / 2f;
 
         targetOrthographicSize = Mathf.Max(verticalOrthographicSize, horizontalOrthographicSize);
 

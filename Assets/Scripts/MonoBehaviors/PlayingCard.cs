@@ -5,8 +5,8 @@ using UnityEngine;
 public enum DegreesOfSpeed { Instantly, Quickly, Slowly, None }
 public class PlayingCard : MonoBehaviour
 {
-    float QuicklyAnimationSpeed = 1.5f;
-    float SlowlyAnimationSpeed = .5f;
+    float QuicklyAnimationSpeed = 18.0f;
+    float SlowlyAnimationSpeed = 9.0f;
 
     public CardData RepresentingCard { get; private set; }
     public Coordinate OnCoordinate { get; private set; }
@@ -82,12 +82,26 @@ public class PlayingCard : MonoBehaviour
         }
         else if (AnimationSpeed != DegreesOfSpeed.None)
         {
-            transform.position = Vector3.MoveTowards(transform.position, AnimationTargetLocation, Time.deltaTime * QuicklyAnimationSpeed);
+            transform.position = Vector3.MoveTowards(transform.position, AnimationTargetLocation, Time.deltaTime * GetAnimationSpeedValue());
 
             if (Vector3.Distance(transform.position, AnimationTargetLocation) == 0)
             {
                 AnimationSpeed = DegreesOfSpeed.None;
             }
+        }
+    }
+
+    float GetAnimationSpeedValue()
+    {
+        switch (AnimationSpeed)
+        {
+            case DegreesOfSpeed.Quickly:
+                return QuicklyAnimationSpeed;
+            case DegreesOfSpeed.Slowly:
+                return SlowlyAnimationSpeed;
+            default:
+                return 0;
+                
         }
     }
 }
