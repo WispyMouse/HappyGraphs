@@ -5,12 +5,22 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     public Camera AttachedCamera;
+
     Rect usedPlayingArea;
     float buffer;
-    Rect targetViewingArea;
 
     public Vector3 HandLocation;
     Vector3 HandLocationOffset;
+
+    #region Calculated Values
+    // These values are generated in UpdateTargetViewingArea, and are used for smooth camera movement.
+    Rect targetViewingArea;
+    float targetOrthographicSize;
+    Vector3 targetPosition;
+
+    float orthographicTransitionSpeed;
+    float positionTransitionSpeed = .5f;
+    #endregion
 
     private void Awake()
     {
@@ -19,6 +29,7 @@ public class CameraManager : MonoBehaviour
         buffer = 3f;
         HandLocationOffset = new Vector3(-.5f, 1.25f, 0);
         UpdateTargetViewingArea();
+        SnapCameraPosition();
     }
 
     public void NewPlacement(Vector3 location)
@@ -52,11 +63,29 @@ public class CameraManager : MonoBehaviour
     {
         targetViewingArea = new Rect(usedPlayingArea.x - buffer, usedPlayingArea.y - buffer, usedPlayingArea.width + buffer * 2f, usedPlayingArea.height + buffer * 2f);
         HandLocation = new Vector3(targetViewingArea.xMax + HandLocationOffset.x, targetViewingArea.yMin + HandLocationOffset.y, 0);
+
+        targetPosition = new Vector3(targetViewingArea.center.x, targetViewingArea.center.y, -10);
+        targetOrthographicSize = targetViewingArea.height / 2f;
+
+        if (targetOrthographicSize != AttachedCamera.orthographicSize)
+        {
+            float positionDistance = Vector3.Distance(AttachedCamera.transform.position, targetPosition);
+            float orthographicDistance = Mathf.Abs(AttachedCamera.orthographicSize - targetOrthographicSize);
+            orthographicTransitionSpeed = orthographicDistance / (positionDistance / positionTransitionSpeed);
+        }
+    }
+
+    void SnapCameraPosition()
+    {
+        AttachedCamera.transform.position = targetPosition;
+        AttachedCamera.orthographicSize = targetOrthographicSize;
+
+        orthographicTransitionSpeed = 0;
     }
 
     private void Update()
     {
-        AttachedCamera.transform.position = new Vector3(targetViewingArea.center.x, targetViewingArea.center.y, -10);
-        AttachedCamera.orthographicSize = targetViewingArea.height / 2f;
+        AttachedCamera.transform.position = Vector3.MoveTowards(AttachedCamera.transform.position, targetPosition, Time.deltaTime * positionTransitionSpeed);
+        AttachedCamera.orthographicSize = Mathf.MoveTowards(AttachedCamera.orthographicSize, targetOrthographicSize, Time.deltaTime * orthographicTransitionSpeed);
     }
 }
