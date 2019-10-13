@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Data\CardData.cs" />
     <Compile Include="Assets\Scripts\Data\Coordinate.cs" />
+    <Compile Include="Assets\Scripts\MonoBehaviors\CardMovementManager.cs" />
     <Compile Include="Assets\Scripts\MonoBehaviors\PlayFieldManager.cs" />
     <Compile Include="Assets\Scripts\MonoBehaviors\PlayingCard.cs" />
     <Reference Include="Unity.Timeline.Editor">

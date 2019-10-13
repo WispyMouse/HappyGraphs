@@ -9,6 +9,7 @@ public class PlayingCard : MonoBehaviour
 
     public List<Sprite> CardSprites;
     public SpriteRenderer SpriteRenderer;
+    public bool CoordinateSet;
 
     public void SetCardData(CardData toCardData)
     {
@@ -19,5 +20,14 @@ public class PlayingCard : MonoBehaviour
     public void SetCoordinate(Coordinate toCoordinate)
     {
         transform.position = toCoordinate.WorldspaceCoordinate;
+        CoordinateSet = true;
+    }
+
+    public bool IsDraggable
+    {
+        get
+        {
+            return !CoordinateSet;
+        }
     }
 }

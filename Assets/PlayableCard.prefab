@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1804374206355145947}
   - component: {fileID: 8064871068835615465}
-  m_Layer: 0
+  - component: {fileID: -5605972898260574111}
+  m_Layer: 8
   m_Name: PlayableCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,6 +51,32 @@ MonoBehaviour:
   - {fileID: -7557494978891415441, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   - {fileID: 6220208007999549204, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   SpriteRenderer: {fileID: 2691501134619931464}
+--- !u!61 &-5605972898260574111
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2392672727799550374}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1.5}
+  m_EdgeRadius: 0
 --- !u!1 &6467962526075516889
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,7 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6440935966937616649}
   - component: {fileID: 2691501134619931464}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: CardRender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
