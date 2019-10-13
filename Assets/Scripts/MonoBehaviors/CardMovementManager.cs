@@ -29,10 +29,16 @@ public class CardMovementManager : MonoBehaviour
                 {
                     DraggedCard.transform.position = PickedUpFrom;
                     DraggedCard = null;
+                    PlayFieldManagerInstance.UpdateValidityOfPlayableSpots(null);
                 }
                 else
                 {
-                    PlayFieldManagerInstance.PlayerPlaysCard(DraggedCard, hoveredSpot.OnCoordinate);
+                    if (!PlayFieldManagerInstance.TryPlayerPlaysCard(DraggedCard, hoveredSpot.OnCoordinate))
+                    {
+                        DraggedCard.transform.position = PickedUpFrom;
+                        PlayFieldManagerInstance.UpdateValidityOfPlayableSpots(null);
+                    }
+
                     DraggedCard = null;
                 }               
             }
@@ -48,6 +54,7 @@ public class CardMovementManager : MonoBehaviour
                     DraggedCard = hoveredCard;
                     PickedUpFrom = hoveredCard.transform.position;
                     DraggingOffset = (Vector2)DraggedCard.transform.position - GetMouseLocation();
+                    PlayFieldManagerInstance.UpdateValidityOfPlayableSpots(DraggedCard);
                 }
             }
         }

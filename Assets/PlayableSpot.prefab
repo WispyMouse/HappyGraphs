@@ -66,15 +66,16 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1725328651
+  m_SortingLayer: -2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf, type: 3}
+  m_Sprite: {fileID: -7987114580771674524, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.32, y: 0.48}
+  m_Size: {x: 1, y: 1.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -125,6 +126,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baada74684ea1fd4196035edf47f7136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PossibleSprite: {fileID: -8639726909833518158, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf,
+    type: 3}
+  ValidSprite: {fileID: -7987114580771674524, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf,
+    type: 3}
+  InvalidSprite: {fileID: -8869440314678083364, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf,
+    type: 3}
+  PlayableSpriteRenderer: {fileID: 4820855619334682376}
 --- !u!61 &4820855620055150977
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -71,13 +71,19 @@ public class PlayFieldManager : MonoBehaviour
         return newCard;
     }
 
-    public void PlayerPlaysCard(PlayingCard card, Coordinate toCoordinate)
+    public bool TryPlayerPlaysCard(PlayingCard playedCard, Coordinate toCoordinate)
     {
-        card.SetCoordinate(toCoordinate);
-        PlayedCards.Add(card);
+        if (!IsSpotValidForCard(toCoordinate, playedCard))
+        {
+            return false;
+        }
+
+        playedCard.SetCoordinate(toCoordinate);
+        PlayedCards.Add(playedCard);
         CheckForHappyCards();
         SetPlayableSpaces();
         DealToPlayer();
+        return true;
     }
 
     CardData DrawCard()
@@ -153,6 +159,8 @@ public class PlayFieldManager : MonoBehaviour
 
             GeneratePlayableSpot(consideredCoordinate);
         }
+
+        UpdateValidityOfPlayableSpots(null);
     }
 
     PlayableSpot GeneratePlayableSpot(Coordinate onCoordinate)
@@ -161,5 +169,36 @@ public class PlayFieldManager : MonoBehaviour
         newSpot.SetCoordinate(onCoordinate);
         PlayableSpots.Add(newSpot);
         return newSpot;
+    }
+
+    public void UpdateValidityOfPlayableSpots(PlayingCard forCard)
+    {
+        if (forCard == null)
+        {
+            foreach (PlayableSpot spot in PlayableSpots)
+            {
+                spot.SetValidity(SpotValidity.Possible);
+            }
+        }
+        else
+        {
+            foreach (PlayableSpot spot in PlayableSpots)
+            {
+                if (IsSpotValidForCard(spot.OnCoordinate, forCard))
+                {
+                    spot.SetValidity(SpotValidity.Valid);
+                }
+                else
+                {
+                    spot.SetValidity(SpotValidity.Invalid);
+                }
+            }
+        }
+    }
+
+    bool IsSpotValidForCard(Coordinate forCoordinate, PlayingCard forCard)
+    {
+        int neighborsAtPosition = forCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
+        return forCard.RepresentingCard.FaceValue >= neighborsAtPosition;
     }
 }

@@ -38,6 +38,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: PlayableSpot
+    uniqueID: 1725328651
+    locked: 0
+  - name: PlayingCard
+    uniqueID: 475438717
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

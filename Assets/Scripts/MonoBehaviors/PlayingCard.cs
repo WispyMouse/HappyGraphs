@@ -9,7 +9,7 @@ public class PlayingCard : MonoBehaviour
 
     public List<Sprite> CardSprites;
     public Sprite HappySprite;
-    public SpriteRenderer SpriteRenderer;
+    public SpriteRenderer CardSprite;
 
     public bool CoordinateSet { get; set; }
     public bool IsHappy { get; set; }
@@ -17,7 +17,7 @@ public class PlayingCard : MonoBehaviour
     public void SetCardData(CardData toCardData)
     {
         RepresentingCard = toCardData;
-        SpriteRenderer.sprite = CardSprites[toCardData.FaceValue - 1];
+        CardSprite.sprite = CardSprites[toCardData.FaceValue - 1];
     }
 
     public void SetCoordinate(Coordinate toCoordinate)
@@ -37,7 +37,7 @@ public class PlayingCard : MonoBehaviour
 
     public void BecomeHappy()
     {
-        SpriteRenderer.sprite = HappySprite;
+        CardSprite.sprite = HappySprite;
         IsHappy = true;
     }
 }

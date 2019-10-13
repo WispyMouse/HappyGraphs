@@ -52,9 +52,7 @@ MonoBehaviour:
   - {fileID: 6220208007999549204, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   HappySprite: {fileID: 4458593027102674584, guid: 10ef9490e06cfc54ea4555a8b929b06a,
     type: 3}
-  SpriteRenderer: {fileID: 2691501134619931464}
-  CoordinateSet: 0
-  IsHappy: 0
+  CardSprite: {fileID: 2691501134619931464}
 --- !u!61 &-5605972898260574111
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -147,8 +145,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 475438717
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: -6555575649291838755, guid: 10ef9490e06cfc54ea4555a8b929b06a,
     type: 3}
