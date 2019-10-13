@@ -2,31 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayFieldManager : MonoBehaviour
 {
     public PlayingCard PlayingCardPF;
     public PlayableSpot PlayableSpotPF;
 
-    public Transform HandLocation;
+    public CameraManager CameraManagerInstance;
+
+    public Text DeckCountLabel;
 
     Stack<CardData> Deck;
     HashSet<PlayableSpot> PlayableSpots { get; set; } = new HashSet<PlayableSpot>();
     HashSet<PlayingCard> PlayedCards { get; set; } = new HashSet<PlayingCard>();
-
-    private void Awake()
-    {
-
-    }
+    HashSet<PlayingCard> CardsInHand { get; set; } = new HashSet<PlayingCard>();
 
     private void Start()
     {
         Deck = InstantiateDeck();
 
-        PlayingCard thisCard = GeneratePlayingCard(DrawCard());
-        thisCard.SetCoordinate(new Coordinate(0, 0));
-        PlayedCards.Add(thisCard);
-        SetPlayableSpaces();
+        NewPlayingField();
 
         DealToPlayer();
     }
@@ -78,8 +74,12 @@ public class PlayFieldManager : MonoBehaviour
             return false;
         }
 
+        CardsInHand.Remove(playedCard);
         playedCard.SetCoordinate(toCoordinate);
         PlayedCards.Add(playedCard);
+
+        CameraManagerInstance.NewPlacement(toCoordinate.WorldspaceCoordinate);
+
         CheckForHappyCards();
         SetPlayableSpaces();
         DealToPlayer();
@@ -88,13 +88,23 @@ public class PlayFieldManager : MonoBehaviour
 
     CardData DrawCard()
     {
-        return Deck.Pop();
+        CardData toReturn = Deck.Pop();
+        DeckCountLabel.text = $"x{Deck.Count}";
+        return toReturn;
     }
 
     void DealToPlayer()
     {
-        PlayingCard newPlayingCard = GeneratePlayingCard(DrawCard());
-        newPlayingCard.transform.position = HandLocation.position;
+        if (Deck.Count > 0)
+        {
+            PlayingCard newPlayingCard = GeneratePlayingCard(DrawCard());
+            newPlayingCard.transform.position = CameraManagerInstance.HandLocation;
+            CardsInHand.Add(newPlayingCard);
+        }
+        else
+        {
+            Debug.Log("The deck is empty!");
+        }        
     }
 
     void CheckForHappyCards()
@@ -200,5 +210,24 @@ public class PlayFieldManager : MonoBehaviour
     {
         int neighborsAtPosition = forCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
         return forCard.RepresentingCard.FaceValue >= neighborsAtPosition;
+    }
+
+    bool NoMovesArePossible()
+    {
+        return false;
+    }
+
+    void NewPlayingField()
+    {
+        if (Deck.Count == 0)
+        {
+            Debug.Log("Trying to make a new playing field, but the deck is empty");
+            return;
+        }
+
+        PlayingCard thisCard = GeneratePlayingCard(DrawCard());
+        thisCard.SetCoordinate(new Coordinate(0, 0));
+        PlayedCards.Add(thisCard);
+        SetPlayableSpaces();
     }
 }
