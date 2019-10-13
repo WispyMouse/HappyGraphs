@@ -65,7 +65,11 @@ public class CameraManager : MonoBehaviour
         HandLocation = new Vector3(targetViewingArea.xMax + HandLocationOffset.x, targetViewingArea.yMin + HandLocationOffset.y, 0);
 
         targetPosition = new Vector3(targetViewingArea.center.x, targetViewingArea.center.y, -10);
-        targetOrthographicSize = targetViewingArea.height / 2f;
+
+        float verticalOrthographicSize = targetViewingArea.height / 2f;
+        float horizontalOrthographicSize = AttachedCamera.aspect * targetViewingArea.width / 2f;
+
+        targetOrthographicSize = Mathf.Max(verticalOrthographicSize, horizontalOrthographicSize);
 
         if (targetOrthographicSize != AttachedCamera.orthographicSize)
         {
