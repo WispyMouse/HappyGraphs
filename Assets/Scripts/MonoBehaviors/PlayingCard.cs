@@ -59,7 +59,7 @@ public class PlayingCard : MonoBehaviour
                 AnimationSpeed = speed;
                 break;
             case DegreesOfSpeed.Instantly:
-                transform.position = toLocation;
+                transform.localPosition = toLocation;
                 AnimationSpeed = DegreesOfSpeed.None;
                 break;
             default:
@@ -78,15 +78,16 @@ public class PlayingCard : MonoBehaviour
     {
         if (AnimationSpeed == DegreesOfSpeed.Instantly)
         {
-            transform.position = AnimationTargetLocation;
+            transform.localPosition = AnimationTargetLocation;
             AnimationSpeed = DegreesOfSpeed.None;
         }
         else if (AnimationSpeed != DegreesOfSpeed.None)
         {
-            transform.position = Vector3.MoveTowards(transform.position, AnimationTargetLocation, Time.deltaTime * GetAnimationSpeedValue());
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, AnimationTargetLocation, Time.deltaTime * GetAnimationSpeedValue());
 
-            if (Vector3.Distance(transform.position, AnimationTargetLocation) == 0)
+            if (Vector3.Distance(transform.localPosition, AnimationTargetLocation) < 0.01f)
             {
+                transform.localPosition = AnimationTargetLocation;
                 AnimationSpeed = DegreesOfSpeed.None;
             }
         }
