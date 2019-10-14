@@ -18,6 +18,8 @@ public class PlayFieldManager : MonoBehaviour
     Stack<CardData> Deck;
     HashSet<PlayingCard> CardsInHand { get; set; } = new HashSet<PlayingCard>();
 
+    // The running total of previous play field's incomplete cards
+    int PreviousPlayfieldIncompleteCards { get; set; } = 0;
     public PlayFieldRuntime ActivePlayField { get; set; }
 
     private void Start()
@@ -138,7 +140,7 @@ public class PlayFieldManager : MonoBehaviour
             currentCard.BecomeHappy();
         }
 
-        IncompleteCardsValue.text = ActivePlayField.GetIncompleteCards().Count.ToString();
+        IncompleteCardsValue.text = (PreviousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
     }
 
     void NewPlayingField()
@@ -151,6 +153,8 @@ public class PlayFieldManager : MonoBehaviour
 
         if (ActivePlayField != null)
         {
+            PreviousPlayfieldIncompleteCards += ActivePlayField.GetIncompleteCards().Count;
+
             // For now, we're going to just... jettison the PlayedCards to space.
             // Need to figure out something more, ah, elegant than that
             Debug.Log("Moving the existing playing field far out of the way");
@@ -158,7 +162,7 @@ public class PlayFieldManager : MonoBehaviour
             CameraManagerInstance.ResetCamera();
         }
 
-        ActivePlayField = Instantiate(PlayFieldRuntimePF, transform);
+        ActivePlayField = ObjectPooler.GetObject<PlayFieldRuntime>(PlayFieldRuntimePF, transform);
         ActivePlayField.SeedInitialCard(DrawCard());
         
         CheckForHappyCards();

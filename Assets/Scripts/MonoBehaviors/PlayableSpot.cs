@@ -15,7 +15,7 @@ public class PlayableSpot : MonoBehaviour
     public void SetCoordinate(Coordinate toCoordinate)
     {
         OnCoordinate = toCoordinate;
-        transform.position = toCoordinate.WorldspaceCoordinate;
+        transform.localPosition = toCoordinate.WorldspaceCoordinate;
     }
 
     public void SetValidity(SpotValidity toState)

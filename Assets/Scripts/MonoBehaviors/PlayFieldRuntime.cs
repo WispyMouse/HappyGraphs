@@ -13,7 +13,7 @@ public class PlayFieldRuntime : MonoBehaviour
 
     PlayingCard GeneratePlayingCard(CardData forCard)
     {
-        PlayingCard newCard = Instantiate(PlayingCardPF, transform);
+        PlayingCard newCard = ObjectPooler.GetObject<PlayingCard>(PlayingCardPF, transform);
         newCard.SetCardData(forCard);
         return newCard;
     }
@@ -92,7 +92,7 @@ public class PlayFieldRuntime : MonoBehaviour
 
         foreach (PlayableSpot spot in PlayableSpots)
         {
-            Destroy(spot.gameObject); // TODO: Object pool these
+            ObjectPooler.ReturnObject<PlayableSpot>(spot);
         }
 
         PlayableSpots.Clear();
@@ -138,7 +138,7 @@ public class PlayFieldRuntime : MonoBehaviour
 
     PlayableSpot GeneratePlayableSpot(Coordinate onCoordinate)
     {
-        PlayableSpot newSpot = Instantiate(PlayableSpotPF, transform);
+        PlayableSpot newSpot = ObjectPooler.GetObject<PlayableSpot>(PlayableSpotPF, transform);
         newSpot.SetCoordinate(onCoordinate);
         PlayableSpots.Add(newSpot);
         return newSpot;
