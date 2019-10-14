@@ -77,8 +77,9 @@ public class PlayFieldManager : MonoBehaviour
 
         CameraManagerInstance.NewPlacement(toCoordinate.WorldspaceCoordinate);
 
-        CheckForHappyCards();
+        CheckForNewHappyCards();
         ActivePlayField.SetPlayableSpaces();
+        CheckForNewCannotBeCompletedCards();
 
         if (Deck.Count > 0)
         {
@@ -131,13 +132,19 @@ public class PlayFieldManager : MonoBehaviour
         }
     }
 
-    void CheckForHappyCards()
+    void CheckForNewHappyCards()
     {
-        HashSet<PlayingCard> newlyHappyCards = ActivePlayField.GetNewlyHappyCards();
-    
-        foreach (PlayingCard currentCard in newlyHappyCards)
+        foreach (PlayingCard currentCard in ActivePlayField.GetNewlyHappyCards())
         {
             currentCard.BecomeHappy();
+        }
+    }
+
+    void CheckForNewCannotBeCompletedCards()
+    {
+        foreach (PlayingCard currentCard in ActivePlayField.GetNewlyNotCompleteableCards())
+        {
+            currentCard.MarkAsCannotComplete();
         }
 
         IncompleteCardsValue.text = (PreviousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
@@ -165,8 +172,9 @@ public class PlayFieldManager : MonoBehaviour
         ActivePlayField = ObjectPooler.GetObject<PlayFieldRuntime>(PlayFieldRuntimePF, transform);
         ActivePlayField.SeedInitialCard(DrawCard());
         
-        CheckForHappyCards();
+        CheckForNewHappyCards();
         ActivePlayField.SetPlayableSpaces();
+        CheckForNewCannotBeCompletedCards();
     }
 
     public void UpdateValidityOfPlayableSpots(PlayingCard forCard)

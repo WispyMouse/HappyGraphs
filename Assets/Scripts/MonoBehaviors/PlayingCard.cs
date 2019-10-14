@@ -17,6 +17,7 @@ public class PlayingCard : MonoBehaviour
 
     public bool CoordinateSet { get; set; }
     public bool IsHappy { get; set; }
+    public bool CannotBeCompleted { get; set; }
 
     public Vector3 AnimationTargetLocation { get; private set; }
     public DegreesOfSpeed AnimationSpeed { get; private set; } = DegreesOfSpeed.None;
@@ -105,5 +106,11 @@ public class PlayingCard : MonoBehaviour
                 return 0;
                 
         }
+    }
+
+    public void MarkAsCannotComplete()
+    {
+        CardSprite.color = Color.gray;
+        CannotBeCompleted = true;
     }
 }

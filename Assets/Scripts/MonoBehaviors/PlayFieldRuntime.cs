@@ -67,11 +67,34 @@ public class PlayFieldRuntime : MonoBehaviour
 
         foreach (PlayingCard currentCard in PlayedCards)
         {
-            if (!currentCard.IsHappy)
+            if (!currentCard.IsHappy && !currentCard.CannotBeCompleted)
             {
                 int neighbors = currentCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
 
                 if (currentCard.RepresentingCard.FaceValue == neighbors)
+                {
+                    newCards.Add(currentCard);
+                }
+            }
+        }
+
+        return newCards;
+    }
+
+    // This function depends on an up to date SetPlayableSpaces having already been called
+    public HashSet<PlayingCard> GetNewlyNotCompleteableCards()
+    {
+        HashSet<PlayingCard> newCards = new HashSet<PlayingCard>();
+
+        foreach (PlayingCard currentCard in PlayedCards)
+        {
+            if (!currentCard.IsHappy && !currentCard.CannotBeCompleted)
+            {
+                int requiredNeighbors = currentCard.RepresentingCard.FaceValue;
+                int occuppiedNeighbors = currentCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
+                int playableSpotNeighbors = currentCard.OnCoordinate.GetNeighbors().Where(neighbor => PlayableSpots.Any(spot => spot.OnCoordinate == neighbor)).Count();
+
+                if (occuppiedNeighbors + playableSpotNeighbors < requiredNeighbors)
                 {
                     newCards.Add(currentCard);
                 }
@@ -103,7 +126,7 @@ public class PlayFieldRuntime : MonoBehaviour
 
         foreach (PlayingCard currentCard in PlayedCards)
         {
-            if (currentCard.IsHappy)
+            if (currentCard.IsHappy || currentCard.CannotBeCompleted)
             {
                 continue;
             }
