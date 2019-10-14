@@ -126,7 +126,7 @@ public class PlayFieldRuntime : MonoBehaviour
 
         foreach (PlayingCard currentCard in PlayedCards)
         {
-            if (currentCard.IsHappy || currentCard.CannotBeCompleted)
+            if (currentCard.IsHappy)
             {
                 continue;
             }
