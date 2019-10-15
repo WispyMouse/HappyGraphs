@@ -15,6 +15,9 @@ public class PlayFieldManager : MonoBehaviour
     public Text DeckCountLabel;
     public Text IncompleteCardsValue;
 
+    public InputField CardsPerRankField;
+    public static int CardsPerRank = 4;
+
     Stack<CardData> Deck;
     HashSet<PlayingCard> CardsInHand { get; set; } = new HashSet<PlayingCard>();
 
@@ -24,6 +27,8 @@ public class PlayFieldManager : MonoBehaviour
 
     private void Start()
     {
+        CardsPerRankField.text = CardsPerRank.ToString();
+
         Deck = InstantiateDeck();
 
         IncompleteCardsValue.text = "0";
@@ -34,13 +39,23 @@ public class PlayFieldManager : MonoBehaviour
 
     Stack<CardData> InstantiateDeck()
     {
+        // First, we want to make a list of suits equal to the amount of cards per rank
+        List<Suit> suits = new List<Suit>();
+        List<Suit> allSuits = new List<Suit>(GetAllSuits());
+
+        for (int cardCount = 0; cardCount < CardsPerRank; cardCount++)
+        {
+            suits.Add(allSuits[cardCount % allSuits.Count]);
+        }
+
+        // Then, for each rank and for each suit in the list, add a card
         Stack<CardData> newDeck = new Stack<CardData>();
-        
+
         for (int value = 1; value <= 4; value++)
         {
-            foreach (Suit suitType in GetAllSuits())
+            foreach (Suit curSuit in suits)
             {
-                newDeck.Push(new CardData(suitType, value));
+                newDeck.Push(new CardData(curSuit, value));
             }
         }
 
@@ -185,5 +200,20 @@ public class PlayFieldManager : MonoBehaviour
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void CardsPerRankChanged()
+    {
+        int parsedValue;
+
+        if (int.TryParse(CardsPerRankField.text, out parsedValue))
+        {
+            CardsPerRank = Mathf.Max(1, parsedValue);
+            CardsPerRankField.text = CardsPerRank.ToString();
+        }
+        else
+        {
+            CardsPerRankField.text = CardsPerRank.ToString();
+        }
     }
 }
