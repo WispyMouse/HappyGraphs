@@ -10,8 +10,8 @@ public class CardMovementManager : MonoBehaviour
     public LayerMask PlayableSpotLayer;
 
     public PlayingCard DraggedCard { get; set; }
-    public Vector2 DraggingOffset { get; set; }
-    public Vector2 PickedUpFrom { get; set; }
+    public Vector3 DraggingOffset { get; set; }
+    public Vector3 PickedUpFrom { get; set; }
 
     private void Update()
     {
@@ -19,7 +19,7 @@ public class CardMovementManager : MonoBehaviour
         {
             if (Input.GetMouseButton(0))
             {
-                DraggedCard.transform.position = GetMouseLocation() + DraggingOffset;
+                DraggedCard.transform.position = GetMouseLocation() + DraggingOffset + Vector3.back;
             }
             else
             {
@@ -53,14 +53,14 @@ public class CardMovementManager : MonoBehaviour
                 {
                     DraggedCard = hoveredCard;
                     PickedUpFrom = hoveredCard.transform.position;
-                    DraggingOffset = (Vector2)DraggedCard.transform.position - GetMouseLocation();
+                    DraggingOffset = DraggedCard.transform.position - GetMouseLocation();
                     PlayFieldManagerInstance.UpdateValidityOfPlayableSpots(DraggedCard);
                 }
             }
         }
     }
 
-    Vector2 GetMouseLocation()
+    Vector3 GetMouseLocation()
     {
         Vector3 mousePosition = MainCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mousePosition2D = new Vector2(mousePosition.x, mousePosition.y);

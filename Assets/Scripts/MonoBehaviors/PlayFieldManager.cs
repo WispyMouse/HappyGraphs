@@ -33,9 +33,10 @@ public class PlayFieldManager : MonoBehaviour
     {
         CardsPerRankField.text = CardsPerRankRule.ToString();
         HandSizeField.text = HandSizeRule.ToString();
-        handSize = HandSizeRule;
 
         deck = InstantiateDeck();
+
+        handSize = Mathf.Min(HandSizeRule, deck.Count - 1);
 
         IncompleteCardsValue.text = "0";
         NewPlayingField();
@@ -102,17 +103,14 @@ public class PlayFieldManager : MonoBehaviour
         ActivePlayField.SetPlayableSpaces();
         CheckForNewCannotBeCompletedCards();
 
-        if (deck.Count > 0)
+        DealToPlayer();
+
+        if (ActivePlayField.NoMovesArePossible(cardsInHand))
         {
-            DealToPlayer();
-
-            if (ActivePlayField.NoMovesArePossible(cardsInHand))
-            {
-                NewPlayingField();
-            }
-
-            ResetCardsInHandPosition();
+            NewPlayingField();
         }
+
+        ResetCardsInHandPosition();
 
         return true;
     }
