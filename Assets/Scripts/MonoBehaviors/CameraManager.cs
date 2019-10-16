@@ -97,4 +97,12 @@ public class CameraManager : MonoBehaviour
         AttachedCamera.transform.position = Vector3.MoveTowards(AttachedCamera.transform.position, targetPosition, Time.deltaTime * positionTransitionSpeed);
         AttachedCamera.orthographicSize = Mathf.MoveTowards(AttachedCamera.orthographicSize, targetOrthographicSize, Time.deltaTime * orthographicTransitionSpeed);
     }
+
+    public Vector3 GetHandPosition(int index, int maxIndex)
+    {
+        float leftMost = .4f * (maxIndex - 1);
+        float offset = index * .8f;
+
+        return HandLocation + Vector3.right * (offset - leftMost);
+    }
 }

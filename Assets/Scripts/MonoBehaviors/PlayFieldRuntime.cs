@@ -31,7 +31,7 @@ public class PlayFieldRuntime : MonoBehaviour
         return forCard.RepresentingCard.FaceValue >= neighborsAtPosition;
     }
 
-    public bool NoMovesArePossible(HashSet<PlayingCard> hand)
+    public bool NoMovesArePossible(IEnumerable<PlayingCard> hand)
     {
         if (PlayableSpots.Count == 0)
         {

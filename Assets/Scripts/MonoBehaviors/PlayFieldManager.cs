@@ -16,20 +16,26 @@ public class PlayFieldManager : MonoBehaviour
     public Text IncompleteCardsValue;
 
     public InputField CardsPerRankField;
-    public static int CardsPerRank = 4;
+    public static int CardsPerRankRule = 4;
 
-    Stack<CardData> Deck;
-    HashSet<PlayingCard> CardsInHand { get; set; } = new HashSet<PlayingCard>();
+    public InputField HandSizeField;
+    public static int HandSizeRule = 1;
+    private int handSize { get; set; }
+
+    Stack<CardData> deck;
+    List<PlayingCard> cardsInHand { get; set; } = new List<PlayingCard>();
 
     // The running total of previous play field's incomplete cards
-    int PreviousPlayfieldIncompleteCards { get; set; } = 0;
+    int previousPlayfieldIncompleteCards { get; set; } = 0;
     public PlayFieldRuntime ActivePlayField { get; set; }
 
     private void Start()
     {
-        CardsPerRankField.text = CardsPerRank.ToString();
+        CardsPerRankField.text = CardsPerRankRule.ToString();
+        HandSizeField.text = HandSizeRule.ToString();
+        handSize = HandSizeRule;
 
-        Deck = InstantiateDeck();
+        deck = InstantiateDeck();
 
         IncompleteCardsValue.text = "0";
         NewPlayingField();
@@ -43,7 +49,7 @@ public class PlayFieldManager : MonoBehaviour
         List<Suit> suits = new List<Suit>();
         List<Suit> allSuits = new List<Suit>(GetAllSuits());
 
-        for (int cardCount = 0; cardCount < CardsPerRank; cardCount++)
+        for (int cardCount = 0; cardCount < CardsPerRankRule; cardCount++)
         {
             suits.Add(allSuits[cardCount % allSuits.Count]);
         }
@@ -87,7 +93,7 @@ public class PlayFieldManager : MonoBehaviour
             return false;
         }
 
-        CardsInHand.Remove(playedCard);
+        cardsInHand.Remove(playedCard);
         ActivePlayField.PlayCard(playedCard, toCoordinate);
 
         CameraManagerInstance.NewPlacement(toCoordinate.WorldspaceCoordinate);
@@ -96,11 +102,11 @@ public class PlayFieldManager : MonoBehaviour
         ActivePlayField.SetPlayableSpaces();
         CheckForNewCannotBeCompletedCards();
 
-        if (Deck.Count > 0)
+        if (deck.Count > 0)
         {
             DealToPlayer();
 
-            if (ActivePlayField.NoMovesArePossible(CardsInHand))
+            if (ActivePlayField.NoMovesArePossible(cardsInHand))
             {
                 NewPlayingField();
             }
@@ -113,23 +119,31 @@ public class PlayFieldManager : MonoBehaviour
 
     CardData DrawCard()
     {
-        CardData toReturn = Deck.Pop();
-        DeckCountLabel.text = $"x{Deck.Count}";
+        CardData toReturn = deck.Pop();
+        DeckCountLabel.text = $"x{deck.Count}";
         return toReturn;
     }
 
     void DealToPlayer()
     {
-        if (Deck.Count > 0)
+        if (deck.Count > 0)
         {
             PlayingCard newPlayingCard = GeneratePlayingCard(DrawCard());
             newPlayingCard.transform.position = CameraManagerInstance.HandLocation;
-            CardsInHand.Add(newPlayingCard);
+            cardsInHand.Add(newPlayingCard);
+
+            if (cardsInHand.Count < handSize)
+            {
+                DealToPlayer();
+                return;
+            }
         }
         else
         {
             Debug.Log("The deck is empty!");
-        }        
+        }
+
+        ResetCardsInHandPosition();
     }
 
     PlayingCard GeneratePlayingCard(CardData forCard)
@@ -141,9 +155,9 @@ public class PlayFieldManager : MonoBehaviour
 
     void ResetCardsInHandPosition()
     {
-        foreach (PlayingCard cardInHand in CardsInHand)
+        for (int cardIndex = 0; cardIndex < cardsInHand.Count; cardIndex++)
         {
-            cardInHand.transform.position = CameraManagerInstance.HandLocation;
+            cardsInHand[cardIndex].transform.position = CameraManagerInstance.GetHandPosition(cardIndex, handSize);
         }
     }
 
@@ -162,12 +176,12 @@ public class PlayFieldManager : MonoBehaviour
             currentCard.MarkAsCannotComplete();
         }
 
-        IncompleteCardsValue.text = (PreviousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
+        IncompleteCardsValue.text = (previousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
     }
 
     void NewPlayingField()
     {
-        if (Deck.Count == 0)
+        if (deck.Count == 0)
         {
             Debug.Log("Trying to make a new playing field, but the deck is empty");
             return;
@@ -175,7 +189,7 @@ public class PlayFieldManager : MonoBehaviour
 
         if (ActivePlayField != null)
         {
-            PreviousPlayfieldIncompleteCards += ActivePlayField.GetIncompleteCards().Count;
+            previousPlayfieldIncompleteCards += ActivePlayField.GetIncompleteCards().Count;
 
             // For now, we're going to just... jettison the PlayedCards to space.
             // Need to figure out something more, ah, elegant than that
@@ -208,12 +222,27 @@ public class PlayFieldManager : MonoBehaviour
 
         if (int.TryParse(CardsPerRankField.text, out parsedValue))
         {
-            CardsPerRank = Mathf.Max(1, parsedValue);
-            CardsPerRankField.text = CardsPerRank.ToString();
+            CardsPerRankRule = Mathf.Max(1, parsedValue);
+            CardsPerRankField.text = CardsPerRankRule.ToString();
         }
         else
         {
-            CardsPerRankField.text = CardsPerRank.ToString();
+            CardsPerRankField.text = CardsPerRankRule.ToString();
+        }
+    }
+
+    public void HandSizeRuleChanged()
+    {
+        int parsedValue;
+
+        if (int.TryParse(HandSizeField.text, out parsedValue))
+        {
+            HandSizeRule = Mathf.Max(1, parsedValue);
+            HandSizeField.text = HandSizeRule.ToString();
+        }
+        else
+        {
+            HandSizeField.text = HandSizeRule.ToString();
         }
     }
 }
