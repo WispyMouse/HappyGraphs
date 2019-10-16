@@ -50,6 +50,10 @@ MonoBehaviour:
   - {fileID: -1636742031616846006, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   - {fileID: -7557494978891415441, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   - {fileID: 6220208007999549204, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: 15826802184982995, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: -392339144297447032, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: -1030216089005083533, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: 6936632652830989309, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
   HappySprite: {fileID: 4458593027102674584, guid: 10ef9490e06cfc54ea4555a8b929b06a,
     type: 3}
   CardSprite: {fileID: 2691501134619931464}

@@ -17,6 +17,18 @@ TextureImporter:
   - first:
       213: 4458593027102674584
     second: Happy
+  - first:
+      213: 15826802184982995
+    second: Five
+  - first:
+      213: -392339144297447032
+    second: Six
+  - first:
+      213: -1030216089005083533
+    second: Seven
+  - first:
+      213: 6936632652830989309
+    second: Eight
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -129,7 +141,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 48
         width: 32
         height: 48
       alignment: 0
@@ -150,7 +162,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 0
+        y: 48
         width: 32
         height: 48
       alignment: 0
@@ -171,7 +183,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 0
+        y: 48
         width: 32
         height: 48
       alignment: 0
@@ -192,7 +204,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 0
+        y: 48
         width: 32
         height: 48
       alignment: 0
@@ -213,7 +225,28 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 48
+        y: 96
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 412f10f0967a2954caea026ee05ced11
+      internalID: 4458593027102674584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Five
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
         width: 32
         height: 48
       alignment: 0
@@ -223,8 +256,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 412f10f0967a2954caea026ee05ced11
-      internalID: 4458593027102674584
+      spriteID: 93646772bf68b4542a69c3193f55ff22
+      internalID: 15826802184982995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Six
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5442c7db0672caa42a841bb795bb3240
+      internalID: -392339144297447032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Seven
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a052f8a6275b714ebd318b69eb80326
+      internalID: -1030216089005083533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eight
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 593099ca9ac08df4986ee1696330f244
+      internalID: 6936632652830989309
       vertices: []
       indices: 
       edges: []

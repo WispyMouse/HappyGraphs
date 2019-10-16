@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum GridType { FourWay, EightWay }
 public class PlayFieldManager : MonoBehaviour
 {
     public PlayFieldRuntime PlayFieldRuntimePF;
@@ -22,6 +23,10 @@ public class PlayFieldManager : MonoBehaviour
     public static int HandSizeRule = 1;
     private int handSize { get; set; }
 
+    public static GridType GridTypeRule = GridType.FourWay;
+    public Dropdown GridTypeDropdown;
+    public static GridType ActiveGridType = GridType.FourWay;
+
     Stack<CardData> deck;
     List<PlayingCard> cardsInHand { get; set; } = new List<PlayingCard>();
 
@@ -33,6 +38,18 @@ public class PlayFieldManager : MonoBehaviour
     {
         CardsPerRankField.text = CardsPerRankRule.ToString();
         HandSizeField.text = HandSizeRule.ToString();
+        ActiveGridType = GridTypeRule;
+
+        switch (ActiveGridType)
+        {
+            default:
+            case GridType.FourWay:
+                GridTypeDropdown.value = 0;
+                break;
+            case GridType.EightWay:
+                GridTypeDropdown.value = 1;
+                break;
+        }
 
         deck = InstantiateDeck();
 
@@ -58,7 +75,20 @@ public class PlayFieldManager : MonoBehaviour
         // Then, for each rank and for each suit in the list, add a card
         Stack<CardData> newDeck = new Stack<CardData>();
 
-        for (int value = 1; value <= 4; value++)
+        int maxCardValue = 4;
+
+        switch (ActiveGridType)
+        {
+            default:
+            case GridType.FourWay:
+                maxCardValue = 4;
+                break;
+            case GridType.EightWay:
+                maxCardValue = 8;
+                break;
+        }
+
+        for (int value = 1; value <= maxCardValue; value++)
         {
             foreach (Suit curSuit in suits)
             {
@@ -241,6 +271,20 @@ public class PlayFieldManager : MonoBehaviour
         else
         {
             HandSizeField.text = HandSizeRule.ToString();
+        }
+    }
+
+    public void GridTypeRuleChanged()
+    {
+        switch (GridTypeDropdown.value)
+        {
+            default:
+            case 0:
+                GridTypeRule = GridType.FourWay;
+                break;
+            case 1:
+                GridTypeRule = GridType.EightWay;
+                break;
         }
     }
 }

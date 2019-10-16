@@ -19,7 +19,16 @@ public struct Coordinate
 
     public HashSet<Coordinate> GetNeighbors()
     {
-        return new HashSet<Coordinate>() { new Coordinate(X - 1, Y), new Coordinate(X + 1, Y), new Coordinate(X, Y + 1), new Coordinate(X, Y - 1) };
+        switch (PlayFieldManager.ActiveGridType)
+        {
+            default:
+            case GridType.FourWay:
+                return new HashSet<Coordinate>() { new Coordinate(X - 1, Y), new Coordinate(X + 1, Y), new Coordinate(X, Y + 1), new Coordinate(X, Y - 1) };
+            case GridType.EightWay:
+                return new HashSet<Coordinate>() { new Coordinate(X - 1, Y - 1), new Coordinate(X - 1, Y), new Coordinate(X - 1, Y + 1),
+                    new Coordinate(X, Y - 1), new Coordinate(X, Y + 1),
+                    new Coordinate(X + 1, Y - 1), new Coordinate(X + 1, Y), new Coordinate(X + 1, Y + 1)};
+        }
     }
 
     public override bool Equals(object obj)
