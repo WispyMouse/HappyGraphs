@@ -9,6 +9,10 @@ public class GameAction
     public CardData? CardDrawn { get; set; }
     public CardData? CardPlayed { get; set; }
     public Coordinate? CoordinatePlayedOn { get; set; }
+
+    public CardData? SeedCard { get; set; }
+    public PlayFieldRuntime PreviousPlayfield { get; set; }
+
     public UndoType ActionUndoType { get; set; }
 
     public string GetActionText()
@@ -23,6 +27,16 @@ public class GameAction
         if (CardPlayed.HasValue)
         {
             actionText.Append($"[Play {CardPlayed.Value.FaceValue} at ({CoordinatePlayedOn.Value.X}, {CoordinatePlayedOn.Value.Y})]");
+        }
+
+        if (SeedCard.HasValue)
+        {
+            actionText.Append($"[Seed {CardPlayed.Value.FaceValue}]");
+        }
+
+        if (PreviousPlayfield != null)
+        {
+            actionText.Append("[Switch Field]");
         }
 
         if (ActionUndoType == UndoType.ContinueAfter)
@@ -41,5 +55,10 @@ public class GameAction
     public static GameAction FromCardPlayed(CardData playedCard, Coordinate onCoordinate)
     {
         return new GameAction() { CardPlayed = playedCard, CoordinatePlayedOn = onCoordinate, ActionUndoType = UndoType.StopAfter };
+    }
+
+    public static GameAction FromNewPlayingField(CardData seedCard, PlayFieldRuntime previousField)
+    {
+        return new GameAction() { SeedCard = seedCard, CoordinatePlayedOn = new Coordinate(0, 0), PreviousPlayfield = previousField, ActionUndoType = UndoType.ContinueAfter };
     }
 }

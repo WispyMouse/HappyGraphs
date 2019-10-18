@@ -240,6 +240,11 @@ public class PlayFieldRuntime : MonoBehaviour
 
     public Rect GetDimensions()
     {
+        if (PlayedCards.Count == 0)
+        {
+            return new Rect();
+        }
+
         Coordinate leftMost = PlayedCards.Select(x => x.OnCoordinate).OrderBy(x => x.X).First();
         Coordinate rightMost = PlayedCards.Select(x => x.OnCoordinate).OrderByDescending(x => x.X).First();
         Coordinate bottomMost = PlayedCards.Select(x => x.OnCoordinate).OrderBy(x => x.Y).First();

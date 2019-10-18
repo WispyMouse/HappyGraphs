@@ -58,7 +58,7 @@ public class PlayFieldManager : MonoBehaviour
         handSize = Mathf.Min(HandSizeRule, deck.Count - 1);
 
         IncompleteCardsValue.text = "0";
-        NewPlayingField();
+        NewPlayingField(false);
 
         DealToPlayer(false);
     }
@@ -217,7 +217,7 @@ public class PlayFieldManager : MonoBehaviour
         IncompleteCardsValue.text = (previousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
     }
 
-    void NewPlayingField()
+    void NewPlayingField(bool logAction = true)
     {
         if (deck.Count == 0)
         {
@@ -236,8 +236,15 @@ public class PlayFieldManager : MonoBehaviour
             CameraManagerInstance.ResetCamera();
         }
 
+        CardData seedCard = DrawCard();
+
+        if (logAction && ActivePlayField != null)
+        {
+            GameActions.Push(GameAction.FromNewPlayingField(seedCard, ActivePlayField));
+        }
+
         ActivePlayField = ObjectPooler.GetObject<PlayFieldRuntime>(PlayFieldRuntimePF, transform);
-        ActivePlayField.SeedInitialCard(DrawCard());
+        ActivePlayField.SeedInitialCard(seedCard);
         
         CheckForNewHappyCards();
         ActivePlayField.SetPlayableSpaces();
@@ -320,6 +327,8 @@ public class PlayFieldManager : MonoBehaviour
         {
             UndoButton();
         }
+
+        CameraManagerInstance.UpdateCamera(ActivePlayField);
     }
 
     void UndoAction(GameAction action)
@@ -337,7 +346,6 @@ public class PlayFieldManager : MonoBehaviour
                 cardsInHand.Add(foundCard);
                 foundCard.Reset();
                 ResetCardsInHandPosition();
-                CameraManagerInstance.UpdateCamera(ActivePlayField);
             }
         }
 
@@ -358,6 +366,30 @@ public class PlayFieldManager : MonoBehaviour
                 DeckCountLabel.text = $"x{deck.Count}";
                 ResetCardsInHandPosition();
             }
+        }
+
+        if (action.SeedCard.HasValue)
+        {
+            PlayingCard foundCard;
+
+            if (!ActivePlayField.TryRemoveCardAtCoordinate(action.CoordinatePlayedOn.Value, out foundCard))
+            {
+                Debug.LogError("Tried to remove a card from the active field, but it doesn't exist");
+            }
+            else
+            {
+                ObjectPooler.ReturnObject(foundCard);
+
+                deck.Push(action.SeedCard.Value);
+                DeckCountLabel.text = $"x{deck.Count}";
+            }
+        }
+
+        if (action.PreviousPlayfield != null)
+        {
+            ObjectPooler.ReturnObject(ActivePlayField);
+            ActivePlayField = action.PreviousPlayfield;
+            ActivePlayField.transform.position = Vector3.zero;
         }
     }
 }
