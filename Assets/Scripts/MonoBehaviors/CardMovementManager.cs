@@ -112,6 +112,18 @@ public class CardMovementManager : MonoBehaviour
             return hitSpot;
         }
 
+        // If we're not mousing over a spot exactly, make an approximate boxcast using the dragged card
+        if (DraggedCard != null)
+        {
+            Collider2D boxCheckSpot = Physics2D.OverlapBox(DraggedCard.transform.position, new Vector2(1f, 1.5f), 0, PlayableSpotLayer);
+
+            if (boxCheckSpot != null)
+            {
+                PlayableSpot hitSpot = boxCheckSpot.gameObject.GetComponent<PlayableSpot>();
+                return hitSpot;
+            }
+        }
+
         return null;
     }
 }
