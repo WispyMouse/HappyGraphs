@@ -15,9 +15,9 @@ public class PlayingCard : MonoBehaviour
     public Sprite HappySprite;
     public SpriteRenderer CardSprite;
 
-    public bool CoordinateSet { get; set; }
-    public bool IsHappy { get; set; }
-    public bool CannotBeCompleted { get; set; }
+    public bool CoordinateSet { get; private set; }
+    public bool IsHappy { get; private set; }
+    public bool CannotBeCompleted { get; private set; }
 
     public Vector3 AnimationTargetLocation { get; private set; }
     public DegreesOfSpeed AnimationSpeed { get; private set; } = DegreesOfSpeed.None;
@@ -128,5 +128,12 @@ public class PlayingCard : MonoBehaviour
         }
         
         CannotBeCompleted = cannotBeCompleted;
+    }
+
+    public void Reset()
+    {
+        SetIncompleteness(false);
+        SetHappiness(false);
+        CoordinateSet = false;
     }
 }

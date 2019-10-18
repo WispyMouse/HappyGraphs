@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
+public enum UndoType { ContinueAfter, StopAfter, CannotUndo }
 public class GameAction
 {
     public CardData? CardDrawn { get; set; }
     public CardData? CardPlayed { get; set; }
     public Coordinate? CoordinatePlayedOn { get; set; }
+    public UndoType ActionUndoType { get; set; }
 
     public string GetActionText()
     {
@@ -23,16 +25,21 @@ public class GameAction
             actionText.Append($"[Play {CardPlayed.Value.FaceValue} at ({CoordinatePlayedOn.Value.X}, {CoordinatePlayedOn.Value.Y})]");
         }
 
+        if (ActionUndoType == UndoType.ContinueAfter)
+        {
+            actionText.Append("[Continue]");
+        }
+
         return actionText.ToString();
     }
 
     public static GameAction FromCardDrawnFromDeck(CardData drawnCard)
     {
-        return new GameAction() { CardDrawn = drawnCard };
+        return new GameAction() { CardDrawn = drawnCard, ActionUndoType = UndoType.ContinueAfter };
     }
 
     public static GameAction FromCardPlayed(CardData playedCard, Coordinate onCoordinate)
     {
-        return new GameAction() { CardPlayed = playedCard, CoordinatePlayedOn = onCoordinate };
+        return new GameAction() { CardPlayed = playedCard, CoordinatePlayedOn = onCoordinate, ActionUndoType = UndoType.StopAfter };
     }
 }

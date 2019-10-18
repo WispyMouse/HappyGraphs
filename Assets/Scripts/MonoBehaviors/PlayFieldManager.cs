@@ -60,7 +60,7 @@ public class PlayFieldManager : MonoBehaviour
         IncompleteCardsValue.text = "0";
         NewPlayingField();
 
-        DealToPlayer();
+        DealToPlayer(false);
     }
 
     Stack<CardData> InstantiateDeck()
@@ -153,11 +153,11 @@ public class PlayFieldManager : MonoBehaviour
     {
         CardData drawnCard = deck.Pop();
         DeckCountLabel.text = $"x{deck.Count}";
-        GameActions.Push(GameAction.FromCardDrawnFromDeck(drawnCard));
+        
         return drawnCard;
     }
 
-    void DealToPlayer()
+    void DealToPlayer(bool logAction = true)
     {
         if (deck.Count > 0)
         {
@@ -165,9 +165,14 @@ public class PlayFieldManager : MonoBehaviour
             newPlayingCard.transform.position = CameraManagerInstance.HandLocation;
             cardsInHand.Add(newPlayingCard);
 
+            if (logAction)
+            {
+                GameActions.Push(GameAction.FromCardDrawnFromDeck(newPlayingCard.RepresentingCard));
+            }
+
             if (cardsInHand.Count < handSize)
             {
-                DealToPlayer();
+                DealToPlayer(logAction);
                 return;
             }
         }
@@ -301,8 +306,20 @@ public class PlayFieldManager : MonoBehaviour
             return;
         }
 
+        if (GameActions.Peek().ActionUndoType == UndoType.CannotUndo)
+        {
+            Debug.Log("Cannot undo the next action");
+            Debug.Log(GameActions.Peek().GetActionText());
+            return;
+        }
+
         GameAction previousAction = GameActions.Pop();
         UndoAction(previousAction);
+
+        if (previousAction.ActionUndoType == UndoType.ContinueAfter)
+        {
+            UndoButton();
+        }
     }
 
     void UndoAction(GameAction action)
@@ -318,8 +335,7 @@ public class PlayFieldManager : MonoBehaviour
             else
             {
                 cardsInHand.Add(foundCard);
-                foundCard.SetHappiness(false);
-                foundCard.SetIncompleteness(false);
+                foundCard.Reset();
                 ResetCardsInHandPosition();
             }
         }
