@@ -69,9 +69,7 @@ public class PlayFieldRuntime : MonoBehaviour
         {
             if (!currentCard.IsHappy && !currentCard.CannotBeCompleted)
             {
-                int neighbors = currentCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
-
-                if (currentCard.RepresentingCard.FaceValue == neighbors)
+                if (ShouldCardBeHappy(currentCard))
                 {
                     newCards.Add(currentCard);
                 }
@@ -79,6 +77,18 @@ public class PlayFieldRuntime : MonoBehaviour
         }
 
         return newCards;
+    }
+
+    bool ShouldCardBeHappy(PlayingCard consideredCard)
+    {
+        int neighbors = consideredCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
+
+        if (consideredCard.RepresentingCard.FaceValue == neighbors)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     // This function depends on an up to date SetPlayableSpaces having already been called
@@ -90,11 +100,7 @@ public class PlayFieldRuntime : MonoBehaviour
         {
             if (!currentCard.IsHappy && !currentCard.CannotBeCompleted)
             {
-                int requiredNeighbors = currentCard.RepresentingCard.FaceValue;
-                int occuppiedNeighbors = currentCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
-                int playableSpotNeighbors = currentCard.OnCoordinate.GetNeighbors().Where(neighbor => PlayableSpots.Any(spot => spot.OnCoordinate == neighbor)).Count();
-
-                if (occuppiedNeighbors + playableSpotNeighbors < requiredNeighbors)
+                if (ShouldCardBeIncompleteable(currentCard))
                 {
                     newCards.Add(currentCard);
                 }
@@ -102,6 +108,20 @@ public class PlayFieldRuntime : MonoBehaviour
         }
 
         return newCards;
+    }
+
+    bool ShouldCardBeIncompleteable(PlayingCard consideredCard)
+    {
+        int requiredNeighbors = consideredCard.RepresentingCard.FaceValue;
+        int occuppiedNeighbors = consideredCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
+        int playableSpotNeighbors = consideredCard.OnCoordinate.GetNeighbors().Where(neighbor => PlayableSpots.Any(spot => spot.OnCoordinate == neighbor)).Count();
+
+        if (occuppiedNeighbors + playableSpotNeighbors < requiredNeighbors)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public HashSet<PlayingCard> GetIncompleteCards()
@@ -190,5 +210,31 @@ public class PlayFieldRuntime : MonoBehaviour
                 }
             }
         }
+    }
+
+    public bool TryRemoveCardAtCoordinate(Coordinate toRemove, out PlayingCard foundCard)
+    {
+        foundCard = PlayedCards.FirstOrDefault(card => card.OnCoordinate == toRemove);
+
+        if (foundCard == null)
+        {
+            return false;
+        }
+
+        PlayedCards.Remove(foundCard);
+
+        foreach (PlayingCard neighbor in PlayedCards.Where(card => toRemove.GetNeighbors().Contains(card.OnCoordinate)))
+        {
+            neighbor.SetHappiness(ShouldCardBeHappy(neighbor));
+        }
+
+        SetPlayableSpaces();
+
+        foreach (PlayingCard neighbor in PlayedCards.Where(card => toRemove.GetNeighbors().Contains(card.OnCoordinate)))
+        {
+            neighbor.SetIncompleteness(ShouldCardBeIncompleteable(neighbor));
+        }
+
+        return true;
     }
 }

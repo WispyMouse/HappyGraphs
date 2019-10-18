@@ -67,7 +67,6 @@ public class CameraManager : MonoBehaviour
     void UpdateTargetViewingArea()
     {
         targetViewingArea = new Rect(usedPlayingArea.x + buffer.x, usedPlayingArea.y + buffer.y, usedPlayingArea.width + buffer.width, usedPlayingArea.height + buffer.height);
-        Debug.Log(targetViewingArea);
         HandLocation = new Vector3(targetViewingArea.xMax + HandLocationOffset.x, targetViewingArea.yMin + HandLocationOffset.y, 0);
 
         targetPosition = new Vector3(targetViewingArea.center.x, targetViewingArea.center.y, -10);

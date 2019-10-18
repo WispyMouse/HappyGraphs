@@ -34,6 +34,8 @@ public class PlayFieldManager : MonoBehaviour
     int previousPlayfieldIncompleteCards { get; set; } = 0;
     public PlayFieldRuntime ActivePlayField { get; set; }
 
+    Stack<GameAction> GameActions { get; set; } = new Stack<GameAction>();
+
     private void Start()
     {
         CardsPerRankField.text = CardsPerRankRule.ToString();
@@ -127,6 +129,8 @@ public class PlayFieldManager : MonoBehaviour
         cardsInHand.Remove(playedCard);
         ActivePlayField.PlayCard(playedCard, toCoordinate);
 
+        GameActions.Push(GameAction.FromCardPlayed(playedCard.RepresentingCard, toCoordinate));
+
         CameraManagerInstance.NewPlacement(toCoordinate.WorldspaceCoordinate);
 
         CheckForNewHappyCards();
@@ -147,9 +151,10 @@ public class PlayFieldManager : MonoBehaviour
 
     CardData DrawCard()
     {
-        CardData toReturn = deck.Pop();
+        CardData drawnCard = deck.Pop();
         DeckCountLabel.text = $"x{deck.Count}";
-        return toReturn;
+        GameActions.Push(GameAction.FromCardDrawnFromDeck(drawnCard));
+        return drawnCard;
     }
 
     void DealToPlayer()
@@ -193,7 +198,7 @@ public class PlayFieldManager : MonoBehaviour
     {
         foreach (PlayingCard currentCard in ActivePlayField.GetNewlyHappyCards())
         {
-            currentCard.BecomeHappy();
+            currentCard.SetHappiness(true);
         }
     }
 
@@ -201,7 +206,7 @@ public class PlayFieldManager : MonoBehaviour
     {
         foreach (PlayingCard currentCard in ActivePlayField.GetNewlyNotCompleteableCards())
         {
-            currentCard.MarkAsCannotComplete();
+            currentCard.SetIncompleteness(true);
         }
 
         IncompleteCardsValue.text = (previousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
@@ -285,6 +290,57 @@ public class PlayFieldManager : MonoBehaviour
             case 1:
                 GridTypeRule = GridType.EightWay;
                 break;
+        }
+    }
+
+    public void UndoButton()
+    {
+        if (GameActions.Count == 0)
+        {
+            Debug.Log("Could not undo, there were no actions.");
+            return;
+        }
+
+        GameAction previousAction = GameActions.Pop();
+        UndoAction(previousAction);
+    }
+
+    void UndoAction(GameAction action)
+    {
+        if (action.CardPlayed.HasValue)
+        {
+            PlayingCard foundCard;
+
+            if (!ActivePlayField.TryRemoveCardAtCoordinate(action.CoordinatePlayedOn.Value, out foundCard))
+            {
+                Debug.LogError("Tried to remove a card from the active field, but it doesn't exist");
+            }
+            else
+            {
+                cardsInHand.Add(foundCard);
+                foundCard.SetHappiness(false);
+                foundCard.SetIncompleteness(false);
+                ResetCardsInHandPosition();
+            }
+        }
+
+        if (action.CardDrawn.HasValue)
+        {
+            PlayingCard matchingCardInHand = cardsInHand.FirstOrDefault(card => card.RepresentingCard == action.CardDrawn.Value);
+
+            if (matchingCardInHand == null)
+            {
+                Debug.LogError("Tried to remove a card from hand, but it doesn't exist");
+            }
+            else
+            {
+                cardsInHand.Remove(matchingCardInHand);
+                ObjectPooler.ReturnObject(matchingCardInHand);
+
+                deck.Push(action.CardDrawn.Value);
+                DeckCountLabel.text = $"x{deck.Count}";
+                ResetCardsInHandPosition();
+            }
         }
     }
 }

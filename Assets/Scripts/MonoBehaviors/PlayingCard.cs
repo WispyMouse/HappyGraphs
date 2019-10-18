@@ -44,10 +44,18 @@ public class PlayingCard : MonoBehaviour
         }
     }
 
-    public void BecomeHappy()
+    public void SetHappiness(bool isHappy)
     {
-        CardSprite.sprite = HappySprite;
-        IsHappy = true;
+        if (isHappy)
+        {
+            CardSprite.sprite = HappySprite;
+        }
+        else
+        {
+            CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
+        }
+        
+        IsHappy = isHappy;
     }
 
     public void AnimateMovement(Vector3 toLocation, DegreesOfSpeed speed)
@@ -108,9 +116,17 @@ public class PlayingCard : MonoBehaviour
         }
     }
 
-    public void MarkAsCannotComplete()
+    public void SetIncompleteness(bool cannotBeCompleted)
     {
-        CardSprite.color = Color.gray;
-        CannotBeCompleted = true;
+        if (cannotBeCompleted)
+        {
+            CardSprite.color = Color.gray;
+        }
+        else
+        {
+            CardSprite.color = Color.white;
+        }
+        
+        CannotBeCompleted = cannotBeCompleted;
     }
 }
