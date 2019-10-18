@@ -10,7 +10,9 @@ public class PlayableSpot : MonoBehaviour
     public Sprite PossibleSprite;
     public Sprite ValidSprite;
     public Sprite InvalidSprite;
+    public Sprite HoveredSprite;
     public SpriteRenderer PlayableSpriteRenderer;
+    SpotValidity previousStatus { get; set; }
 
     public void SetCoordinate(Coordinate toCoordinate)
     {
@@ -20,6 +22,8 @@ public class PlayableSpot : MonoBehaviour
 
     public void SetValidity(SpotValidity toState)
     {
+        previousStatus = toState;
+
         switch (toState)
         {
             case SpotValidity.Valid:
@@ -31,6 +35,18 @@ public class PlayableSpot : MonoBehaviour
             case SpotValidity.Possible:
                 PlayableSpriteRenderer.sprite = PossibleSprite;
                 break;
+        }
+    }
+
+    public void SetHovered(bool state)
+    {
+        if (state && previousStatus != SpotValidity.Invalid)
+        {
+            PlayableSpriteRenderer.sprite = HoveredSprite;
+        }
+        else
+        {
+            SetValidity(previousStatus);
         }
     }
 }

@@ -12,18 +12,40 @@ public class CardMovementManager : MonoBehaviour
     public PlayingCard DraggedCard { get; set; }
     public Vector3 DraggingOffset { get; set; }
     public Vector3 PickedUpFrom { get; set; }
+    PlayableSpot previousHoveredSpot { get; set; }
 
     private void Update()
     {
         if (DraggedCard != null)
         {
+            PlayableSpot hoveredSpot = GetHoveredSpot();
+
             if (Input.GetMouseButton(0))
             {
                 DraggedCard.transform.position = GetMouseLocation() + DraggingOffset + Vector3.back;
+
+                if (previousHoveredSpot != hoveredSpot)
+                {
+                    if (previousHoveredSpot != null)
+                    {
+                        previousHoveredSpot.SetHovered(false);
+                    }
+
+                    previousHoveredSpot = hoveredSpot;
+
+                    if (hoveredSpot != null)
+                    {
+                        hoveredSpot.SetHovered(true);
+                    }
+                }
             }
             else
             {
-                PlayableSpot hoveredSpot = GetHoveredSpot();
+                if (previousHoveredSpot != null)
+                {
+                    previousHoveredSpot.SetHovered(false);
+                    previousHoveredSpot = null;
+                }
 
                 if (hoveredSpot == null)
                 {
@@ -40,7 +62,7 @@ public class CardMovementManager : MonoBehaviour
                     }
 
                     DraggedCard = null;
-                }               
+                }
             }
         }
         else

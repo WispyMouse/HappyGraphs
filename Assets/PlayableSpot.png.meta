@@ -11,6 +11,9 @@ TextureImporter:
   - first:
       213: -8639726909833518158
     second: Possible
+  - first:
+      213: 7027477246400864484
+    second: Hovered
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -169,7 +172,7 @@ TextureImporter:
         width: 32
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -177,6 +180,27 @@ TextureImporter:
       bones: []
       spriteID: db038c1b0e533024d865ab11872bc683
       internalID: -8639726909833518158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hovered
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 48
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f1509664b150a848a8785b5e7b9a5b8
+      internalID: 7027477246400864484
       vertices: []
       indices: 
       edges: []
