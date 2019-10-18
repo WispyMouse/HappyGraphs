@@ -37,30 +37,9 @@ public class CameraManager : MonoBehaviour
         SnapCameraPosition();
     }
 
-    public void NewPlacement(Vector3 location)
+    public void UpdateCamera(PlayFieldRuntime activePlayingField)
     {
-        if (location.x > usedPlayingArea.xMax)
-        {
-            usedPlayingArea.width = Mathf.Abs(location.x - usedPlayingArea.x);
-        }
-
-        if (location.x < usedPlayingArea.xMin)
-        {
-            usedPlayingArea.width = usedPlayingArea.width + (usedPlayingArea.x - location.x);
-            usedPlayingArea.x = location.x;
-        }
-
-        if (location.y > usedPlayingArea.yMax)
-        {
-            usedPlayingArea.height = Mathf.Abs(location.y - usedPlayingArea.y);
-        }
-
-        if (location.y < usedPlayingArea.yMin)
-        {
-            usedPlayingArea.height = usedPlayingArea.height + (usedPlayingArea.y - location.y);
-            usedPlayingArea.y = location.y;
-        }
-
+        usedPlayingArea = activePlayingField.GetDimensions();
         UpdateTargetViewingArea();
     }
 

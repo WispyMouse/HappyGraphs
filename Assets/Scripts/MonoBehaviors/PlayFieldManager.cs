@@ -131,7 +131,7 @@ public class PlayFieldManager : MonoBehaviour
 
         GameActions.Push(GameAction.FromCardPlayed(playedCard.RepresentingCard, toCoordinate));
 
-        CameraManagerInstance.NewPlacement(toCoordinate.WorldspaceCoordinate);
+        CameraManagerInstance.UpdateCamera(ActivePlayField);
 
         CheckForNewHappyCards();
         ActivePlayField.SetPlayableSpaces();
@@ -337,6 +337,7 @@ public class PlayFieldManager : MonoBehaviour
                 cardsInHand.Add(foundCard);
                 foundCard.Reset();
                 ResetCardsInHandPosition();
+                CameraManagerInstance.UpdateCamera(ActivePlayField);
             }
         }
 
