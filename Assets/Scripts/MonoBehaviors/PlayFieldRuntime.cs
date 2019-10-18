@@ -231,9 +231,9 @@ public class PlayFieldRuntime : MonoBehaviour
         SetPlayableSpaces();
 
         // This card could have affected any card up to three cards away, so check each neighbor
-        HashSet<Coordinate> PossiblyAffectedCards = new HashSet<Coordinate>(toRemove.GetNeighbors().SelectMany(neighbor => neighbor.GetNeighbors()).SelectMany(neighbor => neighbor.GetNeighbors()));
+        HashSet<Coordinate> PossiblyAffectedCoordinates = CoordinateCachingManager.GetNeighborsInRadius(toRemove, 3);
 
-        foreach (PlayingCard neighbor in PlayedCards.Where(card => PossiblyAffectedCards.Contains(card.OnCoordinate)))
+        foreach (PlayingCard neighbor in PlayedCards.Where(card => PossiblyAffectedCoordinates.Contains(card.OnCoordinate)))
         {
             neighbor.SetIncompleteness(ShouldCardBeIncompleteable(neighbor));
         }

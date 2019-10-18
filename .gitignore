@@ -4,3 +4,4 @@
 /obj/
 /Logs/Packages-Update.log
 *.csproj
+/Builds/
