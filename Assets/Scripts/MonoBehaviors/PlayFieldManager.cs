@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum GridType { FourWay, EightWay }
+public enum GridType { FourWay, SixWay, EightWay }
 public class PlayFieldManager : MonoBehaviour
 {
     public PlayFieldRuntime PlayFieldRuntimePF;
@@ -48,8 +48,11 @@ public class PlayFieldManager : MonoBehaviour
             case GridType.FourWay:
                 GridTypeDropdown.value = 0;
                 break;
-            case GridType.EightWay:
+            case GridType.SixWay:
                 GridTypeDropdown.value = 1;
+                break;
+            case GridType.EightWay:
+                GridTypeDropdown.value = 2;
                 break;
         }
 
@@ -84,6 +87,9 @@ public class PlayFieldManager : MonoBehaviour
             default:
             case GridType.FourWay:
                 maxCardValue = 4;
+                break;
+            case GridType.SixWay:
+                maxCardValue = 6;
                 break;
             case GridType.EightWay:
                 maxCardValue = 8;
@@ -300,6 +306,9 @@ public class PlayFieldManager : MonoBehaviour
                 GridTypeRule = GridType.FourWay;
                 break;
             case 1:
+                GridTypeRule = GridType.SixWay;
+                break;
+            case 2:
                 GridTypeRule = GridType.EightWay;
                 break;
         }

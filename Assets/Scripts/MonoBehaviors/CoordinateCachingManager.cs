@@ -37,6 +37,19 @@ public class CoordinateCachingManager : MonoBehaviour
             case GridType.FourWay:
                 return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y), new Coordinate(forCoordinate.X + 1, forCoordinate.Y),
                     new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1) };
+            case GridType.SixWay:
+                if (forCoordinate.X % 2 == 0)
+                {
+                    return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),
+                    new Coordinate(forCoordinate.X + 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X + 1, forCoordinate.Y),
+                new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y)};
+                }
+                else
+                {
+                    return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),
+                    new Coordinate(forCoordinate.X + 1, forCoordinate.Y), new Coordinate(forCoordinate.X + 1, forCoordinate.Y + 1),
+                new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y + 1)};
+                }
             case GridType.EightWay:
                 return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y),
                     new Coordinate(forCoordinate.X - 1, forCoordinate.Y + 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),

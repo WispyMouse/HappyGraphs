@@ -14,7 +14,15 @@ public struct Coordinate
         this.X = inX;
         this.Y = inY;
 
-        WorldspaceCoordinate = new Vector3((float)X, (float)Y * 1.5f);
+        switch (PlayFieldManager.ActiveGridType)
+        {
+            default:
+                WorldspaceCoordinate = new Vector3((float)X, (float)Y * 1.5f);
+                break;
+            case GridType.SixWay:
+                WorldspaceCoordinate = new Vector3((float)X, (float)Y * 1.5f + (Mathf.Abs(X) % 2 == 1 ? .75f : 0f));
+                break;
+        }
     }
 
     public HashSet<Coordinate> GetNeighbors()
@@ -47,5 +55,10 @@ public struct Coordinate
     public static bool operator !=(Coordinate one, Coordinate two)
     {
         return !one.Equals(two);
+    }
+
+    public override string ToString()
+    {
+        return $"({X}, {Y})";
     }
 }

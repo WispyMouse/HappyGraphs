@@ -18,6 +18,10 @@ public class PlayableSpot : MonoBehaviour
     {
         OnCoordinate = toCoordinate;
         transform.localPosition = toCoordinate.WorldspaceCoordinate;
+
+#if UNITY_EDITOR
+        name = $"PlayableSpot {toCoordinate.ToString()}";
+#endif
     }
 
     public void SetValidity(SpotValidity toState)

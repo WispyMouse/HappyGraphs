@@ -211,6 +211,8 @@ MonoBehaviour:
     m_Options:
     - m_Text: 4 Way
       m_Image: {fileID: 0}
+    - m_Text: 6 Way
+      m_Image: {fileID: 0}
     - m_Text: 8 Way
       m_Image: {fileID: 0}
   m_OnValueChanged:

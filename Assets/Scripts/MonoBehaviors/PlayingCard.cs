@@ -26,6 +26,10 @@ public class PlayingCard : MonoBehaviour
     {
         RepresentingCard = toCardData;
         CardSprite.sprite = CardSprites[toCardData.FaceValue - 1];
+
+#if UNITY_EDITOR
+        name = $"PlayingCard {toCardData.FaceValue}";
+#endif
     }
 
     public void SetCoordinate(Coordinate toCoordinate, DegreesOfSpeed speed = DegreesOfSpeed.Slowly)
@@ -34,6 +38,10 @@ public class PlayingCard : MonoBehaviour
         CoordinateSet = true;
         AnimateMovement(toCoordinate.WorldspaceCoordinate, speed);
         CardSprite.sortingOrder = -1;
+
+#if UNITY_EDITOR
+        name = $"PlayingCard {RepresentingCard.FaceValue} {toCoordinate.ToString()}";
+#endif
     }
 
     public bool IsDraggable
