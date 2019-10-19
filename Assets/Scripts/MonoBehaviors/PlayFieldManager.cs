@@ -16,8 +16,11 @@ public class PlayFieldManager : MonoBehaviour
     public Text DeckCountLabel;
     public Text IncompleteCardsValue;
 
-    public InputField CardsPerRankField;
-    public static int CardsPerRankRule = 4;
+    public Text CardsPerRankButtonText;
+    public GameObject CardsPerRankDialog;
+    public CardsPerRankPanel CardsPerRankPanelPF;
+    public Transform CardsPerRankHolder;
+    public static Dictionary<int, int> CardsPerRankRules { get; set; } = new Dictionary<int, int>();
 
     public InputField HandSizeField;
     public static int HandSizeRule = 1;
@@ -38,7 +41,7 @@ public class PlayFieldManager : MonoBehaviour
 
     private void Start()
     {
-        CardsPerRankField.text = CardsPerRankRule.ToString();
+        CardsPerRankButtonText.text = "SHOW";
         HandSizeField.text = HandSizeRule.ToString();
         ActiveGridType = GridTypeRule;
 
@@ -64,20 +67,16 @@ public class PlayFieldManager : MonoBehaviour
         NewPlayingField(false);
 
         DealToPlayer(false);
+
+        for (int rank = 1; rank <= 8; rank++)
+        {
+            CardsPerRankPanel panel = ObjectPooler.GetObject<CardsPerRankPanel>(CardsPerRankPanelPF, CardsPerRankHolder);
+            panel.SetRank(rank);
+        }
     }
 
     Stack<CardData> InstantiateDeck()
     {
-        // First, we want to make a list of suits equal to the amount of cards per rank
-        List<Suit> suits = new List<Suit>();
-        List<Suit> allSuits = new List<Suit>(GetAllSuits());
-
-        for (int cardCount = 0; cardCount < CardsPerRankRule; cardCount++)
-        {
-            suits.Add(allSuits[cardCount % allSuits.Count]);
-        }
-
-        // Then, for each rank and for each suit in the list, add a card
         Stack<CardData> newDeck = new Stack<CardData>();
 
         int maxCardValue = 4;
@@ -96,11 +95,11 @@ public class PlayFieldManager : MonoBehaviour
                 break;
         }
 
-        for (int value = 1; value <= maxCardValue; value++)
+        for (int rank = 1; rank <= maxCardValue; rank++)
         {
-            foreach (Suit curSuit in suits)
+            for (int cardCount = 0; cardCount < GetCardsPerRank(rank); cardCount++)
             {
-                newDeck.Push(new CardData(curSuit, value));
+                newDeck.Push(new CardData(rank));
             }
         }
 
@@ -118,11 +117,6 @@ public class PlayFieldManager : MonoBehaviour
         {
             toShuffle.Push(card);
         }
-    }
-
-    static IEnumerable<Suit> GetAllSuits()
-    {
-        return new Suit[] { Suit.Club, Suit.Diamond, Suit.Heart, Suit.Spade };
     }
 
     public bool TryPlayerPlaysCard(PlayingCard playedCard, Coordinate toCoordinate)
@@ -267,18 +261,17 @@ public class PlayFieldManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void CardsPerRankChanged()
+    public void CardsPerRankButton()
     {
-        int parsedValue;
-
-        if (int.TryParse(CardsPerRankField.text, out parsedValue))
+        if (!CardsPerRankDialog.activeSelf)
         {
-            CardsPerRankRule = Mathf.Max(1, parsedValue);
-            CardsPerRankField.text = CardsPerRankRule.ToString();
+            CardsPerRankDialog.SetActive(true);
+            CardsPerRankButtonText.text = "HIDE";
         }
         else
         {
-            CardsPerRankField.text = CardsPerRankRule.ToString();
+            CardsPerRankDialog.SetActive(false);
+            CardsPerRankButtonText.text = "SHOW";
         }
     }
 
@@ -399,6 +392,33 @@ public class PlayFieldManager : MonoBehaviour
             ObjectPooler.ReturnObject(ActivePlayField);
             ActivePlayField = action.PreviousPlayfield;
             ActivePlayField.transform.position = Vector3.zero;
+        }
+    }
+
+    public static int GetCardsPerRank(int rank)
+    {
+        int value;
+
+        if (CardsPerRankRules.TryGetValue(rank, out value))
+        {
+            return value;
+        }
+
+        CardsPerRankRules.Add(rank, 4);
+        return 4;
+    }
+
+    public static void SetCardsPerRank(int rank, int toValue)
+    {
+        toValue = Mathf.Max(0, toValue);
+
+        if (CardsPerRankRules.ContainsKey(rank))
+        {
+            CardsPerRankRules[rank] = toValue;
+        }
+        else
+        {
+            CardsPerRankRules.Add(rank, toValue);
         }
     }
 }
