@@ -8,8 +8,9 @@ public class GameRulesManager : MonoBehaviour
     public static GameRules ActiveGameRules { get; set; } = new GameRules();
     public static GameRules FutureGameRules { get; set; } = new GameRules();
 
-    public Text CardsPerRankButtonText;
-    public GameObject CardsPerRankDialog;
+    public Text RulesDialogButtonText;
+    public GameObject RulesDialog;
+
     public CardsPerRankPanel CardsPerRankPanelPF;
     public Transform CardsPerRankHolder;
 
@@ -21,7 +22,7 @@ public class GameRulesManager : MonoBehaviour
     {
         ActiveGameRules = new GameRules(FutureGameRules);
 
-        CardsPerRankButtonText.text = "SHOW";
+        RulesDialogButtonText.text = "SHOW";
         HandSizeField.text = ActiveGameRules.HandSizeRule.ToString();
 
         switch (ActiveGameRules.GridTypeRule)
@@ -77,17 +78,17 @@ public class GameRulesManager : MonoBehaviour
         }
     }
 
-    public void CardsPerRankButton()
+    public void ToggleRulesDialog()
     {
-        if (!CardsPerRankDialog.activeSelf)
+        if (!RulesDialog.activeSelf)
         {
-            CardsPerRankDialog.SetActive(true);
-            CardsPerRankButtonText.text = "HIDE";
+            RulesDialog.SetActive(true);
+            RulesDialogButtonText.text = "HIDE";
         }
         else
         {
-            CardsPerRankDialog.SetActive(false);
-            CardsPerRankButtonText.text = "SHOW";
+            RulesDialog.SetActive(false);
+            RulesDialogButtonText.text = "SHOW";
         }
     }
 }

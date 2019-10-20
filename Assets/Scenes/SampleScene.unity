@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 28859229}
   - component: {fileID: 28859228}
   m_Layer: 5
-  m_Name: CardsPerRankDialog
+  m_Name: RulesDialog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -296,6 +296,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1480803417}
+  - {fileID: 2103958249}
+  - {fileID: 1627918070}
   - {fileID: 816398645}
   - {fileID: 1444487934}
   m_Father: {fileID: 1926833714}
@@ -319,7 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.92156863}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -506,7 +508,7 @@ GameObject:
   - component: {fileID: 202316229}
   - component: {fileID: 202316228}
   m_Layer: 5
-  m_Name: CardsPerRankPanel
+  m_Name: RulesPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -526,7 +528,7 @@ RectTransform:
   - {fileID: 1052115842}
   - {fileID: 1135590142}
   m_Father: {fileID: 1444083002}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -548,7 +550,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 160
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -621,7 +623,7 @@ RectTransform:
   m_Children:
   - {fileID: 526953163}
   m_Father: {fileID: 1444083002}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1351,7 +1353,7 @@ RectTransform:
   - {fileID: 2036095612}
   - {fileID: 328807972}
   m_Father: {fileID: 1444083002}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1731,7 +1733,7 @@ GameObject:
   - component: {fileID: 816398647}
   - component: {fileID: 816398646}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: CardsPerRankPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1750,12 +1752,12 @@ RectTransform:
   m_Children:
   - {fileID: 1947672367}
   m_Father: {fileID: 28859227}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -25}
-  m_SizeDelta: {x: 0, y: -50}
+  m_AnchoredPosition: {x: 0, y: -50}
+  m_SizeDelta: {x: 0, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &816398646
 MonoBehaviour:
@@ -1777,7 +1779,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 160, y: 70}
+  m_CellSize: {x: 100, y: 50}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
@@ -2284,7 +2286,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Cards Per Rank
+  m_Text: Rules
 --- !u!222 &1052115844
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2322,8 +2324,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbc007053a0e93f49abd2a150b04d052, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardsPerRankButtonText: {fileID: 670025173}
-  CardsPerRankDialog: {fileID: 28859226}
+  RulesDialogButtonText: {fileID: 670025173}
+  RulesDialog: {fileID: 28859226}
   CardsPerRankPanelPF: {fileID: 2350173907003686828, guid: 3efcf62be1703644db4119ab6b3e8c90,
     type: 3}
   CardsPerRankHolder: {fileID: 816398645}
@@ -2426,7 +2428,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1115819620}
-        m_MethodName: CardsPerRankButton
+        m_MethodName: ToggleRulesDialog
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2789,8 +2791,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2009465222}
-  - {fileID: 1627918070}
-  - {fileID: 2103958249}
   - {fileID: 202316227}
   - {fileID: 528853011}
   - {fileID: 288585096}
@@ -2876,7 +2876,7 @@ GameObject:
   - component: {fileID: 1444487936}
   - component: {fileID: 1444487935}
   m_Layer: 5
-  m_Name: Button
+  m_Name: CloseButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2895,7 +2895,7 @@ RectTransform:
   m_Children:
   - {fileID: 50771197}
   m_Father: {fileID: 28859227}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -2946,7 +2946,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1115819620}
-        m_MethodName: CardsPerRankButton
+        m_MethodName: ToggleRulesDialog
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3076,7 +3076,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Cards Per Rank
+  m_Text: Rule Set
 --- !u!222 &1480803420
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3300,7 +3300,6 @@ GameObject:
   - component: {fileID: 1627918070}
   - component: {fileID: 1627918073}
   - component: {fileID: 1627918072}
-  - component: {fileID: 1627918071}
   m_Layer: 5
   m_Name: GridType
   m_TagString: Untagged
@@ -3321,34 +3320,14 @@ RectTransform:
   m_Children:
   - {fileID: 839080188}
   - {fileID: 26736367}
-  m_Father: {fileID: 1444083002}
-  m_RootOrder: 1
+  m_Father: {fileID: 28859227}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 1, y: 1}
---- !u!114 &1627918071
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1627918069}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: 160
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 5, y: -50}
+  m_SizeDelta: {x: -10, y: 40}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1627918072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4326,7 +4305,6 @@ GameObject:
   - component: {fileID: 2103958249}
   - component: {fileID: 2103958252}
   - component: {fileID: 2103958251}
-  - component: {fileID: 2103958250}
   m_Layer: 5
   m_Name: CardsInHand
   m_TagString: Untagged
@@ -4347,34 +4325,14 @@ RectTransform:
   m_Children:
   - {fileID: 1201758143}
   - {fileID: 556680766}
-  m_Father: {fileID: 1444083002}
-  m_RootOrder: 2
+  m_Father: {fileID: 28859227}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 1, y: 1}
---- !u!114 &2103958250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2103958248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: 160
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 5, y: -50}
+  m_SizeDelta: {x: -10, y: 40}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &2103958251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4563,22 +4521,22 @@ PrefabInstance:
     - target: {fileID: 2350173907003686832, guid: 3efcf62be1703644db4119ab6b3e8c90,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 80
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2350173907003686832, guid: 3efcf62be1703644db4119ab6b3e8c90,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 2350173907003686832, guid: 3efcf62be1703644db4119ab6b3e8c90,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 160
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2350173907003686832, guid: 3efcf62be1703644db4119ab6b3e8c90,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 70
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2350173907003686832, guid: 3efcf62be1703644db4119ab6b3e8c90,
         type: 3}
