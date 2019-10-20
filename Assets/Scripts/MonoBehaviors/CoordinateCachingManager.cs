@@ -22,7 +22,7 @@ public class CoordinateCachingManager : MonoBehaviour
             return neighbors;
         }
 
-        neighbors = GenerateNeighbors(forCoordinate, PlayFieldManager.ActiveGridType);
+        neighbors = GenerateNeighbors(forCoordinate, GameRulesManager.ActiveGameRules.GridTypeRule);
 
         NeighborsCache.Add(forCoordinate, neighbors);
 

@@ -14,7 +14,7 @@ public struct Coordinate
         this.X = inX;
         this.Y = inY;
 
-        switch (PlayFieldManager.ActiveGridType)
+        switch (GameRulesManager.ActiveGameRules.GridTypeRule)
         {
             default:
                 WorldspaceCoordinate = new Vector3((float)X, (float)Y * 1.5f);

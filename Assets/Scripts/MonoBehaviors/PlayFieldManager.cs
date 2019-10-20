@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum GridType { FourWay, SixWay, EightWay }
 public class PlayFieldManager : MonoBehaviour
 {
     public PlayFieldRuntime PlayFieldRuntimePF;
@@ -15,20 +14,6 @@ public class PlayFieldManager : MonoBehaviour
 
     public Text DeckCountLabel;
     public Text IncompleteCardsValue;
-
-    public Text CardsPerRankButtonText;
-    public GameObject CardsPerRankDialog;
-    public CardsPerRankPanel CardsPerRankPanelPF;
-    public Transform CardsPerRankHolder;
-    public static Dictionary<int, int> CardsPerRankRules { get; set; } = new Dictionary<int, int>();
-
-    public InputField HandSizeField;
-    public static int HandSizeRule = 1;
-    private int handSize { get; set; }
-
-    public static GridType GridTypeRule = GridType.FourWay;
-    public Dropdown GridTypeDropdown;
-    public static GridType ActiveGridType = GridType.FourWay;
 
     Stack<CardData> deck;
     List<PlayingCard> cardsInHand { get; set; } = new List<PlayingCard>();
@@ -41,38 +26,14 @@ public class PlayFieldManager : MonoBehaviour
 
     private void Start()
     {
-        CardsPerRankButtonText.text = "SHOW";
-        HandSizeField.text = HandSizeRule.ToString();
-        ActiveGridType = GridTypeRule;
-
-        switch (ActiveGridType)
-        {
-            default:
-            case GridType.FourWay:
-                GridTypeDropdown.value = 0;
-                break;
-            case GridType.SixWay:
-                GridTypeDropdown.value = 1;
-                break;
-            case GridType.EightWay:
-                GridTypeDropdown.value = 2;
-                break;
-        }
-
         deck = InstantiateDeck();
 
-        handSize = Mathf.Min(HandSizeRule, deck.Count - 1);
+        GameRulesManager.ActiveGameRules.AdjustHandSizeRule(deck.Count);
 
         IncompleteCardsValue.text = "0";
         NewPlayingField(false);
 
         DealToPlayer(false);
-
-        for (int rank = 1; rank <= 8; rank++)
-        {
-            CardsPerRankPanel panel = ObjectPooler.GetObject<CardsPerRankPanel>(CardsPerRankPanelPF, CardsPerRankHolder);
-            panel.SetRank(rank);
-        }
     }
 
     Stack<CardData> InstantiateDeck()
@@ -81,7 +42,7 @@ public class PlayFieldManager : MonoBehaviour
 
         int maxCardValue = 4;
 
-        switch (ActiveGridType)
+        switch (GameRulesManager.ActiveGameRules.GridTypeRule)
         {
             default:
             case GridType.FourWay:
@@ -97,7 +58,7 @@ public class PlayFieldManager : MonoBehaviour
 
         for (int rank = 1; rank <= maxCardValue; rank++)
         {
-            for (int cardCount = 0; cardCount < GetCardsPerRank(rank); cardCount++)
+            for (int cardCount = 0; cardCount < GameRulesManager.ActiveGameRules.GetCardsPerRank(rank); cardCount++)
             {
                 newDeck.Push(new CardData(rank));
             }
@@ -170,7 +131,7 @@ public class PlayFieldManager : MonoBehaviour
                 GameActions.Push(GameAction.FromCardDrawnFromDeck(newPlayingCard.RepresentingCard));
             }
 
-            if (cardsInHand.Count < handSize)
+            if (cardsInHand.Count < GameRulesManager.ActiveGameRules.HandSizeRule)
             {
                 DealToPlayer(logAction);
                 return;
@@ -195,7 +156,7 @@ public class PlayFieldManager : MonoBehaviour
     {
         for (int cardIndex = 0; cardIndex < cardsInHand.Count; cardIndex++)
         {
-            cardsInHand[cardIndex].transform.position = CameraManagerInstance.GetHandPosition(cardIndex, handSize);
+            cardsInHand[cardIndex].transform.position = CameraManagerInstance.GetHandPosition(cardIndex, GameRulesManager.ActiveGameRules.HandSizeRule);
         }
     }
 
@@ -261,52 +222,6 @@ public class PlayFieldManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void CardsPerRankButton()
-    {
-        if (!CardsPerRankDialog.activeSelf)
-        {
-            CardsPerRankDialog.SetActive(true);
-            CardsPerRankButtonText.text = "HIDE";
-        }
-        else
-        {
-            CardsPerRankDialog.SetActive(false);
-            CardsPerRankButtonText.text = "SHOW";
-        }
-    }
-
-    public void HandSizeRuleChanged()
-    {
-        int parsedValue;
-
-        if (int.TryParse(HandSizeField.text, out parsedValue))
-        {
-            HandSizeRule = Mathf.Max(1, parsedValue);
-            HandSizeField.text = HandSizeRule.ToString();
-        }
-        else
-        {
-            HandSizeField.text = HandSizeRule.ToString();
-        }
-    }
-
-    public void GridTypeRuleChanged()
-    {
-        switch (GridTypeDropdown.value)
-        {
-            default:
-            case 0:
-                GridTypeRule = GridType.FourWay;
-                break;
-            case 1:
-                GridTypeRule = GridType.SixWay;
-                break;
-            case 2:
-                GridTypeRule = GridType.EightWay;
-                break;
-        }
-    }
-
     public void UndoButton()
     {
         if (GameActions.Count == 0)
@@ -331,6 +246,7 @@ public class PlayFieldManager : MonoBehaviour
         }
 
         CameraManagerInstance.UpdateCamera(ActivePlayField);
+        ResetCardsInHandPosition();
     }
 
     void UndoAction(GameAction action)
@@ -392,33 +308,6 @@ public class PlayFieldManager : MonoBehaviour
             ObjectPooler.ReturnObject(ActivePlayField);
             ActivePlayField = action.PreviousPlayfield;
             ActivePlayField.transform.position = Vector3.zero;
-        }
-    }
-
-    public static int GetCardsPerRank(int rank)
-    {
-        int value;
-
-        if (CardsPerRankRules.TryGetValue(rank, out value))
-        {
-            return value;
-        }
-
-        CardsPerRankRules.Add(rank, 4);
-        return 4;
-    }
-
-    public static void SetCardsPerRank(int rank, int toValue)
-    {
-        toValue = Mathf.Max(0, toValue);
-
-        if (CardsPerRankRules.ContainsKey(rank))
-        {
-            CardsPerRankRules[rank] = toValue;
-        }
-        else
-        {
-            CardsPerRankRules.Add(rank, toValue);
         }
     }
 }

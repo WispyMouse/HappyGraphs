@@ -14,19 +14,19 @@ public class CardsPerRankPanel : MonoBehaviour
     {
         RepresentedNumber = rank;
         NumberLabel.text = rank.ToString();
-        NumberInput.text = PlayFieldManager.GetCardsPerRank(rank).ToString();
+        NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(rank).ToString();
     }
 
     public void TickUp()
     {
-        PlayFieldManager.SetCardsPerRank(RepresentedNumber, PlayFieldManager.GetCardsPerRank(RepresentedNumber) + 1);
-        NumberInput.text = PlayFieldManager.GetCardsPerRank(RepresentedNumber).ToString();
+        GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber) + 1);
+        NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
     }
 
     public void TickDown()
     {
-        PlayFieldManager.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, PlayFieldManager.GetCardsPerRank(RepresentedNumber) - 1));
-        NumberInput.text = PlayFieldManager.GetCardsPerRank(RepresentedNumber).ToString();
+        GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber) - 1));
+        NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
     }
 
     public void NumberInputValueChanged()
@@ -35,12 +35,12 @@ public class CardsPerRankPanel : MonoBehaviour
 
         if (int.TryParse(NumberInput.text, out parsedValue))
         {
-            PlayFieldManager.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, parsedValue));
-            NumberInput.text = PlayFieldManager.GetCardsPerRank(RepresentedNumber).ToString();
+            GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, parsedValue));
+            NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
         }
         else
         {
-            NumberInput.text = PlayFieldManager.GetCardsPerRank(RepresentedNumber).ToString();
+            NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
         }
     }
 }
