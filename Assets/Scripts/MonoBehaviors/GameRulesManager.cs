@@ -20,6 +20,7 @@ public class GameRulesManager : MonoBehaviour
 
     public RulePresetSelector RulesPresetSelectorPF;
     public Transform RulesPresetHolder;
+    HashSet<RulePresetSelector> RulePresetSelectors { get; set; } = new HashSet<RulePresetSelector>();
 
     private void Awake()
     {
@@ -42,9 +43,9 @@ public class GameRulesManager : MonoBehaviour
     void HydrateRulePanel()
     {
         RuleSetName.text = FutureGameRules.RuleSetName;
-        HandSizeField.text = ActiveGameRules.HandSizeRule.ToString();
+        HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
 
-        switch (ActiveGameRules.GridTypeRule)
+        switch (FutureGameRules.GridTypeRule)
         {
             default:
             case GridType.FourWay:
@@ -66,11 +67,17 @@ public class GameRulesManager : MonoBehaviour
 
     void HydrateRulePresetPanel()
     {
-        RulePresetSelector rulesPreset = ObjectPooler.GetObject(RulesPresetSelectorPF, RulesPresetHolder);
-        rulesPreset.SetRepresentedRules(new GameRules(), this);
+        HashSet<GameRules> rulesToSet = new HashSet<GameRules>();
 
-        rulesPreset = ObjectPooler.GetObject(RulesPresetSelectorPF, RulesPresetHolder);
-        rulesPreset.SetRepresentedRules(new GameRules(), this);
+        rulesToSet.UnionWith(SaveDataManager.GetDefaultGameRules());
+        rulesToSet.UnionWith(SaveDataManager.GetSavedRuleSets());
+
+        foreach (GameRules rules in rulesToSet)
+        {
+            RulePresetSelector newRulePresetSelector = ObjectPooler.GetObject(RulesPresetSelectorPF, RulesPresetHolder);
+            newRulePresetSelector.SetRepresentedRules(rules, this);
+            RulePresetSelectors.Add(newRulePresetSelector);
+        }
     }
 
     public void SetRulesFromPreset(GameRules rules)
@@ -141,5 +148,13 @@ public class GameRulesManager : MonoBehaviour
     {
         FutureGameRules.HandSizeRule = Mathf.Max(1, FutureGameRules.HandSizeRule + direction);
         HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
+    }
+
+    public void SaveAsNewButton()
+    {
+        RulePresetSelector newRulesPreset = ObjectPooler.GetObject(RulesPresetSelectorPF, RulesPresetHolder);
+        newRulesPreset.SetRepresentedRules(FutureGameRules, this);
+        SaveDataManager.SaveNewRuleSet(FutureGameRules);
+        FutureGameRules = FutureGameRules.CloneRules();
     }
 }
