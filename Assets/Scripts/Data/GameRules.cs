@@ -5,6 +5,7 @@ using UnityEngine;
 public enum GridType { FourWay, SixWay, EightWay }
 public class GameRules
 {
+    public string RuleSetName { get; set; } = "New Rule Set";
     public Dictionary<int, int> CardsPerRankRules { get; private set; } = new Dictionary<int, int>();
     public int HandSizeRule { get; set; } = 1;
     public GridType GridTypeRule { get; set; } = GridType.FourWay;
@@ -14,11 +15,9 @@ public class GameRules
 
     }
 
-    public GameRules(GameRules importedRules)
+    public GameRules CloneRules()
     {
-        this.CardsPerRankRules = importedRules.CardsPerRankRules;
-        this.HandSizeRule = importedRules.HandSizeRule;
-        this.GridTypeRule = importedRules.GridTypeRule;
+        return (GameRules)this.MemberwiseClone();
     }
 
     public void AdjustHandSizeRule(int deckSize)
