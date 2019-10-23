@@ -95,6 +95,11 @@ public class PlayFieldRuntime : MonoBehaviour
         return newCards;
     }
 
+    public HashSet<PlayingCard> GetHappyCards()
+    {
+        return new HashSet<PlayingCard>(PlayedCards.Where(card => card.IsHappy));
+    }
+
     public HashSet<PlayingCard> GetIncompleteCards()
     {
         return new HashSet<PlayingCard>(PlayedCards.Where(card => !card.IsHappy));

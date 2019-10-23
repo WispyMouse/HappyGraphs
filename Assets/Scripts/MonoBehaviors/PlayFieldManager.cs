@@ -13,13 +13,22 @@ public class PlayFieldManager : MonoBehaviour
     public CameraManager CameraManagerInstance;
 
     public Text DeckCountLabel;
+    public Text TotalCardFaceValue;
     public Text IncompleteCardsValue;
+    public Text SatisfiedFaceValue;
+    public Text SatisfiedCountValue;
 
     Stack<CardData> deck;
     List<PlayingCard> cardsInHand { get; set; } = new List<PlayingCard>();
 
     // The running total of previous play field's incomplete cards
     int previousPlayfieldIncompleteCards { get; set; } = 0;
+    int previousPlayfieldTotalFaceValue { get; set; } = 0;
+    int previousPlayfieldSatisfiedCount { get; set; } = 0;
+    int previousPlayfieldSatisfiedFaceValue { get; set; } = 0;
+    int totalDeckSize { get; set; } = 0;
+    int totalDeckFaceValue { get; set; } = 0;
+
     public PlayFieldRuntime ActivePlayField { get; set; }
 
     Stack<GameAction> GameActions { get; set; } = new Stack<GameAction>();
@@ -30,7 +39,12 @@ public class PlayFieldManager : MonoBehaviour
 
         GameRulesManager.ActiveGameRules.AdjustHandSizeRule(deck.Count);
 
+        TotalCardFaceValue.text = "0";
         IncompleteCardsValue.text = "0";
+        SatisfiedCountValue.text = "0";
+        SatisfiedFaceValue.text = "0";
+        totalDeckSize = deck.Count;
+        totalDeckFaceValue = deck.Sum(card => card.FaceValue);
         NewPlayingField(false);
 
         DealToPlayer(false);
@@ -95,8 +109,9 @@ public class PlayFieldManager : MonoBehaviour
         CameraManagerInstance.UpdateCamera(ActivePlayField);
 
         CheckForNewHappyCards();
-        ActivePlayField.SetPlayableSpaces();
         CheckForNewCannotBeCompletedCards();
+        ActivePlayField.SetPlayableSpaces();
+        UpdateScoreLabels();
 
         DealToPlayer();
 
@@ -174,8 +189,15 @@ public class PlayFieldManager : MonoBehaviour
         {
             currentCard.SetIncompleteness(true);
         }
+    }
 
-        IncompleteCardsValue.text = (previousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
+    void UpdateScoreLabels()
+    {
+        TotalCardFaceValue.text = (ActivePlayField.GetIncompleteCards().Sum(card => card.RepresentingCard.FaceValue)).ToString();
+        IncompleteCardsValue.text = (ActivePlayField.GetIncompleteCards().Count).ToString();
+
+        SatisfiedCountValue.text = ((float)(previousPlayfieldSatisfiedCount + ActivePlayField.GetHappyCards().Count) / (float)totalDeckSize).ToString("P0");
+        SatisfiedFaceValue.text = ((float)(previousPlayfieldSatisfiedFaceValue + ActivePlayField.GetHappyCards().Sum(card => card.RepresentingCard.FaceValue)) / (float)totalDeckFaceValue).ToString("P0");
     }
 
     void NewPlayingField(bool logAction = true)
@@ -188,8 +210,6 @@ public class PlayFieldManager : MonoBehaviour
 
         if (ActivePlayField != null)
         {
-            previousPlayfieldIncompleteCards += ActivePlayField.GetIncompleteCards().Count;
-
             // For now, we're going to just... jettison the PlayedCards to space.
             // Need to figure out something more, ah, elegant than that
             Debug.Log("Moving the existing playing field far out of the way");
@@ -202,14 +222,19 @@ public class PlayFieldManager : MonoBehaviour
         if (logAction && ActivePlayField != null)
         {
             GameActions.Push(GameAction.FromNewPlayingField(seedCard, ActivePlayField));
+            previousPlayfieldIncompleteCards += ActivePlayField.GetIncompleteCards().Count;
+            previousPlayfieldTotalFaceValue += ActivePlayField.GetIncompleteCards().Sum(card => card.RepresentingCard.FaceValue);
+            previousPlayfieldSatisfiedCount += ActivePlayField.GetHappyCards().Count;
+            previousPlayfieldSatisfiedFaceValue += ActivePlayField.GetHappyCards().Sum(card => card.RepresentingCard.FaceValue);
         }
 
         ActivePlayField = ObjectPooler.GetObject<PlayFieldRuntime>(PlayFieldRuntimePF, transform);
         ActivePlayField.SeedInitialCard(seedCard);
         
         CheckForNewHappyCards();
-        ActivePlayField.SetPlayableSpaces();
         CheckForNewCannotBeCompletedCards();
+        ActivePlayField.SetPlayableSpaces();
+        UpdateScoreLabels();
     }
 
     public void UpdateValidityOfPlayableSpots(PlayingCard forCard)
@@ -247,6 +272,7 @@ public class PlayFieldManager : MonoBehaviour
 
         CameraManagerInstance.UpdateCamera(ActivePlayField);
         ResetCardsInHandPosition();
+        UpdateScoreLabels();
     }
 
     void UndoAction(GameAction action)
@@ -308,6 +334,10 @@ public class PlayFieldManager : MonoBehaviour
             ObjectPooler.ReturnObject(ActivePlayField);
             ActivePlayField = action.PreviousPlayfield;
             ActivePlayField.transform.position = Vector3.zero;
+            previousPlayfieldIncompleteCards -= ActivePlayField.GetIncompleteCards().Count;
+            previousPlayfieldTotalFaceValue -= ActivePlayField.GetIncompleteCards().Sum(card => card.RepresentingCard.FaceValue);
+            previousPlayfieldSatisfiedCount -= ActivePlayField.GetHappyCards().Count;
+            previousPlayfieldSatisfiedFaceValue -= ActivePlayField.GetHappyCards().Sum(card => card.RepresentingCard.FaceValue);
         }
     }
 }
