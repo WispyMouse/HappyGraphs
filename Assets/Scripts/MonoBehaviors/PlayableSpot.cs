@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum SpotValidity { Possible, Valid, Invalid }
+public enum SpotValidity { Possible, Valid, Invalid, PossibleUnsolveable }
 public class PlayableSpot : MonoBehaviour
 {
     public Coordinate OnCoordinate { get; private set; }
@@ -11,6 +11,8 @@ public class PlayableSpot : MonoBehaviour
     public Sprite ValidSprite;
     public Sprite InvalidSprite;
     public Sprite HoveredSprite;
+    public Sprite UnsolveableSprite;
+    public Sprite UnsolveableHoverSprite;
     public SpriteRenderer PlayableSpriteRenderer;
     SpotValidity previousStatus { get; set; }
 
@@ -39,6 +41,9 @@ public class PlayableSpot : MonoBehaviour
             case SpotValidity.Possible:
                 PlayableSpriteRenderer.sprite = PossibleSprite;
                 break;
+            case SpotValidity.PossibleUnsolveable:
+                PlayableSpriteRenderer.sprite = UnsolveableSprite;
+                break;
         }
     }
 
@@ -46,7 +51,15 @@ public class PlayableSpot : MonoBehaviour
     {
         if (state && previousStatus != SpotValidity.Invalid)
         {
-            PlayableSpriteRenderer.sprite = HoveredSprite;
+            switch (previousStatus)
+            {
+                case SpotValidity.PossibleUnsolveable:
+                    PlayableSpriteRenderer.sprite = UnsolveableHoverSprite;
+                    break;
+                default:
+                    PlayableSpriteRenderer.sprite = HoveredSprite;
+                    break;
+            }
         }
         else
         {

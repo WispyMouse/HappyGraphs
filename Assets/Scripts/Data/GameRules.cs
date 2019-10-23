@@ -17,7 +17,14 @@ public class GameRules
 
     public GameRules CloneRules()
     {
-        return (GameRules)this.MemberwiseClone();
+        GameRules newRules = new GameRules();
+
+        newRules.RuleSetName = RuleSetName;
+        newRules.CardsPerRankRules = new Dictionary<int, int>(CardsPerRankRules);
+        newRules.HandSizeRule = HandSizeRule;
+        newRules.GridTypeRule = GridTypeRule;
+
+        return newRules;
     }
 
     public void AdjustHandSizeRule(int deckSize)

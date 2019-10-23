@@ -14,6 +14,12 @@ TextureImporter:
   - first:
       213: 7027477246400864484
     second: Hovered
+  - first:
+      213: -7006818624117256442
+    second: UnsolveableSpot
+  - first:
+      213: 1178287976351697053
+    second: UnsolveableHovered
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -126,7 +132,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 16
         width: 32
         height: 48
       alignment: 0
@@ -146,8 +152,8 @@ TextureImporter:
       name: InvalidPlayableSpot
       rect:
         serializedVersion: 2
-        x: 32
-        y: 0
+        x: 48
+        y: 16
         width: 32
         height: 48
       alignment: 0
@@ -167,8 +173,8 @@ TextureImporter:
       name: Possible
       rect:
         serializedVersion: 2
-        x: 64
-        y: 0
+        x: 96
+        y: 16
         width: 32
         height: 48
       alignment: 0
@@ -189,11 +195,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 48
+        y: 80
         width: 32
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -201,6 +207,48 @@ TextureImporter:
       bones: []
       spriteID: 4f1509664b150a848a8785b5e7b9a5b8
       internalID: 7027477246400864484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UnsolveableSpot
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 80
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75c9661f8b39cb5469af4f6e90a8c50b
+      internalID: -7006818624117256442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UnsolveableHovered
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 80
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd41de36c31338143ba5430800aa353c
+      internalID: 1178287976351697053
       vertices: []
       indices: 
       edges: []

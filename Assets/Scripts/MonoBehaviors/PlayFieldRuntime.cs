@@ -10,6 +10,7 @@ public class PlayFieldRuntime : MonoBehaviour
 
     HashSet<PlayingCard> PlayedCards { get; set; } = new HashSet<PlayingCard>();
     HashSet<PlayableSpot> PlayableSpots { get; set; } = new HashSet<PlayableSpot>();
+    PlayFieldData CurrentPlayField { get; set; } = new PlayFieldData();
 
     PlayingCard GeneratePlayingCard(CardData forCard)
     {
@@ -23,12 +24,12 @@ public class PlayFieldRuntime : MonoBehaviour
         PlayingCard newCard = GeneratePlayingCard(forCard);
         newCard.SetCoordinate(new Coordinate(0, 0), DegreesOfSpeed.Instantly);
         PlayedCards.Add(newCard);
+        CurrentPlayField.SetCard(forCard, new Coordinate(0, 0));
     }
 
-    public bool IsSpotValidForCard(Coordinate forCoordinate, PlayingCard forCard)
+    public bool IsSpotValidForCard(PlayingCard forCard, Coordinate onCoordinate)
     {
-        int neighborsAtPosition = forCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
-        return forCard.RepresentingCard.FaceValue >= neighborsAtPosition;
+        return CurrentPlayField.IsSpotValidForCard(forCard.RepresentingCard, onCoordinate);
     }
 
     public bool NoMovesArePossible(IEnumerable<PlayingCard> hand)
@@ -43,7 +44,7 @@ public class PlayFieldRuntime : MonoBehaviour
         {
             foreach (PlayingCard card in hand)
             {
-                if (IsSpotValidForCard(spot.OnCoordinate, card))
+                if (IsSpotValidForCard(card, spot.OnCoordinate))
                 {
                     return false;
                 }
@@ -59,69 +60,39 @@ public class PlayFieldRuntime : MonoBehaviour
         toPlay.SetCoordinate(onCoordinate);
         toPlay.transform.SetParent(transform, true);
         PlayedCards.Add(toPlay);
+        CurrentPlayField.SetCard(toPlay.RepresentingCard, onCoordinate);
     }
 
     public HashSet<PlayingCard> GetNewlyHappyCards()
     {
         HashSet<PlayingCard> newCards = new HashSet<PlayingCard>();
+        HashSet<Coordinate> happyCoordinates = CurrentPlayField.GetHappyCoordinates();
 
-        foreach (PlayingCard currentCard in PlayedCards)
+        foreach (PlayingCard currentCard in PlayedCards.Where(card => happyCoordinates.Contains(card.OnCoordinate)))
         {
-            if (!currentCard.IsHappy && !currentCard.CannotBeCompleted)
+            if (!currentCard.IsHappy)
             {
-                if (ShouldCardBeHappy(currentCard))
-                {
-                    newCards.Add(currentCard);
-                }
+                newCards.Add(currentCard);
             }
         }
 
         return newCards;
     }
 
-    bool ShouldCardBeHappy(PlayingCard consideredCard)
-    {
-        int neighbors = consideredCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
-
-        if (consideredCard.RepresentingCard.FaceValue == neighbors)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    // This function depends on an up to date SetPlayableSpaces having already been called
     public HashSet<PlayingCard> GetNewlyNotCompleteableCards()
     {
         HashSet<PlayingCard> newCards = new HashSet<PlayingCard>();
+        HashSet<Coordinate> incompleteableCoordinates = CurrentPlayField.GetIncompleteableCoordinate();
 
-        foreach (PlayingCard currentCard in PlayedCards)
+        foreach (PlayingCard currentCard in PlayedCards.Where(card => incompleteableCoordinates.Contains(card.OnCoordinate)))
         {
-            if (!currentCard.IsHappy && !currentCard.CannotBeCompleted)
+            if (!currentCard.CannotBeCompleted)
             {
-                if (ShouldCardBeIncompleteable(currentCard))
-                {
-                    newCards.Add(currentCard);
-                }
+                newCards.Add(currentCard);
             }
         }
 
         return newCards;
-    }
-
-    bool ShouldCardBeIncompleteable(PlayingCard consideredCard)
-    {
-        int requiredNeighbors = consideredCard.RepresentingCard.FaceValue;
-        int occuppiedNeighbors = consideredCard.OnCoordinate.GetNeighbors().Count(neighbor => PlayedCards.Any(card => card.OnCoordinate == neighbor));
-        int playableSpotNeighbors = consideredCard.OnCoordinate.GetNeighbors().Where(neighbor => PlayableSpots.Any(spot => spot.OnCoordinate == neighbor)).Count();
-
-        if (occuppiedNeighbors + playableSpotNeighbors < requiredNeighbors)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     public HashSet<PlayingCard> GetIncompleteCards()
@@ -131,8 +102,6 @@ public class PlayFieldRuntime : MonoBehaviour
 
     public void SetPlayableSpaces()
     {
-        // Clear out the old collection of spaces
-
         foreach (PlayableSpot spot in PlayableSpots)
         {
             ObjectPooler.ReturnObject<PlayableSpot>(spot);
@@ -140,40 +109,10 @@ public class PlayFieldRuntime : MonoBehaviour
 
         PlayableSpots.Clear();
 
-        // For every played card, add every neighboring coordinate to a HashSet (no duplicates)
-
-        HashSet<Coordinate> consideredCoordinates = new HashSet<Coordinate>();
-
-        foreach (PlayingCard currentCard in PlayedCards)
+        HashSet<Coordinate> validPlayableSpaces = CurrentPlayField.GetValidPlayableSpaces();
+        foreach (Coordinate curCoordinate in validPlayableSpaces)
         {
-            if (currentCard.IsHappy)
-            {
-                continue;
-            }
-
-            foreach (Coordinate curNeighbor in currentCard.OnCoordinate.GetNeighbors())
-            {
-                consideredCoordinates.Add(curNeighbor);
-            }
-        }
-
-        // For each considered Coordinate, if all the following is true, create a Playable Spot:
-        // - there are no cards on that spot
-        // - there are no happy cards neighboring that spot
-
-        foreach (Coordinate consideredCoordinate in consideredCoordinates)
-        {
-            if (PlayedCards.Any(card => card.OnCoordinate == consideredCoordinate))
-            {
-                continue;
-            }
-
-            if (PlayedCards.Where(card => card.IsHappy).Any(card => consideredCoordinate.GetNeighbors().Any(neighbor => neighbor == card.OnCoordinate)))
-            {
-                continue;
-            }
-
-            GeneratePlayableSpot(consideredCoordinate);
+            GeneratePlayableSpot(curCoordinate);
         }
 
         UpdateValidityOfPlayableSpots(null);
@@ -200,13 +139,23 @@ public class PlayFieldRuntime : MonoBehaviour
         {
             foreach (PlayableSpot spot in PlayableSpots)
             {
-                if (IsSpotValidForCard(spot.OnCoordinate, forCard))
+                if (!IsSpotValidForCard(forCard, spot.OnCoordinate))
                 {
-                    spot.SetValidity(SpotValidity.Valid);
+                    spot.SetValidity(SpotValidity.Invalid);
                 }
                 else
                 {
-                    spot.SetValidity(SpotValidity.Invalid);
+                    HashSet<PlayingCard> possibleIncompleteableCards, possibleHappyCards;
+                    GetNewHypotheticalPlacementEffects(forCard, spot.OnCoordinate, out possibleIncompleteableCards, out possibleHappyCards);
+
+                    if (possibleIncompleteableCards.Contains(forCard))
+                    {
+                        spot.SetValidity(SpotValidity.PossibleUnsolveable);
+                    }
+                    else
+                    {
+                        spot.SetValidity(SpotValidity.Valid);
+                    }
                 }
             }
         }
@@ -222,21 +171,17 @@ public class PlayFieldRuntime : MonoBehaviour
         }
 
         PlayedCards.Remove(foundCard);
+        CurrentPlayField.RemoveCard(toRemove);
 
-        foreach (PlayingCard neighbor in PlayedCards.Where(card => toRemove.GetNeighbors().Contains(card.OnCoordinate)))
+        HashSet<Coordinate> playableSpaces = CurrentPlayField.GetValidPlayableSpaces();
+
+        foreach (PlayingCard card in PlayedCards)
         {
-            neighbor.SetHappiness(ShouldCardBeHappy(neighbor));
+            card.SetHappiness(CurrentPlayField.ShouldCoordinateBeHappy(card.OnCoordinate));
+            card.SetIncompleteness(CurrentPlayField.ShouldCoordinateBeIncompletable(card.OnCoordinate, playableSpaces));
         }
 
         SetPlayableSpaces();
-
-        // This card could have affected any card up to three cards away, so check each neighbor
-        HashSet<Coordinate> PossiblyAffectedCoordinates = CoordinateCachingManager.GetNeighborsInRadius(toRemove, 3);
-
-        foreach (PlayingCard neighbor in PlayedCards.Where(card => PossiblyAffectedCoordinates.Contains(card.OnCoordinate)))
-        {
-            neighbor.SetIncompleteness(ShouldCardBeIncompleteable(neighbor));
-        }
 
         return true;
     }
@@ -255,5 +200,31 @@ public class PlayFieldRuntime : MonoBehaviour
 
         return new Rect(leftMost.WorldspaceCoordinate.x, bottomMost.WorldspaceCoordinate.y,
             rightMost.WorldspaceCoordinate.x - leftMost.WorldspaceCoordinate.x, topMost.WorldspaceCoordinate.y - bottomMost.WorldspaceCoordinate.y);
+    }
+
+    public void GetNewHypotheticalPlacementEffects(PlayingCard forCard, Coordinate onCoordinate, 
+        out HashSet<PlayingCard> newHypotheticalIncompleteableCards, out HashSet<PlayingCard> newHypotheticalHappyCards)
+    {
+        newHypotheticalIncompleteableCards = new HashSet<PlayingCard>();
+        newHypotheticalHappyCards = new HashSet<PlayingCard>();
+
+        PlayFieldData hypotheticalPlayField = CurrentPlayField.CloneData();
+        hypotheticalPlayField.SetCard(forCard.RepresentingCard, onCoordinate);
+
+        IEnumerable<Coordinate> newHypotheticalIncompleteableCoordinates = hypotheticalPlayField.GetIncompleteableCoordinate().Except(CurrentPlayField.GetIncompleteableCoordinate());
+        IEnumerable<Coordinate> newHypotheticalHappyCoordinates = hypotheticalPlayField.GetHappyCoordinates().Except(CurrentPlayField.GetHappyCoordinates());
+
+        newHypotheticalIncompleteableCards = new HashSet<PlayingCard>(PlayedCards.Where(card => newHypotheticalIncompleteableCoordinates.Contains(card.OnCoordinate)));
+        newHypotheticalHappyCards = new HashSet<PlayingCard>(PlayedCards.Where(card => newHypotheticalHappyCoordinates.Contains(card.OnCoordinate)));
+
+        if (newHypotheticalIncompleteableCoordinates.Contains(onCoordinate))
+        {
+            newHypotheticalIncompleteableCards.Add(forCard);
+        }
+
+        if (newHypotheticalHappyCoordinates.Contains(onCoordinate))
+        {
+            newHypotheticalHappyCards.Add(forCard);
+        }
     }
 }

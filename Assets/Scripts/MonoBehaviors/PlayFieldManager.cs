@@ -82,7 +82,7 @@ public class PlayFieldManager : MonoBehaviour
 
     public bool TryPlayerPlaysCard(PlayingCard playedCard, Coordinate toCoordinate)
     {
-        if (!ActivePlayField.IsSpotValidForCard(toCoordinate, playedCard))
+        if (!ActivePlayField.IsSpotValidForCard(playedCard, toCoordinate))
         {
             return false;
         }

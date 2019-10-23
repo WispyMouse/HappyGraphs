@@ -134,6 +134,10 @@ MonoBehaviour:
     type: 3}
   HoveredSprite: {fileID: 7027477246400864484, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf,
     type: 3}
+  UnsolveableSprite: {fileID: -7006818624117256442, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf,
+    type: 3}
+  UnsolveableHoverSprite: {fileID: 1178287976351697053, guid: 5a4dcaf1491a7eb4ea214dffd5e91cdf,
+    type: 3}
   PlayableSpriteRenderer: {fileID: 4820855619334682376}
 --- !u!61 &4820855620055150977
 BoxCollider2D:
