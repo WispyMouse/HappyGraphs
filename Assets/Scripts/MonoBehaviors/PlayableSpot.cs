@@ -16,6 +16,9 @@ public class PlayableSpot : MonoBehaviour
     public SpriteRenderer PlayableSpriteRenderer;
     SpotValidity previousStatus { get; set; }
 
+    public HashSet<PlayingCard> WouldMakeHappy { get; set; } = new HashSet<PlayingCard>();
+    public HashSet<PlayingCard> WouldMakeIncompleteable { get; set; } = new HashSet<PlayingCard>();
+
     public void SetCoordinate(Coordinate toCoordinate)
     {
         OnCoordinate = toCoordinate;
@@ -24,6 +27,18 @@ public class PlayableSpot : MonoBehaviour
 #if UNITY_EDITOR
         name = $"PlayableSpot {toCoordinate.ToString()}";
 #endif
+    }
+
+    public void SetWouldEffects(HashSet<PlayingCard> wouldMakeHappy, HashSet<PlayingCard> wouldMakeIncompleteable)
+    {
+        WouldMakeHappy = wouldMakeHappy;
+        WouldMakeIncompleteable = wouldMakeIncompleteable;
+    }
+
+    public void ClearWouldEffects()
+    {
+        WouldMakeHappy.Clear();
+        WouldMakeIncompleteable.Clear();
     }
 
     public void SetValidity(SpotValidity toState)
@@ -60,10 +75,30 @@ public class PlayableSpot : MonoBehaviour
                     PlayableSpriteRenderer.sprite = HoveredSprite;
                     break;
             }
+
+            foreach (PlayingCard curCard in WouldMakeHappy)
+            {
+                curCard.StartBlinking(BlinkType.Happy);
+            }
+
+            foreach (PlayingCard curCard in WouldMakeIncompleteable)
+            {
+                curCard.StartBlinking(BlinkType.Sad);
+            }
         }
         else
         {
             SetValidity(previousStatus);
+
+            foreach (PlayingCard curCard in WouldMakeHappy)
+            {
+                curCard.StartBlinking(BlinkType.None);
+            }
+
+            foreach (PlayingCard curCard in WouldMakeIncompleteable)
+            {
+                curCard.StartBlinking(BlinkType.None);
+            }
         }
     }
 }

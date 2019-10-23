@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum DegreesOfSpeed { Instantly, Quickly, Slowly, None }
+public enum BlinkType { None, Happy, Sad }
 public class PlayingCard : MonoBehaviour
 {
     float QuicklyAnimationSpeed = 18.0f;
@@ -21,6 +22,10 @@ public class PlayingCard : MonoBehaviour
 
     public Vector3 AnimationTargetLocation { get; private set; }
     public DegreesOfSpeed AnimationSpeed { get; private set; } = DegreesOfSpeed.None;
+
+    BlinkType CurBlinkType { get; set; } = BlinkType.None;
+    public SpriteRenderer BlinkOverlaySpriteRenderer;
+    Color blinkTargetColor { get; set; }
 
     public void SetCardData(CardData toCardData)
     {
@@ -143,5 +148,29 @@ public class PlayingCard : MonoBehaviour
         SetIncompleteness(false);
         SetHappiness(false);
         CoordinateSet = false;
+    }
+
+    public void StartBlinking(BlinkType toType)
+    {
+        CurBlinkType = toType;
+        BlinkOverlaySpriteRenderer.color = Color.white;
+
+        switch (toType)
+        {
+            default:
+            case BlinkType.None:
+                BlinkOverlaySpriteRenderer.gameObject.SetActive(false);
+                break;
+            case BlinkType.Happy:
+                BlinkOverlaySpriteRenderer.gameObject.SetActive(true);
+                blinkTargetColor = Color.green;
+                BlinkOverlaySpriteRenderer.color = blinkTargetColor;
+                break;
+            case BlinkType.Sad:
+                BlinkOverlaySpriteRenderer.gameObject.SetActive(true);
+                blinkTargetColor = Color.black;
+                BlinkOverlaySpriteRenderer.color = blinkTargetColor;
+                break;
+        }
     }
 }

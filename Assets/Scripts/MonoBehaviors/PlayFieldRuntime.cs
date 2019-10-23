@@ -133,6 +133,7 @@ public class PlayFieldRuntime : MonoBehaviour
             foreach (PlayableSpot spot in PlayableSpots)
             {
                 spot.SetValidity(SpotValidity.Possible);
+                spot.ClearWouldEffects();
             }
         }
         else
@@ -142,6 +143,7 @@ public class PlayFieldRuntime : MonoBehaviour
                 if (!IsSpotValidForCard(forCard, spot.OnCoordinate))
                 {
                     spot.SetValidity(SpotValidity.Invalid);
+                    spot.ClearWouldEffects();
                 }
                 else
                 {
@@ -156,6 +158,8 @@ public class PlayFieldRuntime : MonoBehaviour
                     {
                         spot.SetValidity(SpotValidity.Valid);
                     }
+
+                    spot.SetWouldEffects(possibleHappyCards, possibleIncompleteableCards);
                 }
             }
         }
