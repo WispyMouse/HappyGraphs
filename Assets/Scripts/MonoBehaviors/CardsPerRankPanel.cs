@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class CardsPerRankPanel : MonoBehaviour
 {
+    public GameRulesManager GameRulesManagerInstance { get; set; }
+
     public int RepresentedNumber { get; set; }
 
     public Text NumberLabel;
@@ -21,12 +23,14 @@ public class CardsPerRankPanel : MonoBehaviour
     {
         GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber) + 1);
         NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
+        GameRulesManagerInstance.MarkRuleAsDirty();
     }
 
     public void TickDown()
     {
         GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber) - 1));
         NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
+        GameRulesManagerInstance.MarkRuleAsDirty();
     }
 
     public void NumberInputValueChanged()
@@ -37,6 +41,7 @@ public class CardsPerRankPanel : MonoBehaviour
         {
             GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, parsedValue));
             NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
+            GameRulesManagerInstance.MarkRuleAsDirty();
         }
         else
         {

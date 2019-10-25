@@ -71,6 +71,28 @@ public class SaveDataManager : MonoBehaviour
         return defaultRules;
     }
 
+    public static void UpdateRuleSet(GameRules ruleSet)
+    {
+        if (string.IsNullOrWhiteSpace(ruleSet.RuleSetGUID))
+        {
+            SaveNewRuleSet(ruleSet);
+            return;
+        }
+        GameRules matchingRules = savedRules.FirstOrDefault(rules => rules.RuleSetGUID == ruleSet.RuleSetGUID);
+
+        if (matchingRules == null)
+        {
+            SaveNewRuleSet(ruleSet);
+            return;
+        }
+
+        savedRules.Remove(matchingRules);
+        savedRules.Add(ruleSet);
+
+        string rulesJson = JSON.ToJSON(ruleSet);
+        PlayerPrefs.SetString(ruleSet.RuleSetGUID.ToString(), rulesJson);
+    }
+
     public static void SaveNewRuleSet(GameRules ruleSet)
     {
         ruleSet.GenerateNewID();
@@ -111,5 +133,10 @@ public class SaveDataManager : MonoBehaviour
         }
 
         return savedRules;
+    }
+
+    public static GameRules GetInitialGameRule()
+    {
+        return GetDefaultGameRules().First();
     }
 }
