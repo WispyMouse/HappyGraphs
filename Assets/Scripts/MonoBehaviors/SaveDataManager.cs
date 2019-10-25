@@ -1,9 +1,13 @@
-﻿using System.Collections;
+﻿using fastJSON;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SaveDataManager : MonoBehaviour
 {
+    const string ruleSetDirectoryName = "SAVEDRULESETSDIRECTORY";
+
     static HashSet<GameRules> savedRules { get; set; } = new HashSet<GameRules>();
 
     public static HashSet<GameRules> GetDefaultGameRules()
@@ -15,7 +19,8 @@ public class SaveDataManager : MonoBehaviour
         {
             RuleSetName = "Basic 4s",
             HandSizeRule = 1,
-            GridTypeRule = GridType.FourWay
+            GridTypeRule = GridType.FourWay,
+            StackDeck = true
         };
         basicFours.SetCardsPerRank(1, 4);
         basicFours.SetCardsPerRank(2, 4);
@@ -32,7 +37,8 @@ public class SaveDataManager : MonoBehaviour
         {
             RuleSetName = "Basic 6s",
             HandSizeRule = 1,
-            GridTypeRule = GridType.FourWay
+            GridTypeRule = GridType.SixWay,
+            StackDeck = true
         };
         basicSixes.SetCardsPerRank(1, 4);
         basicSixes.SetCardsPerRank(2, 4);
@@ -49,7 +55,8 @@ public class SaveDataManager : MonoBehaviour
         {
             RuleSetName = "Basic 8s",
             HandSizeRule = 1,
-            GridTypeRule = GridType.FourWay
+            GridTypeRule = GridType.EightWay,
+            StackDeck = true
         };
         basicEights.SetCardsPerRank(1, 4);
         basicEights.SetCardsPerRank(2, 4);
@@ -66,11 +73,43 @@ public class SaveDataManager : MonoBehaviour
 
     public static void SaveNewRuleSet(GameRules ruleSet)
     {
+        ruleSet.GenerateNewID();
         savedRules.Add(ruleSet);
+
+        string rulesJson = JSON.ToJSON(ruleSet);
+        PlayerPrefs.SetString(ruleSet.RuleSetGUID.ToString(), rulesJson);
+
+        string directoryJson = JSON.ToJSON(savedRules.Select(rule => rule.RuleSetGUID).ToList());
+        PlayerPrefs.SetString(ruleSetDirectoryName, directoryJson);
     }
 
     public static HashSet<GameRules> GetSavedRuleSets()
     {
+        if (savedRules.Count == 0)
+        {
+            string directoryString = PlayerPrefs.GetString(ruleSetDirectoryName);
+
+            if (!string.IsNullOrWhiteSpace(directoryString))
+            {
+                List<string> directoryJson = JSON.ToObject<List<string>>(directoryString);
+
+                foreach (string ruleGuid in directoryJson)
+                {
+                    string ruleString = PlayerPrefs.GetString(ruleGuid);
+
+                    if (string.IsNullOrWhiteSpace(ruleString))
+                    {
+                        Debug.LogError($"Saved rule set at {ruleGuid} was empty, disregarding");
+                    }
+                    else
+                    {
+                        GameRules deserializedRules = JSON.ToObject<GameRules>(ruleString);
+                        savedRules.Add(deserializedRules);
+                    }
+                }
+            }
+        }
+
         return savedRules;
     }
 }

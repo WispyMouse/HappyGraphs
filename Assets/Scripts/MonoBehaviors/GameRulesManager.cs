@@ -84,7 +84,7 @@ public class GameRulesManager : MonoBehaviour
 
     public void SetRulesFromPreset(GameRules rules)
     {
-        FutureGameRules = rules;
+        FutureGameRules = rules.CloneRules();
         HydrateRulePanel();
     }
 

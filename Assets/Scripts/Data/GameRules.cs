@@ -1,25 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public enum GridType { FourWay, SixWay, EightWay }
 public class GameRules
 {
-    public string RuleSetName { get; set; } = "New Rule Set";
-    public Dictionary<int, int> CardsPerRankRules { get; private set; } = new Dictionary<int, int>();
-    public int HandSizeRule { get; set; } = 1;
-    public GridType GridTypeRule { get; set; } = GridType.FourWay;
-    public bool StackDeck { get; set; } = true;
+    // This is a string rather than a System.Guid, because FastJSON (the library used for serialization) seems to serialize Guids oddly
+    public string RuleSetGUID;
+
+    public string RuleSetName = "New Rule Set";
+    public Dictionary<int, int> CardsPerRankRules { get; set; } = new Dictionary<int, int>();
+    public int HandSizeRule = 1;
+    public GridType GridTypeRule  = GridType.FourWay;
+    public bool StackDeck = true;
 
     public GameRules()
     {
+    }
 
+    public void GenerateNewID()
+    {
+        RuleSetGUID = System.Guid.NewGuid().ToString();
     }
 
     public GameRules CloneRules()
     {
         GameRules newRules = new GameRules();
 
+        newRules.RuleSetGUID = RuleSetGUID;
         newRules.RuleSetName = RuleSetName;
         newRules.CardsPerRankRules = new Dictionary<int, int>(CardsPerRankRules);
         newRules.HandSizeRule = HandSizeRule;
