@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,8 @@ public class GameRulesManager : MonoBehaviour
 
     private void Awake()
     {
+        HydrateRulePresetPanel();
+
         ActiveGameRules = FutureGameRules.CloneRules();
 
         RulesDialogButtonText.text = "SHOW";
@@ -42,11 +45,10 @@ public class GameRulesManager : MonoBehaviour
             CardsPerRankPanels.Add(panel);
         }
 
-        HydrateRulePanel();
-        HydrateRulePresetPanel();
-
         GameRules defaultRule = SaveDataManager.GetInitialGameRule();
         SetRulesFromPreset(defaultRule);
+
+        HydrateRulePanel();
     }
 
     void HydrateRulePanel()
@@ -102,11 +104,29 @@ public class GameRulesManager : MonoBehaviour
 
     public void SetRulesFromPreset(GameRules rules)
     {
+        // Deselect the old rules
+        if (FutureGameRules != null)
+        {
+            RulePresetSelector matchingOldSelector = MatchingSelector(FutureGameRules);
+
+            if (matchingOldSelector != null)
+            {
+                matchingOldSelector.SetHighlightedState(false);
+            }
+        }
+
         FutureGameRules = rules.CloneRules();
         HydrateRulePanel();
         UpdateRuleSetButton.interactable = false;
 
         SaveDataManager.SetLastUsedGameRule(rules);
+
+        RulePresetSelector matchingNewSelector = MatchingSelector(FutureGameRules);
+
+        if (matchingNewSelector != null)
+        {
+            matchingNewSelector.SetHighlightedState(true);
+        }
     }
 
     public void RuleSetNameChanged()
@@ -192,11 +212,15 @@ public class GameRulesManager : MonoBehaviour
 
     public void SaveAsNewButton()
     {
+        GameRules newRules = FutureGameRules.CloneRules();
+
+        SaveDataManager.SaveNewRuleSet(newRules);
+
         RulePresetSelector newRulesPreset = ObjectPooler.GetObject(RulesPresetSelectorPF, RulesPresetHolder);
-        newRulesPreset.SetRepresentedRules(FutureGameRules, this);
-        SaveDataManager.SaveNewRuleSet(FutureGameRules);
-        FutureGameRules = FutureGameRules.CloneRules();
-        SetRulesFromPreset(FutureGameRules);
+        RulePresetSelectors.Add(newRulesPreset);
+        newRulesPreset.SetRepresentedRules(newRules, this);
+
+        SetRulesFromPreset(newRules);
     }
 
     public void UpdateButton()
@@ -204,10 +228,22 @@ public class GameRulesManager : MonoBehaviour
         SaveDataManager.UpdateRuleSet(FutureGameRules);
         FutureGameRules = FutureGameRules.CloneRules();
         UpdateRuleSetButton.interactable = false;
+
+        RulePresetSelector matchingSelector = MatchingSelector(FutureGameRules);
+
+        if (matchingSelector != null)
+        {
+            matchingSelector.SetRepresentedRules(FutureGameRules, this);
+        }
     }
 
     public void MarkRuleAsDirty()
     {
         UpdateRuleSetButton.interactable = true;
+    }
+
+    RulePresetSelector MatchingSelector(GameRules forRules)
+    {
+        return RulePresetSelectors.FirstOrDefault(preset => preset.RepresentedRules.RuleSetGUID == forRules.RuleSetGUID);
     }
 }

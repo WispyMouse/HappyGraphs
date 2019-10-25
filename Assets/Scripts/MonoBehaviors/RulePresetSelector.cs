@@ -10,6 +10,8 @@ public class RulePresetSelector : MonoBehaviour
     public Button SelectionButton;
     public Text RulesNameLabel;
 
+    public Image SelectionArrowImage;
+
     public void SetRepresentedRules(GameRules rulesData, GameRulesManager gameRulesManagerInstance)
     {
         GameRulesManagerInstance = gameRulesManagerInstance;
@@ -18,5 +20,10 @@ public class RulePresetSelector : MonoBehaviour
 
         SelectionButton.onClick.RemoveAllListeners();
         SelectionButton.onClick.AddListener(() => { GameRulesManagerInstance.SetRulesFromPreset(RepresentedRules); });
+    }
+
+    public void SetHighlightedState(bool toState)
+    {
+        SelectionArrowImage.gameObject.SetActive(toState);
     }
 }

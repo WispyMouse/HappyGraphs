@@ -4324,6 +4324,7 @@ MonoBehaviour:
   CardsPerRankPanelPF: {fileID: 2350173907003686828, guid: 3efcf62be1703644db4119ab6b3e8c90,
     type: 3}
   CardsPerRankHolder: {fileID: 816398645}
+  RulesPresetScrollRect: {fileID: 456603544}
   RulesPresetSelectorPF: {fileID: 1032066527330844334, guid: 9cc2ba9d2023be045af87c9cb3ad4c91,
     type: 3}
   RulesPresetHolder: {fileID: 1000144713}
