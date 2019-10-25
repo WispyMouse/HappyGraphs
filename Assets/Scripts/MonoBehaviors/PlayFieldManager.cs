@@ -85,8 +85,23 @@ public class PlayFieldManager : MonoBehaviour
 
     void ShuffleDeck(Stack<CardData> toShuffle)
     {
-        CardData[] originalDeck = toShuffle.ToArray();
+        List<CardData> originalDeck = toShuffle.ToList();
         toShuffle.Clear();
+
+        // If we stack the deck, it means the last card in the deck should be the lowest value possible, preferably an Ace
+        // This is so that you don't get stuck in a situation where the last card needs more connections than you could have reasonably prepared for
+        if (GameRulesManager.ActiveGameRules.StackDeck)
+        {
+            int maxCardRank = originalDeck.Max(value => value.FaceValue);
+            int lastMovedCard = 0;
+            while (lastMovedCard < maxCardRank)
+            {
+                CardData lowestCard = originalDeck.Where(card => card.FaceValue > lastMovedCard).OrderBy(card => card.FaceValue).First();
+                lastMovedCard = lowestCard.FaceValue;
+                originalDeck.Remove(lowestCard);
+                toShuffle.Push(lowestCard);
+            }
+        }
         
         foreach(CardData card in originalDeck.OrderBy(card => Random.Range(0f, 1f)))
         {

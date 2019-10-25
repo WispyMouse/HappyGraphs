@@ -9,6 +9,7 @@ public class GameRules
     public Dictionary<int, int> CardsPerRankRules { get; private set; } = new Dictionary<int, int>();
     public int HandSizeRule { get; set; } = 1;
     public GridType GridTypeRule { get; set; } = GridType.FourWay;
+    public bool StackDeck { get; set; } = true;
 
     public GameRules()
     {
@@ -23,6 +24,7 @@ public class GameRules
         newRules.CardsPerRankRules = new Dictionary<int, int>(CardsPerRankRules);
         newRules.HandSizeRule = HandSizeRule;
         newRules.GridTypeRule = GridTypeRule;
+        newRules.StackDeck = StackDeck;
 
         return newRules;
     }

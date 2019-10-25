@@ -17,6 +17,7 @@ public class GameRulesManager : MonoBehaviour
     HashSet<CardsPerRankPanel> CardsPerRankPanels { get; set; }
     public InputField HandSizeField;
     public Dropdown GridTypeDropdown;
+    public Toggle StackDeckToggle;
 
     public RulePresetSelector RulesPresetSelectorPF;
     public Transform RulesPresetHolder;
@@ -44,6 +45,7 @@ public class GameRulesManager : MonoBehaviour
     {
         RuleSetName.text = FutureGameRules.RuleSetName;
         HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
+        StackDeckToggle.isOn = FutureGameRules.StackDeck;
 
         switch (FutureGameRules.GridTypeRule)
         {
@@ -148,6 +150,11 @@ public class GameRulesManager : MonoBehaviour
     {
         FutureGameRules.HandSizeRule = Mathf.Max(1, FutureGameRules.HandSizeRule + direction);
         HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
+    }
+
+    public void StackDeckToggleChanged()
+    {
+        FutureGameRules.StackDeck = StackDeckToggle.isOn;
     }
 
     public void SaveAsNewButton()
