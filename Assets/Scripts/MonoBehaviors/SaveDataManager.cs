@@ -11,6 +11,15 @@ public class SaveDataManager : MonoBehaviour
 
     static HashSet<GameRules> savedRules { get; set; } = new HashSet<GameRules>();
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            PlayerPrefs.DeleteAll();
+            savedRules.Clear();
+        }
+    }
+
     public static HashSet<GameRules> GetDefaultGameRules()
     {
         HashSet<GameRules> defaultRules = new HashSet<GameRules>();
@@ -22,7 +31,10 @@ public class SaveDataManager : MonoBehaviour
             HandSizeRule = 1,
             GridTypeRule = GridType.FourWay,
             StackDeck = true,
-            RuleSetGUID = "cc05f7cf-2b02-4117-bcae-d8a481da4070"
+            // These default ruleset guids were generated once, and are effectively arbitrary
+            // Having a GUID allows the reloading memory to work
+            RuleSetGUID = "cc05f7cf-2b02-4117-bcae-d8a481da4070", 
+            IsDefaultRule = true
         };
         basicFours.SetCardsPerRank(1, 4);
         basicFours.SetCardsPerRank(2, 4);
@@ -41,7 +53,8 @@ public class SaveDataManager : MonoBehaviour
             HandSizeRule = 1,
             GridTypeRule = GridType.SixWay,
             StackDeck = true,
-            RuleSetGUID = "03d8e8b1-0a9d-4f79-a538-993ab08ef1ef"
+            RuleSetGUID = "03d8e8b1-0a9d-4f79-a538-993ab08ef1ef",
+            IsDefaultRule = true
         };
         basicSixes.SetCardsPerRank(1, 4);
         basicSixes.SetCardsPerRank(2, 4);
@@ -60,7 +73,8 @@ public class SaveDataManager : MonoBehaviour
             HandSizeRule = 1,
             GridTypeRule = GridType.EightWay,
             StackDeck = true,
-            RuleSetGUID = "a4da6df5-5f40-4da0-ac9b-7e89fa208813"
+            RuleSetGUID = "a4da6df5-5f40-4da0-ac9b-7e89fa208813",
+            IsDefaultRule = true
         };
         basicEights.SetCardsPerRank(1, 4);
         basicEights.SetCardsPerRank(2, 4);
@@ -77,11 +91,12 @@ public class SaveDataManager : MonoBehaviour
 
     public static void UpdateRuleSet(GameRules ruleSet)
     {
-        if (string.IsNullOrWhiteSpace(ruleSet.RuleSetGUID))
+        if (string.IsNullOrWhiteSpace(ruleSet.RuleSetGUID) || ruleSet.IsDefaultRule)
         {
             SaveNewRuleSet(ruleSet);
             return;
         }
+
         GameRules matchingRules = savedRules.FirstOrDefault(rules => rules.RuleSetGUID == ruleSet.RuleSetGUID);
 
         if (matchingRules == null)
@@ -95,10 +110,13 @@ public class SaveDataManager : MonoBehaviour
 
         string rulesJson = JSON.ToJSON(ruleSet);
         PlayerPrefs.SetString(ruleSet.RuleSetGUID.ToString(), rulesJson);
+
+        SetLastUsedGameRule(ruleSet);
     }
 
     public static void SaveNewRuleSet(GameRules ruleSet)
     {
+        ruleSet.IsDefaultRule = false;
         ruleSet.GenerateNewID();
         savedRules.Add(ruleSet);
 
@@ -107,6 +125,8 @@ public class SaveDataManager : MonoBehaviour
 
         string directoryJson = JSON.ToJSON(savedRules.Select(rule => rule.RuleSetGUID).ToList());
         PlayerPrefs.SetString(ruleSetDirectoryName, directoryJson);
+
+        SetLastUsedGameRule(ruleSet);
     }
 
     public static HashSet<GameRules> GetSavedRuleSets()

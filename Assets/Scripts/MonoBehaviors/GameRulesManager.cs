@@ -73,6 +73,16 @@ public class GameRulesManager : MonoBehaviour
         {
             panel.SetRank(panel.RepresentedNumber);
         }
+
+        if (FutureGameRules.IsDefaultRule)
+        {
+            UpdateRuleSetButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            UpdateRuleSetButton.gameObject.SetActive(true);
+            UpdateRuleSetButton.interactable = false;
+        }
     }
 
     void HydrateRulePresetPanel()
@@ -186,6 +196,7 @@ public class GameRulesManager : MonoBehaviour
         newRulesPreset.SetRepresentedRules(FutureGameRules, this);
         SaveDataManager.SaveNewRuleSet(FutureGameRules);
         FutureGameRules = FutureGameRules.CloneRules();
+        SetRulesFromPreset(FutureGameRules);
     }
 
     public void UpdateButton()

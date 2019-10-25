@@ -10,10 +10,12 @@ public class GameRules
     public string RuleSetGUID;
 
     public string RuleSetName = "New Rule Set";
-    public Dictionary<int, int> CardsPerRankRules { get; set; } = new Dictionary<int, int>();
+    public Dictionary<int, int> CardsPerRankRules = new Dictionary<int, int>();
     public int HandSizeRule = 1;
     public GridType GridTypeRule  = GridType.FourWay;
     public bool StackDeck = true;
+
+    public bool IsDefaultRule { get; set; }
 
     public GameRules()
     {
@@ -34,6 +36,7 @@ public class GameRules
         newRules.HandSizeRule = HandSizeRule;
         newRules.GridTypeRule = GridTypeRule;
         newRules.StackDeck = StackDeck;
+        newRules.IsDefaultRule = IsDefaultRule;
 
         return newRules;
     }
