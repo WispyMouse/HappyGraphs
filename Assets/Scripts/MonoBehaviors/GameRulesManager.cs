@@ -95,6 +95,8 @@ public class GameRulesManager : MonoBehaviour
         FutureGameRules = rules.CloneRules();
         HydrateRulePanel();
         UpdateRuleSetButton.interactable = false;
+
+        SaveDataManager.SetLastUsedGameRule(rules);
     }
 
     public void RuleSetNameChanged()
