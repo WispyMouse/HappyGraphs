@@ -27,6 +27,7 @@ public class GameRulesManager : MonoBehaviour
     HashSet<RulePresetSelector> RulePresetSelectors { get; set; } = new HashSet<RulePresetSelector>();
 
     public Button UpdateRuleSetButton;
+    public Button DeleteRuleSetButton;
 
     private void Awake()
     {
@@ -85,10 +86,12 @@ public class GameRulesManager : MonoBehaviour
         if (FutureGameRules.IsDefaultRule)
         {
             UpdateRuleSetButton.gameObject.SetActive(false);
+            DeleteRuleSetButton.gameObject.SetActive(false);
         }
         else
         {
             UpdateRuleSetButton.gameObject.SetActive(true);
+            DeleteRuleSetButton.gameObject.SetActive(true);
             UpdateRuleSetButton.interactable = false;
         }
     }
@@ -241,6 +244,19 @@ public class GameRulesManager : MonoBehaviour
         {
             matchingSelector.SetRepresentedRules(FutureGameRules, this);
         }
+    }
+
+    public void DeleteButton()
+    {
+        RulePresetSelector matchingSelector = MatchingSelector(FutureGameRules);
+        RulePresetSelectors.Remove(matchingSelector);
+        ObjectPooler.ReturnObject(matchingSelector);
+
+        GameRules nextRuleSet = SaveDataManager.GetNextRuleSet(FutureGameRules);
+
+        SaveDataManager.DeleteRuleSet(FutureGameRules);
+
+        SetRulesFromPreset(nextRuleSet);
     }
 
     public void MarkRuleAsDirty()

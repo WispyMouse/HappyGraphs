@@ -9,7 +9,7 @@ public class SaveDataManager : MonoBehaviour
     const string ruleSetDirectoryName = "SAVEDRULESETSDIRECTORY";
     const string lastUsedRuleSetName = "LASTUSEDRULESET";
 
-    static HashSet<GameRules> savedRules { get; set; } = new HashSet<GameRules>();
+    static List<GameRules> savedRules { get; set; } = new List<GameRules>();
 
     private void Update()
     {
@@ -123,13 +123,12 @@ public class SaveDataManager : MonoBehaviour
         string rulesJson = JSON.ToJSON(ruleSet);
         PlayerPrefs.SetString(ruleSet.RuleSetGUID.ToString(), rulesJson);
 
-        string directoryJson = JSON.ToJSON(savedRules.Select(rule => rule.RuleSetGUID).ToList());
-        PlayerPrefs.SetString(ruleSetDirectoryName, directoryJson);
+        UpdateDirectory();
 
         SetLastUsedGameRule(ruleSet);
     }
 
-    public static HashSet<GameRules> GetSavedRuleSets()
+    public static List<GameRules> GetSavedRuleSets()
     {
         if (savedRules.Count == 0)
         {
@@ -189,13 +188,64 @@ public class SaveDataManager : MonoBehaviour
 
     public static void SetLastUsedGameRule(GameRules toValue)
     {
-        if (!string.IsNullOrEmpty(toValue.RuleSetGUID))
-        {
-            PlayerPrefs.SetString(lastUsedRuleSetName, toValue.RuleSetGUID);
-        }
-        else
+        if (string.IsNullOrEmpty(toValue.RuleSetGUID))
         {
             Debug.LogError("Attempted to set a last used game rule to a set without a GUID");
+            return;
+            
         }
+
+        PlayerPrefs.SetString(lastUsedRuleSetName, toValue.RuleSetGUID);
+    }
+
+    public static GameRules GetNextRuleSet(GameRules afterThis)
+    {
+        GameRules matchingRules = savedRules.FirstOrDefault(rule => rule.RuleSetGUID == afterThis.RuleSetGUID);
+
+        // Somehow, this rule isn't in our list. Just hand the first default.
+        if (matchingRules == null)
+        {
+            return GetDefaultGameRules().First();
+        }
+
+        // There aren't any other saved rules, so just hand the first default.
+        if (savedRules.Count == 1)
+        {
+            return GetDefaultGameRules().First();
+        }
+
+        int saveIndex = savedRules.IndexOf(matchingRules);
+
+        if (saveIndex == savedRules.Count - 1)
+        {
+            return savedRules[saveIndex - 1];
+        }
+
+        return savedRules[saveIndex + 1];
+    }
+
+    public static void DeleteRuleSet(GameRules toDelete)
+    {
+        if (string.IsNullOrEmpty(toDelete.RuleSetGUID))
+        {
+            Debug.LogError("Attempted to delete a game rule without a GUID");
+            return;
+        }
+
+        GameRules matchingRules = savedRules.FirstOrDefault(rules => rules.RuleSetGUID == toDelete.RuleSetGUID);
+
+        if (matchingRules != null)
+        {
+            savedRules.Remove(matchingRules);
+        }
+
+        PlayerPrefs.DeleteKey(toDelete.RuleSetGUID);
+        UpdateDirectory();
+    }
+
+    static void UpdateDirectory()
+    {
+        string directoryJson = JSON.ToJSON(savedRules.Select(rule => rule.RuleSetGUID).ToList());
+        PlayerPrefs.SetString(ruleSetDirectoryName, directoryJson);
     }
 }
