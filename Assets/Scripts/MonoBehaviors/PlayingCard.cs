@@ -19,6 +19,7 @@ public class PlayingCard : MonoBehaviour
     public bool CoordinateSet { get; private set; }
     public bool IsHappy { get; private set; }
     public bool CannotBeCompleted { get; private set; }
+    static bool ShowingActualValue { get; set; } = false;
 
     public Vector3 AnimationTargetLocation { get; private set; }
     public DegreesOfSpeed AnimationSpeed { get; private set; } = DegreesOfSpeed.None;
@@ -59,16 +60,8 @@ public class PlayingCard : MonoBehaviour
 
     public void SetHappiness(bool isHappy)
     {
-        if (isHappy)
-        {
-            CardSprite.sprite = HappySprite;
-        }
-        else
-        {
-            CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
-        }
-        
         IsHappy = isHappy;
+        UpdateVisual();
     }
 
     public void AnimateMovement(Vector3 toLocation, DegreesOfSpeed speed)
@@ -130,17 +123,9 @@ public class PlayingCard : MonoBehaviour
     }
 
     public void SetIncompleteness(bool cannotBeCompleted)
-    {
-        if (cannotBeCompleted)
-        {
-            CardSprite.color = Color.gray;
-        }
-        else
-        {
-            CardSprite.color = Color.white;
-        }
-        
+    {        
         CannotBeCompleted = cannotBeCompleted;
+        UpdateVisual();
     }
 
     public void Reset()
@@ -171,6 +156,40 @@ public class PlayingCard : MonoBehaviour
                 blinkTargetColor = Color.black;
                 BlinkOverlaySpriteRenderer.color = blinkTargetColor;
                 break;
+        }
+    }
+
+    public void ActualValueToggle(bool toState)
+    {
+        ShowingActualValue = toState;
+        UpdateVisual();
+    }
+
+    void UpdateVisual()
+    {
+        if (ShowingActualValue)
+        {
+            CardSprite.color = Color.white;
+            CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
+        }
+        else
+        {
+            if (IsHappy)
+            {
+                CardSprite.color = Color.white;
+                CardSprite.sprite = HappySprite;
+            }
+            else if (CannotBeCompleted)
+            {
+                CardSprite.color = Color.gray;
+                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
+            }
+            else
+            {
+                CardSprite.color = Color.white;
+                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
+
+            }
         }
     }
 }

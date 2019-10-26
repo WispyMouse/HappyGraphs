@@ -12,6 +12,34 @@ public class PlayFieldRuntime : MonoBehaviour
     HashSet<PlayableSpot> PlayableSpots { get; set; } = new HashSet<PlayableSpot>();
     public PlayFieldData CurrentPlayField { get; set; } = new PlayFieldData();
 
+    bool showingActualValues { get; set; } = false;
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            if (!showingActualValues)
+            {
+                foreach (PlayingCard card in PlayedCards)
+                {
+                    card.ActualValueToggle(true);
+                }
+                showingActualValues = true;
+            }
+        }
+        else
+        {
+            if (showingActualValues)
+            {
+                foreach (PlayingCard card in PlayedCards)
+                {
+                    card.ActualValueToggle(false);
+                }
+                showingActualValues = false;
+            }
+        }
+    }
+
     PlayingCard GeneratePlayingCard(CardData forCard)
     {
         PlayingCard newCard = ObjectPooler.GetObject<PlayingCard>(PlayingCardPF, transform);
