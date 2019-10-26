@@ -8,6 +8,7 @@ using UnityEngine.UI;
 enum SeedMode { Random, Set }
 public class PlayFieldManager : MonoBehaviour
 {
+    public SolutionEngine SolutionEngineInstance;
     public PlayFieldRuntime PlayFieldRuntimePF;
     public PlayingCard PlayingCardPF;
 
@@ -61,6 +62,14 @@ public class PlayFieldManager : MonoBehaviour
 
         DealToPlayer(false);
         UpdateSeedPanel();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.End))
+        {
+            SolutionEngineInstance.FindSolution(ActivePlayField.CurrentPlayField, deck, new HashSet<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
+        }
     }
 
     Stack<CardData> InstantiateDeck()

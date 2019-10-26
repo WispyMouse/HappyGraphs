@@ -10,7 +10,7 @@ public class PlayFieldRuntime : MonoBehaviour
 
     HashSet<PlayingCard> PlayedCards { get; set; } = new HashSet<PlayingCard>();
     HashSet<PlayableSpot> PlayableSpots { get; set; } = new HashSet<PlayableSpot>();
-    PlayFieldData CurrentPlayField { get; set; } = new PlayFieldData();
+    public PlayFieldData CurrentPlayField { get; set; } = new PlayFieldData();
 
     PlayingCard GeneratePlayingCard(CardData forCard)
     {
@@ -40,19 +40,7 @@ public class PlayFieldRuntime : MonoBehaviour
             return true;
         }
 
-        foreach (PlayableSpot spot in PlayableSpots)
-        {
-            foreach (PlayingCard card in hand)
-            {
-                if (IsSpotValidForCard(card, spot.OnCoordinate))
-                {
-                    return false;
-                }
-            }
-        }
-
-        Debug.Log("None of the cards in hand can validly be played in any playable space, so no moves are possible");
-        return true;
+        return !CurrentPlayField.AreAnyMovesPossible(hand.Select(card => card.RepresentingCard));
     }
 
     public void PlayCard(PlayingCard toPlay, Coordinate onCoordinate)

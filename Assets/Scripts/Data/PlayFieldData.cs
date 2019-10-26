@@ -147,4 +147,25 @@ public class PlayFieldData
     {
         return forCoordinate.GetNeighbors().Count(neighbor => PlayedCards.ContainsKey(neighbor));
     }
+
+    public bool AreAnyMovesPossible(IEnumerable<CardData> hand)
+    {
+        foreach (Coordinate coordinate in GetValidPlayableSpaces())
+        {
+            foreach (CardData card in hand)
+            {
+                if (IsSpotValidForCard(card, coordinate))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public int CountOfCardsThatAreNotHappy()
+    {
+        return PlayedCards.Keys.Count - GetHappyCoordinates().Count;
+    }
 }
