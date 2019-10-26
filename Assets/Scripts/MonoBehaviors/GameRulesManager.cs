@@ -6,9 +6,10 @@ using UnityEngine.UI;
 
 public class GameRulesManager : MonoBehaviour
 {
-    public static GameRules ActiveGameRules { get; set; } = new GameRules();
-    public static GameRules FutureGameRules { get; set; } = new GameRules();
+    public static GameRules ActiveGameRules { get; set; }
+    public static GameRules FutureGameRules { get; set; }
 
+    public Text RuleSetTitle;
     public Text RulesDialogButtonText;
     public GameObject RulesDialog;
 
@@ -31,7 +32,13 @@ public class GameRulesManager : MonoBehaviour
     {
         HydrateRulePresetPanel();
 
+        if (FutureGameRules == null)
+        {
+            FutureGameRules = SaveDataManager.GetInitialGameRule();
+        }
+
         ActiveGameRules = FutureGameRules.CloneRules();
+        RuleSetTitle.text = ActiveGameRules.RuleSetName;
 
         RulesDialogButtonText.text = "SHOW";
         RulesDialog.gameObject.SetActive(false);
@@ -45,8 +52,7 @@ public class GameRulesManager : MonoBehaviour
             CardsPerRankPanels.Add(panel);
         }
 
-        GameRules defaultRule = SaveDataManager.GetInitialGameRule();
-        SetRulesFromPreset(defaultRule);
+        SetRulesFromPreset(FutureGameRules);
 
         HydrateRulePanel();
     }
