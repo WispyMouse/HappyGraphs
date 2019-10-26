@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+enum SeedMode { Random, Set }
 public class PlayFieldManager : MonoBehaviour
 {
     public PlayFieldRuntime PlayFieldRuntimePF;
@@ -33,8 +34,19 @@ public class PlayFieldManager : MonoBehaviour
 
     Stack<GameAction> GameActions { get; set; } = new Stack<GameAction>();
 
+    public InputField SeedField;
+    public Toggle RandomSeedToggle;
+    public Toggle SetSeedToggle;
+    static SeedMode ActiveSeedMode { get; set; } = SeedMode.Random;
+    static int DeckSeed { get; set; } = -1;
+
     private void Start()
     {
+        if (DeckSeed == -1 || ActiveSeedMode == SeedMode.Random)
+        {
+            DeckSeed = Random.Range(1000, 9999);
+        }
+
         deck = InstantiateDeck();
 
         GameRulesManager.ActiveGameRules.AdjustHandSizeRule(deck.Count);
@@ -48,6 +60,7 @@ public class PlayFieldManager : MonoBehaviour
         NewPlayingField(false);
 
         DealToPlayer(false);
+        UpdateSeedPanel();
     }
 
     Stack<CardData> InstantiateDeck()
@@ -102,8 +115,10 @@ public class PlayFieldManager : MonoBehaviour
                 toShuffle.Push(lowestCard);
             }
         }
+
+        System.Random seededRandom = new System.Random(DeckSeed);
         
-        foreach(CardData card in originalDeck.OrderBy(card => Random.Range(0f, 1f)))
+        foreach(CardData card in originalDeck.OrderBy(card => seededRandom.Next(0, 10000)))
         {
             toShuffle.Push(card);
         }
@@ -354,5 +369,50 @@ public class PlayFieldManager : MonoBehaviour
             previousPlayfieldSatisfiedCount -= ActivePlayField.GetHappyCards().Count;
             previousPlayfieldSatisfiedFaceValue -= ActivePlayField.GetHappyCards().Sum(card => card.RepresentingCard.FaceValue);
         }
+    }
+
+    public void UpdateSeedPanel()
+    {
+        if (string.IsNullOrWhiteSpace(SeedField.text))
+        {
+            SeedField.text = DeckSeed.ToString();
+        }
+        else
+        {
+            int parsedSeed;
+            if (int.TryParse(SeedField.text, out parsedSeed))
+            {
+                DeckSeed = parsedSeed;
+            }
+            else
+            {
+                SeedField.text = DeckSeed.ToString();
+            }
+        }
+        
+        if (ActiveSeedMode == SeedMode.Random)
+        {
+            RandomSeedToggle.isOn = true;
+            SeedField.interactable = false;
+        }
+        else
+        {
+            SetSeedToggle.isOn = true;
+            SeedField.interactable = true;
+        }
+    }
+
+    public void SeedPanelChanged()
+    {
+        if (RandomSeedToggle.isOn)
+        {
+            ActiveSeedMode = SeedMode.Random;
+        }
+        else
+        {
+            ActiveSeedMode = SeedMode.Set;
+        }
+
+        UpdateSeedPanel();
     }
 }
