@@ -7,16 +7,26 @@ using UnityEngine;
 public class SolutionEngine : MonoBehaviour
 {
     static List<GameAction> solution { get; set; }
+    static System.Diagnostics.Stopwatch SolutionTimeStopwatch { get; set; }
+    static System.Diagnostics.Stopwatch TimeSpentFindingPossibleActions { get; set; }
+    static System.Diagnostics.Stopwatch TimeSpentTakingActions { get; set; }
+
+    public static System.Diagnostics.Stopwatch RoamingCheck { get; set; } = new System.Diagnostics.Stopwatch();
 
     public void FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand)
     {
-        if (activePlayField.GetIncompleteableCoordinate().Any())
+        if (activePlayField.GetIncompleteableCoordinates().Any())
         {
             Debug.Log("The current playing field already has incompleteable cards.");
             return;
         }
 
         solution = null;
+        SolutionTimeStopwatch = System.Diagnostics.Stopwatch.StartNew();
+        TimeSpentFindingPossibleActions = new System.Diagnostics.Stopwatch();
+        TimeSpentTakingActions = new System.Diagnostics.Stopwatch();
+        RoamingCheck = new System.Diagnostics.Stopwatch();
+
         StringBuilder deckString = new StringBuilder();
         Debug.Log("The deck is:");
         
@@ -43,12 +53,19 @@ public class SolutionEngine : MonoBehaviour
                 Debug.Log(actionsTaken.GetActionText());
             }
         }
+        SolutionTimeStopwatch.Stop();
+        Debug.Log($"Solution took {SolutionTimeStopwatch.ElapsedMilliseconds} milliseconds to find.");
+        Debug.Log($"Spent {TimeSpentFindingPossibleActions.ElapsedMilliseconds} milliseconds finding possible actions.");
+        Debug.Log($"Spent {TimeSpentTakingActions.ElapsedMilliseconds} milliseconds taking actions.");
+        Debug.Log($"Spent {RoamingCheck.ElapsedMilliseconds} milliseconds on the roaming check.");
     }
 
     void SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand, List<GameAction> gameActionsTaken)
     {
+        TimeSpentFindingPossibleActions.Start();
         List<GameAction> consideredActions = AllPossibleActions(activePlayField, hand);
         List<GameAction> validActions = ReduceToNotImmediatelyImperfectActions(activePlayField, consideredActions);
+        TimeSpentFindingPossibleActions.Stop();
 
         foreach (GameAction validAction in validActions)
         {
@@ -56,6 +73,8 @@ public class SolutionEngine : MonoBehaviour
             {
                 return;
             }
+
+            TimeSpentTakingActions.Start();
 
             PlayFieldData resultedPlayField;
             Stack<CardData> resultedDeck;
@@ -66,6 +85,8 @@ public class SolutionEngine : MonoBehaviour
             List<GameAction> resultActions = new List<GameAction>();
             resultActions.AddRange(gameActionsTaken);
             resultActions.Add(validAction);
+
+            TimeSpentTakingActions.Stop();
 
             if (CanKeepPlaying(resultedPlayField, resultedHand))
             {
@@ -110,7 +131,7 @@ public class SolutionEngine : MonoBehaviour
             PlayFieldData clonedPlayField = activePlayField.CloneData();
             clonedPlayField.SetCard(consideredAction.CardPlayed.Value, consideredAction.CoordinatePlayedOn.Value);
 
-            if (clonedPlayField.GetIncompleteableCoordinate().Count == 0)
+            if (clonedPlayField.GetIncompleteableCoordinates().Count == 0)
             {
                 resultedActions.Add(consideredAction);
             }

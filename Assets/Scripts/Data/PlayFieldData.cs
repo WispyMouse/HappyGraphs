@@ -8,6 +8,7 @@ using UnityEngine;
 public class PlayFieldData
 {
     public Dictionary<Coordinate, CardData> PlayedCards { get; private set; } = new Dictionary<Coordinate, CardData>();
+    private HashSet<Coordinate> ValidPlayableSpacesCache { get; set; } = null;
 
     public PlayFieldData CloneData()
     {
@@ -18,6 +19,8 @@ public class PlayFieldData
 
     public void SetCard(CardData forCard, Coordinate onCoordinate)
     {
+        ValidPlayableSpacesCache = null;
+
         if (PlayedCards.ContainsKey(onCoordinate))
         {
             PlayedCards[onCoordinate] = forCard;
@@ -30,6 +33,8 @@ public class PlayFieldData
 
     public void RemoveCard(Coordinate atCoordinate)
     {
+        ValidPlayableSpacesCache = null;
+
         PlayedCards.Remove(atCoordinate);
     }
 
@@ -72,7 +77,7 @@ public class PlayFieldData
         return false;
     }
 
-    public HashSet<Coordinate> GetIncompleteableCoordinate()
+    public HashSet<Coordinate> GetIncompleteableCoordinates()
     {
         HashSet<Coordinate> incompleteableCoordinates = new HashSet<Coordinate>();
         HashSet<Coordinate> validPlayableSpaces = GetValidPlayableSpaces();
@@ -90,9 +95,17 @@ public class PlayFieldData
 
     public HashSet<Coordinate> GetValidPlayableSpaces()
     {
+        if (ValidPlayableSpacesCache != null)
+        {
+            return ValidPlayableSpacesCache;
+        }
+
         // For every played card, add every neighboring coordinate to a HashSet (no duplicates)
 
+        SolutionEngine.RoamingCheck.Start();
         HashSet<Coordinate> happyCoordinates = GetHappyCoordinates();
+        HashSet<Coordinate> neighborsOfHappyCoordinates = new HashSet<Coordinate>(happyCoordinates.SelectMany(coordinate => coordinate.GetNeighbors()));
+        SolutionEngine.RoamingCheck.Stop();
         HashSet<Coordinate> consideredCoordinates = new HashSet<Coordinate>();
         HashSet<Coordinate> finalCut = new HashSet<Coordinate>();
 
@@ -104,7 +117,7 @@ public class PlayFieldData
         // For each considered Coordinate, if all the following is true, consider that spot valid:
         // - there are no cards on that spot
         // - there are no happy cards neighboring that spot
-        
+
         foreach (Coordinate consideredCoordinate in consideredCoordinates)
         {
             if (PlayedCards.ContainsKey(consideredCoordinate))
@@ -112,13 +125,15 @@ public class PlayFieldData
                 continue;
             }
 
-            if (happyCoordinates.Any(happyCoordinate => happyCoordinate.GetNeighbors().Any(neighbor => neighbor == consideredCoordinate)))
+            if (neighborsOfHappyCoordinates.Contains(consideredCoordinate))
             {
                 continue;
             }
 
             finalCut.Add(consideredCoordinate);
         }
+
+        ValidPlayableSpacesCache = finalCut;
 
         return finalCut;
     }

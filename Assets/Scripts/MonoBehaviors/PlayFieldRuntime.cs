@@ -98,7 +98,7 @@ public class PlayFieldRuntime : MonoBehaviour
     public HashSet<PlayingCard> GetNewlyNotCompleteableCards()
     {
         HashSet<PlayingCard> newCards = new HashSet<PlayingCard>();
-        HashSet<Coordinate> incompleteableCoordinates = CurrentPlayField.GetIncompleteableCoordinate();
+        HashSet<Coordinate> incompleteableCoordinates = CurrentPlayField.GetIncompleteableCoordinates();
 
         foreach (PlayingCard currentCard in PlayedCards.Where(card => incompleteableCoordinates.Contains(card.OnCoordinate)))
         {
@@ -236,7 +236,7 @@ public class PlayFieldRuntime : MonoBehaviour
         PlayFieldData hypotheticalPlayField = CurrentPlayField.CloneData();
         hypotheticalPlayField.SetCard(forCard.RepresentingCard, onCoordinate);
 
-        IEnumerable<Coordinate> newHypotheticalIncompleteableCoordinates = hypotheticalPlayField.GetIncompleteableCoordinate().Except(CurrentPlayField.GetIncompleteableCoordinate());
+        IEnumerable<Coordinate> newHypotheticalIncompleteableCoordinates = hypotheticalPlayField.GetIncompleteableCoordinates().Except(CurrentPlayField.GetIncompleteableCoordinates());
         IEnumerable<Coordinate> newHypotheticalHappyCoordinates = hypotheticalPlayField.GetHappyCoordinates().Except(CurrentPlayField.GetHappyCoordinates());
 
         newHypotheticalIncompleteableCards = new HashSet<PlayingCard>(PlayedCards.Where(card => newHypotheticalIncompleteableCoordinates.Contains(card.OnCoordinate)));
