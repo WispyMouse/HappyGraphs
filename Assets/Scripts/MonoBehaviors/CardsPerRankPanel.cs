@@ -16,20 +16,20 @@ public class CardsPerRankPanel : MonoBehaviour
     {
         RepresentedNumber = rank;
         NumberLabel.text = rank.ToString();
-        NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(rank).ToString();
+        NumberInput.text = GameRulesManager.CurrentlyWorkshoppedGameRules.GetCardsPerRank(rank).ToString();
     }
 
     public void TickUp()
     {
-        GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber) + 1);
-        NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
+        GameRulesManager.CurrentlyWorkshoppedGameRules.SetCardsPerRank(RepresentedNumber, GameRulesManager.CurrentlyWorkshoppedGameRules.GetCardsPerRank(RepresentedNumber) + 1);
+        NumberInput.text = GameRulesManager.CurrentlyWorkshoppedGameRules.GetCardsPerRank(RepresentedNumber).ToString();
         GameRulesManagerInstance.MarkRuleAsDirty();
     }
 
     public void TickDown()
     {
-        GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber) - 1));
-        NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
+        GameRulesManager.CurrentlyWorkshoppedGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, GameRulesManager.CurrentlyWorkshoppedGameRules.GetCardsPerRank(RepresentedNumber) - 1));
+        NumberInput.text = GameRulesManager.CurrentlyWorkshoppedGameRules.GetCardsPerRank(RepresentedNumber).ToString();
         GameRulesManagerInstance.MarkRuleAsDirty();
     }
 
@@ -39,13 +39,13 @@ public class CardsPerRankPanel : MonoBehaviour
 
         if (int.TryParse(NumberInput.text, out parsedValue))
         {
-            GameRulesManager.FutureGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, parsedValue));
-            NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
+            GameRulesManager.CurrentlyWorkshoppedGameRules.SetCardsPerRank(RepresentedNumber, Mathf.Max(0, parsedValue));
+            NumberInput.text = GameRulesManager.CurrentlyWorkshoppedGameRules.GetCardsPerRank(RepresentedNumber).ToString();
             GameRulesManagerInstance.MarkRuleAsDirty();
         }
         else
         {
-            NumberInput.text = GameRulesManager.FutureGameRules.GetCardsPerRank(RepresentedNumber).ToString();
+            NumberInput.text = GameRulesManager.CurrentlyWorkshoppedGameRules.GetCardsPerRank(RepresentedNumber).ToString();
         }
     }
 }

@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public class GameRulesManager : MonoBehaviour
 {
     public static GameRules ActiveGameRules { get; set; }
-    public static GameRules FutureGameRules { get; set; }
+    public static GameRules CurrentlyWorkshoppedGameRules { get; set; }
+    static GameRules FutureGameRules { get; set; }
 
     public Text RuleSetTitle;
     public Text RulesDialogButtonText;
@@ -39,6 +40,7 @@ public class GameRulesManager : MonoBehaviour
         }
 
         ActiveGameRules = FutureGameRules.CloneRules();
+        CurrentlyWorkshoppedGameRules = FutureGameRules.CloneRules();
         RuleSetTitle.text = ActiveGameRules.RuleSetName;
 
         RulesDialogButtonText.text = "SHOW";
@@ -53,18 +55,18 @@ public class GameRulesManager : MonoBehaviour
             CardsPerRankPanels.Add(panel);
         }
 
-        SetRulesFromPreset(FutureGameRules);
+        SetRulesFromPreset(CurrentlyWorkshoppedGameRules);
 
         HydrateRulePanel();
     }
 
     void HydrateRulePanel()
     {
-        RuleSetName.text = FutureGameRules.RuleSetName;
-        HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
-        StackDeckToggle.isOn = FutureGameRules.StackDeck;
+        RuleSetName.text = CurrentlyWorkshoppedGameRules.RuleSetName;
+        HandSizeField.text = CurrentlyWorkshoppedGameRules.HandSizeRule.ToString();
+        StackDeckToggle.isOn = CurrentlyWorkshoppedGameRules.StackDeck;
 
-        switch (FutureGameRules.GridTypeRule)
+        switch (CurrentlyWorkshoppedGameRules.GridTypeRule)
         {
             default:
             case GridType.FourWay:
@@ -83,7 +85,7 @@ public class GameRulesManager : MonoBehaviour
             panel.SetRank(panel.RepresentedNumber);
         }
 
-        if (FutureGameRules.IsDefaultRule)
+        if (CurrentlyWorkshoppedGameRules.IsDefaultRule)
         {
             UpdateRuleSetButton.gameObject.SetActive(false);
             DeleteRuleSetButton.gameObject.SetActive(false);
@@ -114,9 +116,9 @@ public class GameRulesManager : MonoBehaviour
     public void SetRulesFromPreset(GameRules rules)
     {
         // Deselect the old rules
-        if (FutureGameRules != null)
+        if (CurrentlyWorkshoppedGameRules != null)
         {
-            RulePresetSelector matchingOldSelector = MatchingSelector(FutureGameRules);
+            RulePresetSelector matchingOldSelector = MatchingSelector(CurrentlyWorkshoppedGameRules);
 
             if (matchingOldSelector != null)
             {
@@ -124,13 +126,14 @@ public class GameRulesManager : MonoBehaviour
             }
         }
 
+        CurrentlyWorkshoppedGameRules = rules.CloneRules();
         FutureGameRules = rules.CloneRules();
         HydrateRulePanel();
         UpdateRuleSetButton.interactable = false;
 
         SaveDataManager.SetLastUsedGameRule(rules);
 
-        RulePresetSelector matchingNewSelector = MatchingSelector(FutureGameRules);
+        RulePresetSelector matchingNewSelector = MatchingSelector(CurrentlyWorkshoppedGameRules);
 
         if (matchingNewSelector != null)
         {
@@ -140,14 +143,14 @@ public class GameRulesManager : MonoBehaviour
 
     public void RuleSetNameChanged()
     {
-        if (!string.IsNullOrEmpty(RuleSetName.text) && RuleSetName.text != FutureGameRules.RuleSetName)
+        if (!string.IsNullOrEmpty(RuleSetName.text) && RuleSetName.text != CurrentlyWorkshoppedGameRules.RuleSetName)
         {
-            FutureGameRules.RuleSetName = RuleSetName.text;
+            CurrentlyWorkshoppedGameRules.RuleSetName = RuleSetName.text;
             MarkRuleAsDirty();
         }
         else
         {
-            RuleSetName.text = FutureGameRules.RuleSetName;
+            RuleSetName.text = CurrentlyWorkshoppedGameRules.RuleSetName;
         }
     }
 
@@ -155,15 +158,15 @@ public class GameRulesManager : MonoBehaviour
     {
         int parsedValue;
 
-        if (int.TryParse(HandSizeField.text, out parsedValue) && parsedValue != FutureGameRules.HandSizeRule)
+        if (int.TryParse(HandSizeField.text, out parsedValue) && parsedValue != CurrentlyWorkshoppedGameRules.HandSizeRule)
         {
-            FutureGameRules.HandSizeRule = Mathf.Max(1, parsedValue);
-            HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
+            CurrentlyWorkshoppedGameRules.HandSizeRule = Mathf.Max(1, parsedValue);
+            HandSizeField.text = CurrentlyWorkshoppedGameRules.HandSizeRule.ToString();
             MarkRuleAsDirty();
         }
         else
         {
-            HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
+            HandSizeField.text = CurrentlyWorkshoppedGameRules.HandSizeRule.ToString();
         }
     }
 
@@ -185,9 +188,9 @@ public class GameRulesManager : MonoBehaviour
                 break;
         }
 
-        if (FutureGameRules.GridTypeRule != newGridType)
+        if (CurrentlyWorkshoppedGameRules.GridTypeRule != newGridType)
         {
-            FutureGameRules.GridTypeRule = newGridType;
+            CurrentlyWorkshoppedGameRules.GridTypeRule = newGridType;
             MarkRuleAsDirty();
         }
     }
@@ -208,20 +211,20 @@ public class GameRulesManager : MonoBehaviour
 
     public void HandSizeTick(int direction)
     {
-        FutureGameRules.HandSizeRule = Mathf.Max(1, FutureGameRules.HandSizeRule + direction);
-        HandSizeField.text = FutureGameRules.HandSizeRule.ToString();
+        CurrentlyWorkshoppedGameRules.HandSizeRule = Mathf.Max(1, CurrentlyWorkshoppedGameRules.HandSizeRule + direction);
+        HandSizeField.text = CurrentlyWorkshoppedGameRules.HandSizeRule.ToString();
         MarkRuleAsDirty();
     }
 
     public void StackDeckToggleChanged()
     {
-        FutureGameRules.StackDeck = StackDeckToggle.isOn;
+        CurrentlyWorkshoppedGameRules.StackDeck = StackDeckToggle.isOn;
         MarkRuleAsDirty();
     }
 
     public void SaveAsNewButton()
     {
-        GameRules newRules = FutureGameRules.CloneRules();
+        GameRules newRules = CurrentlyWorkshoppedGameRules.CloneRules();
 
         SaveDataManager.SaveNewRuleSet(newRules);
 
@@ -234,27 +237,28 @@ public class GameRulesManager : MonoBehaviour
 
     public void UpdateButton()
     {
-        SaveDataManager.UpdateRuleSet(FutureGameRules);
-        FutureGameRules = FutureGameRules.CloneRules();
+        SaveDataManager.UpdateRuleSet(CurrentlyWorkshoppedGameRules);
+        CurrentlyWorkshoppedGameRules = CurrentlyWorkshoppedGameRules.CloneRules();
+        FutureGameRules = CurrentlyWorkshoppedGameRules.CloneRules();
         UpdateRuleSetButton.interactable = false;
 
-        RulePresetSelector matchingSelector = MatchingSelector(FutureGameRules);
+        RulePresetSelector matchingSelector = MatchingSelector(CurrentlyWorkshoppedGameRules);
 
         if (matchingSelector != null)
         {
-            matchingSelector.SetRepresentedRules(FutureGameRules, this);
+            matchingSelector.SetRepresentedRules(CurrentlyWorkshoppedGameRules, this);
         }
     }
 
     public void DeleteButton()
     {
-        RulePresetSelector matchingSelector = MatchingSelector(FutureGameRules);
+        RulePresetSelector matchingSelector = MatchingSelector(CurrentlyWorkshoppedGameRules);
         RulePresetSelectors.Remove(matchingSelector);
         ObjectPooler.ReturnObject(matchingSelector);
 
-        GameRules nextRuleSet = SaveDataManager.GetNextRuleSet(FutureGameRules);
+        GameRules nextRuleSet = SaveDataManager.GetNextRuleSet(CurrentlyWorkshoppedGameRules);
 
-        SaveDataManager.DeleteRuleSet(FutureGameRules);
+        SaveDataManager.DeleteRuleSet(CurrentlyWorkshoppedGameRules);
 
         SetRulesFromPreset(nextRuleSet);
     }
