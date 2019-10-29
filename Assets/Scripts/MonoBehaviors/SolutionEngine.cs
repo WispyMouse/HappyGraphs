@@ -12,6 +12,9 @@ public class SolutionEngine : MonoBehaviour
     static System.Diagnostics.Stopwatch TimeSpentTakingActions { get; set; }
 
     public static System.Diagnostics.Stopwatch RoamingCheck { get; set; } = new System.Diagnostics.Stopwatch();
+    static int DeadEndedActions { get; set; } = 0;
+    static int TimesTooIncompleteCheckFires { get; set; } = 0;
+    static int ImmediateImperfectCheckFires { get; set; } = 0;
 
     public void FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand)
     {
@@ -26,10 +29,13 @@ public class SolutionEngine : MonoBehaviour
         TimeSpentFindingPossibleActions = new System.Diagnostics.Stopwatch();
         TimeSpentTakingActions = new System.Diagnostics.Stopwatch();
         RoamingCheck = new System.Diagnostics.Stopwatch();
+        DeadEndedActions = 0;
+        TimesTooIncompleteCheckFires = 0;
+        ImmediateImperfectCheckFires = 0;
 
         StringBuilder deckString = new StringBuilder();
         Debug.Log("The deck is:");
-        
+
         foreach (CardData cards in deck.ToList())
         {
             deckString.Append(cards.FaceValue);
@@ -58,10 +64,18 @@ public class SolutionEngine : MonoBehaviour
         Debug.Log($"Spent {TimeSpentFindingPossibleActions.ElapsedMilliseconds} milliseconds finding possible actions.");
         Debug.Log($"Spent {TimeSpentTakingActions.ElapsedMilliseconds} milliseconds taking actions.");
         Debug.Log($"Spent {RoamingCheck.ElapsedMilliseconds} milliseconds on the roaming check.");
+        Debug.Log($"There were {DeadEndedActions} dead ended actions.");
+        Debug.Log($"The shortcircuit fired {TimesTooIncompleteCheckFires} times.");
+        Debug.Log($"There have been {ImmediateImperfectCheckFires} removed actions for being immediately imperfect.");
     }
 
     void SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand, List<GameAction> gameActionsTaken)
     {
+        if (solution != null)
+        {
+            return;
+        }
+
         TimeSpentFindingPossibleActions.Start();
         List<GameAction> consideredActions = AllPossibleActions(activePlayField, hand);
         List<GameAction> validActions = ReduceToNotImmediatelyImperfectActions(activePlayField, consideredActions);
@@ -69,11 +83,6 @@ public class SolutionEngine : MonoBehaviour
 
         foreach (GameAction validAction in validActions)
         {
-            if (solution != null)
-            {
-                return;
-            }
-
             TimeSpentTakingActions.Start();
 
             PlayFieldData resultedPlayField;
@@ -88,17 +97,22 @@ public class SolutionEngine : MonoBehaviour
 
             TimeSpentTakingActions.Stop();
 
-            if (CanKeepPlaying(resultedPlayField, resultedHand))
-            {
-                SolutionIteration(resultedPlayField, resultedDeck, resultedHand, resultActions);
-            }
-            else
+            if (resultedDeck.Count == 0 && resultedHand.Count == 0)
             {
                 if (resultedPlayField.CountOfCardsThatAreNotHappy() == 0)
                 {
                     solution = resultActions;
-                }                
-            }            
+                    return;
+                }
+                else
+                {
+                    DeadEndedActions++;
+                }
+            }
+            else if (CanPossiblyPerfectClear(resultedPlayField, resultedDeck, resultedHand))
+            {
+                SolutionIteration(resultedPlayField, resultedDeck, resultedHand, resultActions);
+            }
         }
     }
 
@@ -135,6 +149,10 @@ public class SolutionEngine : MonoBehaviour
             {
                 resultedActions.Add(consideredAction);
             }
+            else
+            {
+                ImmediateImperfectCheckFires++;
+            }
         }
 
         return resultedActions;
@@ -166,8 +184,17 @@ public class SolutionEngine : MonoBehaviour
         }
     }
 
-    bool CanKeepPlaying(PlayFieldData activePlayField, HashSet<CardData> hand)
+    bool CanPossiblyPerfectClear(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand)
     {
-        return activePlayField.AreAnyMovesPossible(hand);
+        int totalPlaybleSum = deck.Sum(card => card.FaceValue) + hand.Sum(card => card.FaceValue);
+        int remainingNeededNeighbors = activePlayField.NeededNeighbors();
+
+        if (totalPlaybleSum < remainingNeededNeighbors)
+        {
+            TimesTooIncompleteCheckFires++;
+            return false;
+        }
+
+        return true;
     }
 }

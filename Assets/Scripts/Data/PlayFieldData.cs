@@ -9,6 +9,7 @@ public class PlayFieldData
 {
     public Dictionary<Coordinate, CardData> PlayedCards { get; private set; } = new Dictionary<Coordinate, CardData>();
     private HashSet<Coordinate> ValidPlayableSpacesCache { get; set; } = null;
+    private HashSet<Coordinate> HappyCoordinatesCache { get; set; } = new HashSet<Coordinate>();
 
     public PlayFieldData CloneData()
     {
@@ -20,6 +21,7 @@ public class PlayFieldData
     public void SetCard(CardData forCard, Coordinate onCoordinate)
     {
         ValidPlayableSpacesCache = null;
+        HappyCoordinatesCache = null;
 
         if (PlayedCards.ContainsKey(onCoordinate))
         {
@@ -34,6 +36,7 @@ public class PlayFieldData
     public void RemoveCard(Coordinate atCoordinate)
     {
         ValidPlayableSpacesCache = null;
+        HappyCoordinatesCache = null;
 
         PlayedCards.Remove(atCoordinate);
     }
@@ -46,6 +49,11 @@ public class PlayFieldData
 
     public HashSet<Coordinate> GetHappyCoordinates()
     {
+        if (HappyCoordinatesCache != null)
+        {
+            return HappyCoordinatesCache;
+        }
+
         HashSet<Coordinate> happyCoordinates = new HashSet<Coordinate>();
 
         foreach (Coordinate curCoordinate in PlayedCards.Keys)
@@ -56,6 +64,7 @@ public class PlayFieldData
             }
         }
 
+        HappyCoordinatesCache = happyCoordinates;
         return happyCoordinates;
     }
 
@@ -101,11 +110,9 @@ public class PlayFieldData
         }
 
         // For every played card, add every neighboring coordinate to a HashSet (no duplicates)
-
-        SolutionEngine.RoamingCheck.Start();
         HashSet<Coordinate> happyCoordinates = GetHappyCoordinates();
         HashSet<Coordinate> neighborsOfHappyCoordinates = new HashSet<Coordinate>(happyCoordinates.SelectMany(coordinate => coordinate.GetNeighbors()));
-        SolutionEngine.RoamingCheck.Stop();
+        
         HashSet<Coordinate> consideredCoordinates = new HashSet<Coordinate>();
         HashSet<Coordinate> finalCut = new HashSet<Coordinate>();
 
@@ -148,7 +155,13 @@ public class PlayFieldData
 
         int requiredNeighbors = PlayedCards[forCoordinate].FaceValue;
         int occuppiedNeighbors = OccuppiedNeighborsAtCoordinate(forCoordinate);
-        int playableSpotNeighbors = forCoordinate.GetNeighbors().Where(neighbor => validPlayableSpaces.Contains(neighbor)).Count();
+
+        if (requiredNeighbors == occuppiedNeighbors)
+        {
+            return false; // Presumably already happy
+        }
+
+        int playableSpotNeighbors = forCoordinate.GetNeighbors().Count(neighbor => validPlayableSpaces.Contains(neighbor));
 
         if (occuppiedNeighbors + playableSpotNeighbors < requiredNeighbors)
         {
@@ -160,7 +173,8 @@ public class PlayFieldData
 
     public int OccuppiedNeighborsAtCoordinate(Coordinate forCoordinate)
     {
-        return forCoordinate.GetNeighbors().Count(neighbor => PlayedCards.ContainsKey(neighbor));
+        int answer = forCoordinate.GetNeighbors().Count(neighbor => PlayedCards.ContainsKey(neighbor));
+        return answer;
     }
 
     public bool AreAnyMovesPossible(IEnumerable<CardData> hand)
@@ -182,5 +196,17 @@ public class PlayFieldData
     public int CountOfCardsThatAreNotHappy()
     {
         return PlayedCards.Keys.Count - GetHappyCoordinates().Count;
+    }
+
+    public int NeededNeighbors()
+    {
+        int sum = 0;
+
+        foreach (Coordinate curCoordinate in PlayedCards.Keys)
+        {
+            sum += PlayedCards[curCoordinate].FaceValue - OccuppiedNeighborsAtCoordinate(curCoordinate);
+        }
+
+        return sum;
     }
 }

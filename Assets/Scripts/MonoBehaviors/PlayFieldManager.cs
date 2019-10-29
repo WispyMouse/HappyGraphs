@@ -68,6 +68,7 @@ public class PlayFieldManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.End))
         {
+            Debug.Log($"Deck Seed is {DeckSeed}");
             SolutionEngineInstance.FindSolution(ActivePlayField.CurrentPlayField, deck, new HashSet<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
         }
     }
@@ -76,7 +77,7 @@ public class PlayFieldManager : MonoBehaviour
     {
         Stack<CardData> newDeck = new Stack<CardData>();
 
-        int maxCardValue = 4;
+        int maxCardValue;
 
         switch (GameRulesManager.ActiveGameRules.GridTypeRule)
         {
