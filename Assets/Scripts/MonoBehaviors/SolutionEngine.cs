@@ -9,16 +9,17 @@ public class SolutionEngine : MonoBehaviour
     static List<GameAction> solution { get; set; }
     static System.Diagnostics.Stopwatch SolutionTimeStopwatch { get; set; }
 
-    public void FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
+    public List<GameAction> FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
     {
         solution = null;
-        SolutionTimeStopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         if (activePlayField.AreAnyCoordinatesAreIncompleteable())
         {
             Debug.Log("The current playing field already has incompleteable cards.");
-            return;
+            return null;
         }
+
+        SolutionTimeStopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         StringBuilder deckString = new StringBuilder();
         Debug.Log("The deck is:");
@@ -47,6 +48,7 @@ public class SolutionEngine : MonoBehaviour
             }
         }
         SolutionTimeStopwatch.Stop();
+        return solution;
     }
 
     void SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand, List<GameAction> gameActionsTaken)

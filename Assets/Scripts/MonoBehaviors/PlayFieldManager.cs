@@ -69,7 +69,16 @@ public class PlayFieldManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.End))
         {
             Debug.Log($"Deck Seed is {DeckSeed}");
-            SolutionEngineInstance.FindSolution(ActivePlayField.CurrentPlayField, deck, new List<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
+            List<GameAction> actionsToTake = SolutionEngineInstance.FindSolution(ActivePlayField.CurrentPlayField, deck, new List<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
+
+            if (actionsToTake != null)
+            {
+                foreach (GameAction toTake in actionsToTake)
+                {
+                    PlayingCard matchingCard = cardsInHand.First(card => card.RepresentingCard == toTake.CardPlayed.Value);
+                    TryPlayerPlaysCard(matchingCard, toTake.CoordinatePlayedOn.Value);
+                }
+            }
         }
     }
 
@@ -233,8 +242,8 @@ public class PlayFieldManager : MonoBehaviour
 
     void UpdateScoreLabels()
     {
-        TotalCardFaceValue.text = (ActivePlayField.GetIncompleteCards().Sum(card => card.RepresentingCard.FaceValue)).ToString();
-        IncompleteCardsValue.text = (ActivePlayField.GetIncompleteCards().Count).ToString();
+        TotalCardFaceValue.text = (previousPlayfieldTotalFaceValue + ActivePlayField.GetIncompleteCards().Sum(card => card.RepresentingCard.FaceValue)).ToString();
+        IncompleteCardsValue.text = (previousPlayfieldIncompleteCards + ActivePlayField.GetIncompleteCards().Count).ToString();
 
         SatisfiedCountValue.text = ((float)(previousPlayfieldSatisfiedCount + ActivePlayField.GetHappyCards().Count) / (float)totalDeckSize).ToString("P0");
         SatisfiedFaceValue.text = ((float)(previousPlayfieldSatisfiedFaceValue + ActivePlayField.GetHappyCards().Sum(card => card.RepresentingCard.FaceValue)) / (float)totalDeckFaceValue).ToString("P0");
