@@ -60,7 +60,7 @@ public class PlayFieldRuntime : MonoBehaviour
         return CurrentPlayField.IsSpotValidForCard(forCard.RepresentingCard, onCoordinate);
     }
 
-    public bool NoMovesArePossible(IEnumerable<PlayingCard> hand)
+    public bool NoMovesArePossible(List<PlayingCard> hand)
     {
         if (PlayableSpots.Count == 0)
         {
@@ -68,7 +68,7 @@ public class PlayFieldRuntime : MonoBehaviour
             return true;
         }
 
-        return !CurrentPlayField.AreAnyMovesPossible(hand.Select(card => card.RepresentingCard));
+        return !CurrentPlayField.AreAnyMovesPossible(hand.Select(card => card.RepresentingCard).ToList());
     }
 
     public void PlayCard(PlayingCard toPlay, Coordinate onCoordinate)
@@ -203,7 +203,7 @@ public class PlayFieldRuntime : MonoBehaviour
         foreach (PlayingCard card in PlayedCards)
         {
             card.SetHappiness(CurrentPlayField.ShouldCoordinateBeHappy(card.OnCoordinate));
-            card.SetIncompleteness(CurrentPlayField.ShouldCoordinateBeIncompletable(card.OnCoordinate, playableSpaces));
+            card.SetIncompleteness(CurrentPlayField.ShouldCoordinateBeIncompletable(card.OnCoordinate));
         }
 
         SetPlayableSpaces();

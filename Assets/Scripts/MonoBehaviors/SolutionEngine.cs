@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class SolutionEngine : MonoBehaviour
+public class SolutionEngine
 {
     static List<GameAction> solution { get; set; }
     static System.Diagnostics.Stopwatch SolutionTimeStopwatch { get; set; }
@@ -12,11 +12,24 @@ public class SolutionEngine : MonoBehaviour
     static System.Diagnostics.Stopwatch TimeSpentTakingActions { get; set; }
 
     public static System.Diagnostics.Stopwatch RoamingCheck { get; set; } = new System.Diagnostics.Stopwatch();
+    public static System.Diagnostics.Stopwatch TimeSpentCalculatingValidPlayableSpace { get; set; } = new System.Diagnostics.Stopwatch();
+    public static System.Diagnostics.Stopwatch TimeSpentCalculatingHappyCoordinates { get; set; } = new System.Diagnostics.Stopwatch();
     static int DeadEndedActions { get; set; } = 0;
     static int TimesTooIncompleteCheckFires { get; set; } = 0;
     static int ImmediateImperfectCheckFires { get; set; } = 0;
+    public static int CardWouldInvalidateSelf { get; set; } = 0;
 
-    public void FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand)
+    public static int HappyCoordinatesCacheUsed { get; set; } = 0;
+    public static int ValidPlayableSpaceCacheUsed { get; set; } = 0;
+    public static int TimesFieldIsCloned { get; set; } = 0;
+    public static int TimesOccuppiedNeighborCountIsAskedFor { get; set; } = 0;
+
+    public static int IsSpotValidForCardCheck { get; set; } = 0;
+    public static int ShouldCoordinateBeHappyCheck { get; set; } = 0;
+    public static int ShouldCoordinateBeIncompletableCheck { get; set; } = 0;
+    public static int NeededNeighborsCheck { get; set; } = 0;
+
+    public void FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
     {
         if (activePlayField.GetIncompleteableCoordinates().Any())
         {
@@ -29,9 +42,19 @@ public class SolutionEngine : MonoBehaviour
         TimeSpentFindingPossibleActions = new System.Diagnostics.Stopwatch();
         TimeSpentTakingActions = new System.Diagnostics.Stopwatch();
         RoamingCheck = new System.Diagnostics.Stopwatch();
+        TimeSpentCalculatingValidPlayableSpace = new System.Diagnostics.Stopwatch();
+        TimeSpentCalculatingHappyCoordinates = new System.Diagnostics.Stopwatch();
         DeadEndedActions = 0;
         TimesTooIncompleteCheckFires = 0;
         ImmediateImperfectCheckFires = 0;
+        CardWouldInvalidateSelf = 0;
+        HappyCoordinatesCacheUsed = 0;
+        TimesFieldIsCloned = 0;
+        TimesOccuppiedNeighborCountIsAskedFor = 0;
+        IsSpotValidForCardCheck = 0;
+        ShouldCoordinateBeHappyCheck = 0;
+        ShouldCoordinateBeIncompletableCheck = 0;
+        NeededNeighborsCheck = 0;
 
         StringBuilder deckString = new StringBuilder();
         Debug.Log("The deck is:");
@@ -67,9 +90,20 @@ public class SolutionEngine : MonoBehaviour
         Debug.Log($"There were {DeadEndedActions} dead ended actions.");
         Debug.Log($"The shortcircuit fired {TimesTooIncompleteCheckFires} times.");
         Debug.Log($"There have been {ImmediateImperfectCheckFires} removed actions for being immediately imperfect.");
+        Debug.Log($"There have been {CardWouldInvalidateSelf} actions that would invalidate their own card.");
+        Debug.Log($"The valid playable coordinates cache was used {ValidPlayableSpaceCacheUsed} times.");
+        Debug.Log($"The happy coordinates cache was used {HappyCoordinatesCacheUsed} times.");
+        Debug.Log($"Spent {TimeSpentCalculatingValidPlayableSpace.ElapsedMilliseconds} miliseconds searching for valid playable spaces.");
+        Debug.Log($"Spent {TimeSpentCalculatingHappyCoordinates.ElapsedMilliseconds} miliseconds calculating happy coordinates.");
+        Debug.Log($"There were {TimesFieldIsCloned} PlayFieldData clones made.");
+        Debug.Log($"Asked for OccuppiedNeighborsAtCoordinate {TimesOccuppiedNeighborCountIsAskedFor} times.");
+        Debug.Log($"Asked for IsSpotValidForCoordinate {IsSpotValidForCardCheck} times.");
+        Debug.Log($"Asked for ShouldCoordinateBeHappy {ShouldCoordinateBeHappyCheck} times.");
+        Debug.Log($"Asked for ShouldCoordinateBeIncompletable {ShouldCoordinateBeIncompletableCheck} times.");
+        Debug.Log($"Asked for NeededNeighbors {NeededNeighborsCheck} times.");
     }
 
-    void SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand, List<GameAction> gameActionsTaken)
+    void SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand, List<GameAction> gameActionsTaken)
     {
         if (solution != null)
         {
@@ -87,7 +121,7 @@ public class SolutionEngine : MonoBehaviour
 
             PlayFieldData resultedPlayField;
             Stack<CardData> resultedDeck;
-            HashSet<CardData> resultedHand;
+            List<CardData> resultedHand;
 
             TakeAction(validAction, activePlayField, deck, hand, out resultedPlayField, out resultedDeck, out resultedHand);
 
@@ -116,7 +150,7 @@ public class SolutionEngine : MonoBehaviour
         }
     }
 
-    List<GameAction> AllPossibleActions(PlayFieldData activePlayField, HashSet<CardData> hand)
+    List<GameAction> AllPossibleActions(PlayFieldData activePlayField, List<CardData> hand)
     {
         List<GameAction> possibleActions = new List<GameAction>();
 
@@ -145,6 +179,12 @@ public class SolutionEngine : MonoBehaviour
             PlayFieldData clonedPlayField = activePlayField.CloneData();
             clonedPlayField.SetCard(consideredAction.CardPlayed.Value, consideredAction.CoordinatePlayedOn.Value);
 
+            if (clonedPlayField.ShouldCoordinateBeIncompletable(consideredAction.CoordinatePlayedOn.Value))
+            {
+                CardWouldInvalidateSelf++;
+                continue;
+            }
+
             if (clonedPlayField.GetIncompleteableCoordinates().Count == 0)
             {
                 resultedActions.Add(consideredAction);
@@ -158,15 +198,15 @@ public class SolutionEngine : MonoBehaviour
         return resultedActions;
     }
 
-    void TakeAction(GameAction toTake, PlayFieldData startingPlayField, Stack<CardData> startingDeck, HashSet<CardData> startingHand,
-        out PlayFieldData resultPlayField, out Stack<CardData> resultDeck, out HashSet<CardData> resultHand)
+    void TakeAction(GameAction toTake, PlayFieldData startingPlayField, Stack<CardData> startingDeck, List<CardData> startingHand,
+        out PlayFieldData resultPlayField, out Stack<CardData> resultDeck, out List<CardData> resultHand)
     {
         resultPlayField = startingPlayField.CloneData();
 
         // Frustratingly, creating a new stack creates that stack upsidedown! Reverse it, again
         resultDeck = new Stack<CardData>(new Stack<CardData>(startingDeck));
 
-        resultHand = new HashSet<CardData>(startingHand);
+        resultHand = new List<CardData>(startingHand);
 
         resultHand.Remove(toTake.CardPlayed.Value);
 
@@ -177,14 +217,14 @@ public class SolutionEngine : MonoBehaviour
 
         resultPlayField.SetCard(toTake.CardPlayed.Value, toTake.CoordinatePlayedOn.Value);
 
-        if (!resultPlayField.AreAnyMovesPossible(resultHand) && resultDeck.Count > 0)
+        if (resultDeck.Count > 0 && resultHand.Count > 0 && !resultPlayField.AreAnyMovesPossible(resultHand))
         {
             resultPlayField = new PlayFieldData();
             resultPlayField.SetCard(resultDeck.Pop(), new Coordinate(0, 0));
         }
     }
 
-    bool CanPossiblyPerfectClear(PlayFieldData activePlayField, Stack<CardData> deck, HashSet<CardData> hand)
+    bool CanPossiblyPerfectClear(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
     {
         int totalPlaybleSum = deck.Sum(card => card.FaceValue) + hand.Sum(card => card.FaceValue);
         int remainingNeededNeighbors = activePlayField.NeededNeighbors();
