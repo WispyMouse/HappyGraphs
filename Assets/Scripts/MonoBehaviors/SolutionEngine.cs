@@ -8,53 +8,17 @@ public class SolutionEngine : MonoBehaviour
 {
     static List<GameAction> solution { get; set; }
     static System.Diagnostics.Stopwatch SolutionTimeStopwatch { get; set; }
-    static System.Diagnostics.Stopwatch TimeSpentFindingPossibleActions { get; set; }
-    static System.Diagnostics.Stopwatch TimeSpentTakingActions { get; set; }
-
-    public static System.Diagnostics.Stopwatch RoamingCheck { get; set; } = new System.Diagnostics.Stopwatch();
-    public static System.Diagnostics.Stopwatch TimeSpentCalculatingValidPlayableSpace { get; set; } = new System.Diagnostics.Stopwatch();
-    public static System.Diagnostics.Stopwatch TimeSpentCalculatingHappyCoordinates { get; set; } = new System.Diagnostics.Stopwatch();
-    static int DeadEndedActions { get; set; } = 0;
-    static int TimesTooIncompleteCheckFires { get; set; } = 0;
-    static int ImmediateImperfectCheckFires { get; set; } = 0;
-    public static int CardWouldInvalidateSelf { get; set; } = 0;
-
-    public static int HappyCoordinatesCacheUsed { get; set; } = 0;
-    public static int ValidPlayableSpaceCacheUsed { get; set; } = 0;
-    public static int TimesFieldIsCloned { get; set; } = 0;
-    public static int TimesOccuppiedNeighborCountIsAskedFor { get; set; } = 0;
-
-    public static int IsSpotValidForCardCheck { get; set; } = 0;
-    public static int ShouldCoordinateBeHappyCheck { get; set; } = 0;
-    public static int ShouldCoordinateBeIncompletableCheck { get; set; } = 0;
-    public static int NeededNeighborsCheck { get; set; } = 0;
 
     public void FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
     {
-        if (activePlayField.GetIncompleteableCoordinates().Any())
+        solution = null;
+        SolutionTimeStopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+        if (activePlayField.AreAnyCoordinatesAreIncompleteable())
         {
             Debug.Log("The current playing field already has incompleteable cards.");
             return;
         }
-
-        solution = null;
-        SolutionTimeStopwatch = System.Diagnostics.Stopwatch.StartNew();
-        TimeSpentFindingPossibleActions = new System.Diagnostics.Stopwatch();
-        TimeSpentTakingActions = new System.Diagnostics.Stopwatch();
-        RoamingCheck = new System.Diagnostics.Stopwatch();
-        TimeSpentCalculatingValidPlayableSpace = new System.Diagnostics.Stopwatch();
-        TimeSpentCalculatingHappyCoordinates = new System.Diagnostics.Stopwatch();
-        DeadEndedActions = 0;
-        TimesTooIncompleteCheckFires = 0;
-        ImmediateImperfectCheckFires = 0;
-        CardWouldInvalidateSelf = 0;
-        HappyCoordinatesCacheUsed = 0;
-        TimesFieldIsCloned = 0;
-        TimesOccuppiedNeighborCountIsAskedFor = 0;
-        IsSpotValidForCardCheck = 0;
-        ShouldCoordinateBeHappyCheck = 0;
-        ShouldCoordinateBeIncompletableCheck = 0;
-        NeededNeighborsCheck = 0;
 
         StringBuilder deckString = new StringBuilder();
         Debug.Log("The deck is:");
@@ -83,24 +47,6 @@ public class SolutionEngine : MonoBehaviour
             }
         }
         SolutionTimeStopwatch.Stop();
-        Debug.Log($"Solution took {SolutionTimeStopwatch.ElapsedMilliseconds} milliseconds to find.");
-        Debug.Log($"Spent {TimeSpentFindingPossibleActions.ElapsedMilliseconds} milliseconds finding possible actions.");
-        Debug.Log($"Spent {TimeSpentTakingActions.ElapsedMilliseconds} milliseconds taking actions.");
-        Debug.Log($"Spent {RoamingCheck.ElapsedMilliseconds} milliseconds on the roaming check.");
-        Debug.Log($"There were {DeadEndedActions} dead ended actions.");
-        Debug.Log($"The shortcircuit fired {TimesTooIncompleteCheckFires} times.");
-        Debug.Log($"There have been {ImmediateImperfectCheckFires} removed actions for being immediately imperfect.");
-        Debug.Log($"There have been {CardWouldInvalidateSelf} actions that would invalidate their own card.");
-        Debug.Log($"The valid playable coordinates cache was used {ValidPlayableSpaceCacheUsed} times.");
-        Debug.Log($"The happy coordinates cache was used {HappyCoordinatesCacheUsed} times.");
-        Debug.Log($"Spent {TimeSpentCalculatingValidPlayableSpace.ElapsedMilliseconds} miliseconds searching for valid playable spaces.");
-        Debug.Log($"Spent {TimeSpentCalculatingHappyCoordinates.ElapsedMilliseconds} miliseconds calculating happy coordinates.");
-        Debug.Log($"There were {TimesFieldIsCloned} PlayFieldData clones made.");
-        Debug.Log($"Asked for OccuppiedNeighborsAtCoordinate {TimesOccuppiedNeighborCountIsAskedFor} times.");
-        Debug.Log($"Asked for IsSpotValidForCoordinate {IsSpotValidForCardCheck} times.");
-        Debug.Log($"Asked for ShouldCoordinateBeHappy {ShouldCoordinateBeHappyCheck} times.");
-        Debug.Log($"Asked for ShouldCoordinateBeIncompletable {ShouldCoordinateBeIncompletableCheck} times.");
-        Debug.Log($"Asked for NeededNeighbors {NeededNeighborsCheck} times.");
     }
 
     void SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand, List<GameAction> gameActionsTaken)
@@ -110,26 +56,25 @@ public class SolutionEngine : MonoBehaviour
             return;
         }
 
-        TimeSpentFindingPossibleActions.Start();
         List<GameAction> consideredActions = AllPossibleActions(activePlayField, hand);
-        List<GameAction> validActions = ReduceToNotImmediatelyImperfectActions(activePlayField, consideredActions);
-        TimeSpentFindingPossibleActions.Stop();
 
-        foreach (GameAction validAction in validActions)
+        foreach (GameAction validAction in consideredActions)
         {
-            TimeSpentTakingActions.Start();
-
             PlayFieldData resultedPlayField;
             Stack<CardData> resultedDeck;
             List<CardData> resultedHand;
+            bool resultsInIncompleteness;
 
-            TakeAction(validAction, activePlayField, deck, hand, out resultedPlayField, out resultedDeck, out resultedHand);
+            TakeAction(validAction, activePlayField, deck, hand, out resultedPlayField, out resultedDeck, out resultedHand, out resultsInIncompleteness);
+
+            if (resultsInIncompleteness)
+            {
+                continue;
+            }
 
             List<GameAction> resultActions = new List<GameAction>();
             resultActions.AddRange(gameActionsTaken);
             resultActions.Add(validAction);
-
-            TimeSpentTakingActions.Stop();
 
             if (resultedDeck.Count == 0 && resultedHand.Count == 0)
             {
@@ -137,10 +82,6 @@ public class SolutionEngine : MonoBehaviour
                 {
                     solution = resultActions;
                     return;
-                }
-                else
-                {
-                    DeadEndedActions++;
                 }
             }
             else if (CanPossiblyPerfectClear(resultedPlayField, resultedDeck, resultedHand))
@@ -153,7 +94,6 @@ public class SolutionEngine : MonoBehaviour
     List<GameAction> AllPossibleActions(PlayFieldData activePlayField, List<CardData> hand)
     {
         List<GameAction> possibleActions = new List<GameAction>();
-
         HashSet<Coordinate> possibleCoordinates = activePlayField.GetValidPlayableSpaces();
 
         foreach (CardData consideredCard in hand)
@@ -170,36 +110,8 @@ public class SolutionEngine : MonoBehaviour
         return possibleActions;
     }
 
-    List<GameAction> ReduceToNotImmediatelyImperfectActions(PlayFieldData activePlayField, List<GameAction> potentialActions)
-    {
-        List<GameAction> resultedActions = new List<GameAction>();
-
-        foreach (GameAction consideredAction in potentialActions)
-        {
-            PlayFieldData clonedPlayField = activePlayField.CloneData();
-            clonedPlayField.SetCard(consideredAction.CardPlayed.Value, consideredAction.CoordinatePlayedOn.Value);
-
-            if (clonedPlayField.ShouldCoordinateBeIncompletable(consideredAction.CoordinatePlayedOn.Value))
-            {
-                CardWouldInvalidateSelf++;
-                continue;
-            }
-
-            if (clonedPlayField.GetIncompleteableCoordinates().Count == 0)
-            {
-                resultedActions.Add(consideredAction);
-            }
-            else
-            {
-                ImmediateImperfectCheckFires++;
-            }
-        }
-
-        return resultedActions;
-    }
-
     void TakeAction(GameAction toTake, PlayFieldData startingPlayField, Stack<CardData> startingDeck, List<CardData> startingHand,
-        out PlayFieldData resultPlayField, out Stack<CardData> resultDeck, out List<CardData> resultHand)
+        out PlayFieldData resultPlayField, out Stack<CardData> resultDeck, out List<CardData> resultHand, out bool resultsInIncompleteness)
     {
         resultPlayField = startingPlayField.CloneData();
 
@@ -217,6 +129,15 @@ public class SolutionEngine : MonoBehaviour
 
         resultPlayField.SetCard(toTake.CardPlayed.Value, toTake.CoordinatePlayedOn.Value);
 
+        if (resultPlayField.AreAnyCoordinatesAreIncompleteable())
+        {
+            resultsInIncompleteness = true;
+        }
+        else
+        {
+            resultsInIncompleteness = false;
+        }
+
         if (resultDeck.Count > 0 && resultHand.Count > 0 && !resultPlayField.AreAnyMovesPossible(resultHand))
         {
             resultPlayField = new PlayFieldData();
@@ -231,7 +152,6 @@ public class SolutionEngine : MonoBehaviour
 
         if (totalPlaybleSum < remainingNeededNeighbors)
         {
-            TimesTooIncompleteCheckFires++;
             return false;
         }
 
