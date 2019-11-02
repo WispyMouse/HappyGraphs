@@ -148,7 +148,7 @@ public class PlayingCard : MonoBehaviour
                 break;
             case BlinkType.Happy:
                 BlinkOverlaySpriteRenderer.gameObject.SetActive(true);
-                blinkTargetColor = Color.green;
+                blinkTargetColor = new Color(8f / 255f, 250f / 255f, 167f / 255f);
                 BlinkOverlaySpriteRenderer.color = blinkTargetColor;
                 break;
             case BlinkType.Sad:
