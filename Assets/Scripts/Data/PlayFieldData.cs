@@ -42,12 +42,12 @@ public class PlayFieldData
 
     public void RemoveCard(Coordinate atCoordinate)
     {
-        ValidPlayableSpacesCache = null;
-        HappyCoordinatesCache = null;
-        NotHappyCoordinatesCache = null;
-        HappyCoordinatesAreDirty = true;
-
         PlayedCards.Remove(atCoordinate);
+
+        ValidPlayableSpacesCache = null;
+        HappyCoordinatesCache = new HashSet<Coordinate>();
+        NotHappyCoordinatesCache = new HashSet<Coordinate>(PlayedCards.Keys);
+        HappyCoordinatesAreDirty = true;
     }
 
     public bool IsSpotValidForCard(CardData forCard, Coordinate onCoordinate)
