@@ -1,4 +1,4 @@
-﻿using fastJSON;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,7 +108,7 @@ public class SaveDataManager : MonoBehaviour
         savedRules.Remove(matchingRules);
         savedRules.Add(ruleSet);
 
-        string rulesJson = JSON.ToJSON(ruleSet);
+        string rulesJson = JsonConvert.SerializeObject(ruleSet);
         PlayerPrefs.SetString(ruleSet.RuleSetGUID.ToString(), rulesJson);
 
         SetLastUsedGameRule(ruleSet);
@@ -120,7 +120,7 @@ public class SaveDataManager : MonoBehaviour
         ruleSet.GenerateNewID();
         savedRules.Add(ruleSet);
 
-        string rulesJson = JSON.ToJSON(ruleSet);
+        string rulesJson = JsonConvert.SerializeObject(ruleSet);
         PlayerPrefs.SetString(ruleSet.RuleSetGUID.ToString(), rulesJson);
 
         UpdateDirectory();
@@ -136,7 +136,7 @@ public class SaveDataManager : MonoBehaviour
 
             if (!string.IsNullOrWhiteSpace(directoryString))
             {
-                List<string> directoryJson = JSON.ToObject<List<string>>(directoryString);
+                List<string> directoryJson = JsonConvert.DeserializeObject<List<string>>(directoryString);
 
                 foreach (string ruleGuid in directoryJson)
                 {
@@ -148,7 +148,7 @@ public class SaveDataManager : MonoBehaviour
                     }
                     else
                     {
-                        GameRules deserializedRules = JSON.ToObject<GameRules>(ruleString);
+                        GameRules deserializedRules = JsonConvert.DeserializeObject<GameRules>(ruleString);
                         savedRules.Add(deserializedRules);
                     }
                 }
@@ -245,7 +245,7 @@ public class SaveDataManager : MonoBehaviour
 
     static void UpdateDirectory()
     {
-        string directoryJson = JSON.ToJSON(savedRules.Select(rule => rule.RuleSetGUID).ToList());
+        string directoryJson = JsonConvert.SerializeObject(savedRules.Select(rule => rule.RuleSetGUID).ToList());
         PlayerPrefs.SetString(ruleSetDirectoryName, directoryJson);
     }
 }
