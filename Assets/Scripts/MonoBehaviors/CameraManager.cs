@@ -25,7 +25,7 @@ public class CameraManager : MonoBehaviour
     private void Awake()
     {
         AttachedCamera = GetComponent<Camera>();
-        buffer = new Rect(-3f, -5f, 6f, 9f);
+        buffer = new Rect(-3f, -4.5f, 6f, 9f);
         HandLocationOffset = new Vector3(-.5f, 1.75f, 0);
         ResetCamera();
     }
