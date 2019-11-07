@@ -252,4 +252,22 @@ public class PlayFieldRuntime : MonoBehaviour
             newHypotheticalHappyCards.Add(forCard);
         }
     }
+
+    public void UpdateCardVisuals()
+    {
+        foreach (PlayingCard currentCard in GetNewlyHappyCards())
+        {
+            currentCard.SetHappiness(true);
+        }
+
+        foreach (PlayingCard currentCard in GetNewlyNotCompleteableCards())
+        {
+            currentCard.SetIncompleteness(true);
+        }
+
+        foreach (PlayingCard currentCard in GetIncompleteCards())
+        {
+            currentCard.SetNeighborCount(CurrentPlayField.OccuppiedNeighborsAtCoordinate(currentCard.OnCoordinate));
+        }
+    }
 }

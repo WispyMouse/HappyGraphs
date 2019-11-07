@@ -157,8 +157,7 @@ public class PlayFieldManager : MonoBehaviour
 
         CameraManagerInstance.UpdateCamera(ActivePlayField);
 
-        CheckForNewHappyCards();
-        CheckForNewCannotBeCompletedCards();
+        ActivePlayField.UpdateCardVisuals();
         ActivePlayField.SetPlayableSpaces();
         UpdateScoreLabels();
 
@@ -224,22 +223,6 @@ public class PlayFieldManager : MonoBehaviour
         }
     }
 
-    void CheckForNewHappyCards()
-    {
-        foreach (PlayingCard currentCard in ActivePlayField.GetNewlyHappyCards())
-        {
-            currentCard.SetHappiness(true);
-        }
-    }
-
-    void CheckForNewCannotBeCompletedCards()
-    {
-        foreach (PlayingCard currentCard in ActivePlayField.GetNewlyNotCompleteableCards())
-        {
-            currentCard.SetIncompleteness(true);
-        }
-    }
-
     void UpdateScoreLabels()
     {
         TotalCardFaceValue.text = (previousPlayfieldTotalFaceValue + ActivePlayField.GetIncompleteCards().Sum(card => card.RepresentingCard.FaceValue)).ToString();
@@ -279,9 +262,8 @@ public class PlayFieldManager : MonoBehaviour
 
         ActivePlayField = ObjectPooler.GetObject<PlayFieldRuntime>(PlayFieldRuntimePF, transform);
         ActivePlayField.SeedInitialCard(seedCard);
-        
-        CheckForNewHappyCards();
-        CheckForNewCannotBeCompletedCards();
+
+        ActivePlayField.UpdateCardVisuals();
         ActivePlayField.SetPlayableSpaces();
         UpdateScoreLabels();
     }
@@ -322,6 +304,7 @@ public class PlayFieldManager : MonoBehaviour
         CameraManagerInstance.UpdateCamera(ActivePlayField);
         ResetCardsInHandPosition();
         UpdateScoreLabels();
+        ActivePlayField.UpdateCardVisuals();
     }
 
     void UndoAction(GameAction action)

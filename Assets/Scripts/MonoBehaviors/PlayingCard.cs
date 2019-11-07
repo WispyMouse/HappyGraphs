@@ -28,6 +28,8 @@ public class PlayingCard : MonoBehaviour
     public SpriteRenderer BlinkOverlaySpriteRenderer;
     Color blinkTargetColor { get; set; }
 
+    int NeighborCount { get; set; } = 0;
+
     public void SetCardData(CardData toCardData)
     {
         RepresentingCard = toCardData;
@@ -133,6 +135,10 @@ public class PlayingCard : MonoBehaviour
         SetIncompleteness(false);
         SetHappiness(false);
         CoordinateSet = false;
+        NeighborCount = 0;
+        ShowingActualValue = false;
+
+        UpdateVisual();
     }
 
     public void StartBlinking(BlinkType toType)
@@ -182,14 +188,20 @@ public class PlayingCard : MonoBehaviour
             else if (CannotBeCompleted)
             {
                 CardSprite.color = Color.gray;
-                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
+                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1 - NeighborCount];
             }
             else
             {
                 CardSprite.color = Color.white;
-                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
+                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1 - NeighborCount];
 
             }
         }
+    }
+
+    public void SetNeighborCount(int count)
+    {
+        NeighborCount = count;
+        UpdateVisual();
     }
 }
