@@ -68,7 +68,7 @@ public class PlayFieldManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.End))
         {
             Debug.Log($"Deck Seed is {DeckSeed}");
-            List<GameAction> actionsToTake = new SolutionEngine().FindSolution(ActivePlayField.CurrentPlayField, deck, new List<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
+            List<GameAction> actionsToTake = SolutionEngine.FindSolution(ActivePlayField.CurrentPlayField, deck, new List<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
 
             if (actionsToTake != null)
             {

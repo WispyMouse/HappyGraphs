@@ -4,22 +4,15 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class SolutionEngine
+public static class SolutionEngine
 {
-    static List<GameAction> solution { get; set; }
-    static System.Diagnostics.Stopwatch SolutionTimeStopwatch { get; set; }
-
-    public List<GameAction> FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
+    public static List<GameAction> FindSolution(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
     {
-        solution = null;
-
         if (activePlayField.AreAnyCoordinatesAreIncompleteable())
         {
             Debug.Log("The current playing field already has incompleteable cards.");
             return null;
         }
-
-        SolutionTimeStopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         StringBuilder deckString = new StringBuilder();
         Debug.Log("The deck is:");
@@ -32,7 +25,7 @@ public class SolutionEngine
 
         Debug.Log(deckString.ToString().TrimEnd(' ').TrimEnd(','));
 
-        SolutionIteration(activePlayField, deck, hand, new List<GameAction>());
+        List<GameAction> solution = SolutionIteration(activePlayField, deck, hand, new List<GameAction>());
 
         if (solution == null)
         {
@@ -47,17 +40,12 @@ public class SolutionEngine
                 Debug.Log(actionsTaken.GetActionText());
             }
         }
-        SolutionTimeStopwatch.Stop();
+
         return solution;
     }
 
-    void SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand, List<GameAction> gameActionsTaken)
+    static List<GameAction> SolutionIteration(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand, List<GameAction> gameActionsTaken)
     {
-        if (solution != null)
-        {
-            return;
-        }
-
         List<GameAction> consideredActions = AllPossibleActions(activePlayField, hand);
 
         foreach (GameAction validAction in consideredActions)
@@ -82,18 +70,23 @@ public class SolutionEngine
             {
                 if (resultedPlayField.CountOfCardsThatAreNotHappy() == 0)
                 {
-                    solution = resultActions;
-                    return;
+                    return resultActions;
                 }
             }
             else if (CanPossiblyPerfectClear(resultedPlayField, resultedDeck, resultedHand))
             {
-                SolutionIteration(resultedPlayField, resultedDeck, resultedHand, resultActions);
+                List<GameAction> results = SolutionIteration(resultedPlayField, resultedDeck, resultedHand, resultActions);
+                if (results != null)
+                {
+                    return results;
+                }
             }
         }
+
+        return null;
     }
 
-    List<GameAction> AllPossibleActions(PlayFieldData activePlayField, List<CardData> hand)
+    static List<GameAction> AllPossibleActions(PlayFieldData activePlayField, List<CardData> hand)
     {
         List<GameAction> possibleActions = new List<GameAction>();
         HashSet<Coordinate> possibleCoordinates = activePlayField.GetValidPlayableSpaces();
@@ -112,7 +105,7 @@ public class SolutionEngine
         return possibleActions;
     }
 
-    void TakeAction(GameAction toTake, PlayFieldData startingPlayField, Stack<CardData> startingDeck, List<CardData> startingHand,
+    static void TakeAction(GameAction toTake, PlayFieldData startingPlayField, Stack<CardData> startingDeck, List<CardData> startingHand,
         out PlayFieldData resultPlayField, out Stack<CardData> resultDeck, out List<CardData> resultHand, out bool resultsInIncompleteness)
     {
         resultPlayField = startingPlayField.CloneData();
@@ -147,7 +140,7 @@ public class SolutionEngine
         }
     }
 
-    bool CanPossiblyPerfectClear(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
+    static bool CanPossiblyPerfectClear(PlayFieldData activePlayField, Stack<CardData> deck, List<CardData> hand)
     {
         int totalPlaybleSum = deck.Sum(card => card.FaceValue) + hand.Sum(card => card.FaceValue);
         int remainingNeededNeighbors = activePlayField.NeededNeighbors();
