@@ -8,7 +8,6 @@ using UnityEngine.UI;
 enum SeedMode { Random, Set }
 public class PlayFieldManager : MonoBehaviour
 {
-    public SolutionEngine SolutionEngineInstance;
     public PlayFieldRuntime PlayFieldRuntimePF;
     public PlayingCard PlayingCardPF;
 
@@ -69,7 +68,7 @@ public class PlayFieldManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.End))
         {
             Debug.Log($"Deck Seed is {DeckSeed}");
-            List<GameAction> actionsToTake = SolutionEngineInstance.FindSolution(ActivePlayField.CurrentPlayField, deck, new List<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
+            List<GameAction> actionsToTake = new SolutionEngine().FindSolution(ActivePlayField.CurrentPlayField, deck, new List<CardData>(cardsInHand.Select(card => card.RepresentingCard)));
 
             if (actionsToTake != null)
             {

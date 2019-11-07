@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class SolutionEngine : MonoBehaviour
+public class SolutionEngine
 {
     static List<GameAction> solution { get; set; }
     static System.Diagnostics.Stopwatch SolutionTimeStopwatch { get; set; }
