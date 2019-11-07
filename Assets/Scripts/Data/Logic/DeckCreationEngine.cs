@@ -41,22 +41,30 @@ public static class DeckCreationEngine
         List<CardData> originalDeck = toShuffle.ToList();
         toShuffle.Clear();
 
-        // If we stack the deck, it means the last card in the deck should be the lowest value possible, preferably an Ace
+        System.Random seededRandom = new System.Random(seed);
+
+        // If we stack the deck, it means the last card in the deck should be the lowest value possible, preferably a 1
         // This is so that you don't get stuck in a situation where the last card needs more connections than you could have reasonably prepared for
+        // The next card is either a 1 or a 2, the next is either a 1 or a 2 or a 3...
         if (rules.StackDeck)
         {
             int maxCardRank = originalDeck.Max(value => value.FaceValue);
-            int lastMovedCard = 0;
-            while (lastMovedCard < maxCardRank)
+            int lastCardRank = 1;
+
+            while (lastCardRank < maxCardRank)
             {
-                CardData lowestCard = originalDeck.Where(card => card.FaceValue > lastMovedCard).OrderBy(card => card.FaceValue).First();
-                lastMovedCard = lowestCard.FaceValue;
-                originalDeck.Remove(lowestCard);
-                toShuffle.Push(lowestCard);
+                IEnumerable<CardData> matchingCards = originalDeck.Where(card => card.FaceValue <= lastCardRank).OrderBy(card => seededRandom.Next(0, 10000));
+
+                if (matchingCards.Any())
+                {
+                    CardData usedCard = matchingCards.First();
+                    originalDeck.Remove(usedCard);
+                    toShuffle.Push(usedCard);
+                }
+
+                lastCardRank++;
             }
         }
-
-        System.Random seededRandom = new System.Random(seed);
 
         foreach (CardData card in originalDeck.OrderBy(card => seededRandom.Next(0, 10000)))
         {
