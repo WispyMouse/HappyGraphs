@@ -85,16 +85,25 @@ public static class DeckCreationEngine
     public static Stack<CardData> PerfectSolveableShuffle(Stack<CardData> toShuffle, GameRules rules, int seed)
     {
         List<CardData> originalDeck = toShuffle.ToList();
-        Stack<CardData> placedCards = new Stack<CardData>();
+        Queue<CardData> placedCards = new Queue<CardData>();
 
         System.Random seededRandom = new System.Random(seed);
 
         PlayFieldData activePlayField = new PlayFieldData();
 
-        return PerfectSolveableShuffleIteration(originalDeck, placedCards, rules, seededRandom, activePlayField);
+        Queue<CardData> cardOrder = PerfectSolveableShuffleIteration(originalDeck, placedCards, rules, seededRandom, activePlayField);
+
+        if (cardOrder != null)
+        {
+            return new Stack<CardData>(new Stack<CardData>(cardOrder));
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    static Stack<CardData> PerfectSolveableShuffleIteration(List<CardData> remainingCards, Stack<CardData> placedCards, GameRules rules, System.Random seededRandom, PlayFieldData activePlayField)
+    static Queue<CardData> PerfectSolveableShuffleIteration(List<CardData> remainingCards, Queue<CardData> placedCards, GameRules rules, System.Random seededRandom, PlayFieldData activePlayField)
     {
         foreach (CardData nextCard in RandomizeOptions(remainingCards, seededRandom))
         {
@@ -111,16 +120,23 @@ public static class DeckCreationEngine
                     newRemaining.Remove(nextCard);
 
                     // Frustratingly, creating a new stack creates that stack upsidedown! Reverse it, again
-                    Stack<CardData> newPlacedCards = new Stack<CardData>(new Stack<CardData>(placedCards));
-                    newPlacedCards.Push(nextCard);
+                    Queue<CardData> newPlacedCards = new Queue<CardData>(new Queue<CardData>(placedCards));
+                    newPlacedCards.Enqueue(nextCard);
 
                     if (newRemaining.Count == 0)
                     {
+                        PrintBoardState(clonedField);
                         return newPlacedCards;
                     }
-                    else
+                    else if (CanPossiblyPerfectClear(clonedField, newRemaining))
                     {
-                        Stack<CardData> stackResult = PerfectSolveableShuffleIteration(newRemaining, newPlacedCards, rules, seededRandom, clonedField);
+                        if (clonedField.CountOfCardsThatAreNotHappy() == 0)
+                        {
+                            Debug.Log("**CREATES A NEW FIELD**");
+                            clonedField = new PlayFieldData();
+                        }
+
+                        Queue<CardData> stackResult = PerfectSolveableShuffleIteration(newRemaining, newPlacedCards, rules, seededRandom, clonedField);
 
                         if (stackResult != null)
                         {
@@ -162,5 +178,26 @@ public static class DeckCreationEngine
         }
 
         return orderedOptions;
+    }
+
+    static bool CanPossiblyPerfectClear(PlayFieldData activePlayField, IEnumerable<CardData> deck)
+    {
+        int totalPlaybleSum = deck.Sum(card => card.FaceValue);
+        int remainingNeededNeighbors = activePlayField.NeededNeighbors();
+
+        if (totalPlaybleSum < remainingNeededNeighbors)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    static void PrintBoardState(PlayFieldData activePlayField)
+    {
+        foreach (Coordinate coordinate in activePlayField.PlayedCards.Keys)
+        {
+            Debug.Log($"{coordinate} - {activePlayField.PlayedCards[coordinate].FaceValue}");
+        }
     }
 }
