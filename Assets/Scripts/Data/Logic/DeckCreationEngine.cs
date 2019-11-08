@@ -33,10 +33,18 @@ public static class DeckCreationEngine
             }
         }
 
-        return PerfectSolveableShuffleDeck(newDeck, rules, seed);
+        Stack<CardData> deck = PerfectSolveableShuffle(newDeck, rules, seed);
+
+        if (deck == null)
+        {
+            Debug.Log("Unable to create a perfect solveable deck using this rule set.");
+            deck = SimpleShuffle(newDeck, rules, seed);
+        }
+
+        return deck;
     }
 
-    public static Stack<CardData> PerfectSolveableShuffleDeck(Stack<CardData> toShuffle, GameRules rules, int seed)
+    public static Stack<CardData> SimpleShuffle(Stack<CardData> toShuffle, GameRules rules, int seed)
     {
         List<CardData> originalDeck = toShuffle.ToList();
         toShuffle.Clear();
@@ -72,5 +80,87 @@ public static class DeckCreationEngine
         }
 
         return toShuffle;
+    }
+
+    public static Stack<CardData> PerfectSolveableShuffle(Stack<CardData> toShuffle, GameRules rules, int seed)
+    {
+        List<CardData> originalDeck = toShuffle.ToList();
+        Stack<CardData> placedCards = new Stack<CardData>();
+
+        System.Random seededRandom = new System.Random(seed);
+
+        PlayFieldData activePlayField = new PlayFieldData();
+
+        return PerfectSolveableShuffleIteration(originalDeck, placedCards, rules, seededRandom, activePlayField);
+    }
+
+    static Stack<CardData> PerfectSolveableShuffleIteration(List<CardData> remainingCards, Stack<CardData> placedCards, GameRules rules, System.Random seededRandom, PlayFieldData activePlayField)
+    {
+        foreach (CardData nextCard in RandomizeOptions(remainingCards, seededRandom))
+        {
+            HashSet<Coordinate> validSpots = ValidCoordinatesToPlaceCard(nextCard, activePlayField);
+
+            foreach (Coordinate spot in RandomizeOptions(validSpots, seededRandom))
+            {
+                PlayFieldData clonedField = activePlayField.CloneData();
+                clonedField.SetCard(nextCard, spot);
+
+                if (!clonedField.AreAnyCoordinatesAreIncompleteable())
+                {
+                    List<CardData> newRemaining = new List<CardData>(remainingCards);
+                    newRemaining.Remove(nextCard);
+
+                    // Frustratingly, creating a new stack creates that stack upsidedown! Reverse it, again
+                    Stack<CardData> newPlacedCards = new Stack<CardData>(new Stack<CardData>(placedCards));
+                    newPlacedCards.Push(nextCard);
+
+                    if (newRemaining.Count == 0)
+                    {
+                        return newPlacedCards;
+                    }
+                    else
+                    {
+                        Stack<CardData> stackResult = PerfectSolveableShuffleIteration(newRemaining, newPlacedCards, rules, seededRandom, clonedField);
+
+                        if (stackResult != null)
+                        {
+                            return stackResult;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    static HashSet<Coordinate> ValidCoordinatesToPlaceCard(CardData toPlace, PlayFieldData activePlayField)
+    {
+        HashSet<Coordinate> validCoordinates = new HashSet<Coordinate>();
+
+        foreach (Coordinate playableSpace in activePlayField.GetValidPlayableSpaces())
+        {
+            if (activePlayField.IsSpotValidForCard(toPlace, playableSpace))
+            {
+                validCoordinates.Add(playableSpace);
+            }
+        }
+
+        return validCoordinates;
+    }
+
+    static Queue<T> RandomizeOptions<T>(IEnumerable<T> options, System.Random seededRandom)
+    {
+        List<T> remainingOptions = new List<T>(options);
+        Queue<T> orderedOptions = new Queue<T>();
+
+        while (remainingOptions.Count > 0)
+        {
+            T selectedOption = remainingOptions.OrderBy(option => seededRandom.Next(0, 10000)).First();
+            remainingOptions.RemoveAll(option => option.Equals(selectedOption));
+            orderedOptions.Enqueue(selectedOption);
+        }
+
+        return orderedOptions;
     }
 }

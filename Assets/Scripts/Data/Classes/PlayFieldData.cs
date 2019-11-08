@@ -147,6 +147,12 @@ public class PlayFieldData
             return ValidPlayableSpacesCache;
         }
 
+        if (PlayedCards.Count == 0)
+        {
+            ValidPlayableSpacesCache = new HashSet<Coordinate>() { new Coordinate(0, 0) };
+            return ValidPlayableSpacesCache;
+        }
+
         // For every played card, add every neighboring coordinate to a HashSet (no duplicates)
         HashSet<Coordinate> neighborsOfHappyCoordinates = new HashSet<Coordinate>(GetHappyCoordinates().SelectMany(coordinate => coordinate.GetNeighbors()));
         HashSet<Coordinate> neighborsOfNotHappyCoordinates = new HashSet<Coordinate>(GetNotHappyCoordinates().SelectMany(coordinate => coordinate.GetNeighbors()));
@@ -171,8 +177,7 @@ public class PlayFieldData
         }
 
         ValidPlayableSpacesCache = finalCut;
-
-        return finalCut;
+        return ValidPlayableSpacesCache;
     }
 
     public bool ShouldCoordinateBeIncompletable(Coordinate forCoordinate)
