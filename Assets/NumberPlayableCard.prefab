@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1804374206355145947}
-  - component: {fileID: 8064871068835615465}
   - component: {fileID: -5605972898260574111}
+  - component: {fileID: 8653589864323272602}
   m_Layer: 8
-  m_Name: PlayableCard
+  m_Name: NumberPlayableCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,31 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8064871068835615465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2392672727799550374}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ff9b2c0574821747840c9f137d01a22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CardSprites:
-  - {fileID: -6555575649291838755, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  - {fileID: -1636742031616846006, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  - {fileID: -7557494978891415441, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  - {fileID: 6220208007999549204, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  - {fileID: 15826802184982995, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  - {fileID: -392339144297447032, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  - {fileID: -1030216089005083533, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  - {fileID: 6936632652830989309, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
-  HappySprite: {fileID: 4458593027102674584, guid: 10ef9490e06cfc54ea4555a8b929b06a,
-    type: 3}
-  CardSprite: {fileID: 2691501134619931464}
-  BlinkOverlaySpriteRenderer: {fileID: 9068756462181107076}
 --- !u!61 &-5605972898260574111
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -85,6 +60,31 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.5}
   m_EdgeRadius: 0
+--- !u!114 &8653589864323272602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2392672727799550374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ead62ba713f579a42a37367ed78ebe44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BlinkOverlaySpriteRenderer: {fileID: 9068756462181107076}
+  CardSprites:
+  - {fileID: -6555575649291838755, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: -1636742031616846006, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: -7557494978891415441, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: 6220208007999549204, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: 15826802184982995, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: -392339144297447032, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: -1030216089005083533, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  - {fileID: 6936632652830989309, guid: 10ef9490e06cfc54ea4555a8b929b06a, type: 3}
+  HappySprite: {fileID: 4458593027102674584, guid: 10ef9490e06cfc54ea4555a8b929b06a,
+    type: 3}
+  CardSprite: {fileID: 2691501134619931464}
 --- !u!1 &6412040327075947496
 GameObject:
   m_ObjectHideFlags: 0

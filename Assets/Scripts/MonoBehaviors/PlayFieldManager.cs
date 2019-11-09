@@ -148,7 +148,7 @@ public class PlayFieldManager : MonoBehaviour
 
     PlayingCard GeneratePlayingCard(CardData forCard)
     {
-        PlayingCard newCard = Instantiate(PlayingCardPF, transform);
+        PlayingCard newCard = ObjectPooler.GetObject(PlayingCardPF, transform);
         newCard.SetCardData(forCard);
         return newCard;
     }

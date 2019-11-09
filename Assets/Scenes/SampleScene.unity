@@ -6208,7 +6208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayFieldRuntimePF: {fileID: 4372215536435833473, guid: b506d6c675e6fb841a422713bee30aa6,
     type: 3}
-  PlayingCardPF: {fileID: 8064871068835615465, guid: c3b5f5b2539df764ca635318af5f8207,
+  PlayingCardPF: {fileID: 8653589864323272602, guid: c3b5f5b2539df764ca635318af5f8207,
     type: 3}
   CameraManagerInstance: {fileID: 519420030}
   DeckCountLabel: {fileID: 1392740704}

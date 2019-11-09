@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum DegreesOfSpeed { Instantly, Quickly, Slowly, None }
 public enum BlinkType { None, Happy, Sad }
-public class PlayingCard : MonoBehaviour
+public abstract class PlayingCard : MonoBehaviour
 {
     float QuicklyAnimationSpeed = 18.0f;
     float SlowlyAnimationSpeed = 9.0f;
@@ -12,14 +12,10 @@ public class PlayingCard : MonoBehaviour
     public CardData RepresentingCard { get; private set; }
     public Coordinate OnCoordinate { get; private set; }
 
-    public List<Sprite> CardSprites;
-    public Sprite HappySprite;
-    public SpriteRenderer CardSprite;
-
     public bool CoordinateSet { get; private set; }
     public bool IsHappy { get; private set; }
     public bool CannotBeCompleted { get; private set; }
-    static bool ShowingActualValue { get; set; } = false;
+    protected static bool ShowingActualValue { get; set; } = false;
 
     public Vector3 AnimationTargetLocation { get; private set; }
     public DegreesOfSpeed AnimationSpeed { get; private set; } = DegreesOfSpeed.None;
@@ -28,16 +24,16 @@ public class PlayingCard : MonoBehaviour
     public SpriteRenderer BlinkOverlaySpriteRenderer;
     Color blinkTargetColor { get; set; }
 
-    int NeighborCount { get; set; } = 0;
+    protected int NeighborCount { get; set; } = 0;
 
     public void SetCardData(CardData toCardData)
     {
         RepresentingCard = toCardData;
-        CardSprite.sprite = CardSprites[toCardData.FaceValue - 1];
 
 #if UNITY_EDITOR
         name = $"PlayingCard {toCardData.FaceValue}";
 #endif
+        UpdateVisual();
     }
 
     public void SetCoordinate(Coordinate toCoordinate, DegreesOfSpeed speed = DegreesOfSpeed.Slowly)
@@ -45,7 +41,6 @@ public class PlayingCard : MonoBehaviour
         OnCoordinate = toCoordinate;
         CoordinateSet = true;
         AnimateMovement(toCoordinate.WorldspaceCoordinate, speed);
-        CardSprite.sortingOrder = -1;
 
 #if UNITY_EDITOR
         name = $"PlayingCard {RepresentingCard.FaceValue} {toCoordinate.ToString()}";
@@ -171,33 +166,7 @@ public class PlayingCard : MonoBehaviour
         UpdateVisual();
     }
 
-    void UpdateVisual()
-    {
-        if (ShowingActualValue)
-        {
-            CardSprite.color = Color.white;
-            CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1];
-        }
-        else
-        {
-            if (IsHappy)
-            {
-                CardSprite.color = Color.white;
-                CardSprite.sprite = HappySprite;
-            }
-            else if (CannotBeCompleted)
-            {
-                CardSprite.color = Color.gray;
-                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1 - NeighborCount];
-            }
-            else
-            {
-                CardSprite.color = Color.white;
-                CardSprite.sprite = CardSprites[RepresentingCard.FaceValue - 1 - NeighborCount];
-
-            }
-        }
-    }
+    abstract protected void UpdateVisual();
 
     public void SetNeighborCount(int count)
     {
