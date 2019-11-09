@@ -16,8 +16,9 @@ public class PlayableSpot : MonoBehaviour
     public SpriteRenderer PlayableSpriteRenderer;
     SpotValidity previousStatus { get; set; }
 
-    public HashSet<PlayingCard> WouldMakeHappy { get; set; } = new HashSet<PlayingCard>();
-    public HashSet<PlayingCard> WouldMakeIncompleteable { get; set; } = new HashSet<PlayingCard>();
+    public Dictionary<PlayingCard, int> WouldMakeHappy { get; set; } = new Dictionary<PlayingCard, int>();
+    public Dictionary<PlayingCard, int> WouldMakeIncompleteable { get; set; } = new Dictionary<PlayingCard, int>();
+    public Dictionary<PlayingCard, int> WouldAffectNeighbors { get; set; } = new Dictionary<PlayingCard, int>();
 
     public void SetCoordinate(Coordinate toCoordinate)
     {
@@ -29,16 +30,18 @@ public class PlayableSpot : MonoBehaviour
 #endif
     }
 
-    public void SetWouldEffects(HashSet<PlayingCard> wouldMakeHappy, HashSet<PlayingCard> wouldMakeIncompleteable)
+    public void SetWouldEffects(Dictionary<PlayingCard, int> wouldMakeHappy, Dictionary<PlayingCard, int> wouldMakeIncompleteable, Dictionary<PlayingCard, int> wouldAffectNeighbors)
     {
         WouldMakeHappy = wouldMakeHappy;
         WouldMakeIncompleteable = wouldMakeIncompleteable;
+        WouldAffectNeighbors = wouldAffectNeighbors;
     }
 
     public void ClearWouldEffects()
     {
         WouldMakeHappy.Clear();
         WouldMakeIncompleteable.Clear();
+        WouldAffectNeighbors.Clear();
     }
 
     public void SetValidity(SpotValidity toState)
@@ -76,28 +79,38 @@ public class PlayableSpot : MonoBehaviour
                     break;
             }
 
-            foreach (PlayingCard curCard in WouldMakeHappy)
+            foreach (PlayingCard curCard in WouldAffectNeighbors.Keys)
             {
-                curCard.StartBlinking(BlinkType.Happy);
+                curCard.HighlightState(BlinkType.None, WouldAffectNeighbors[curCard]);
             }
 
-            foreach (PlayingCard curCard in WouldMakeIncompleteable)
+            foreach (PlayingCard curCard in WouldMakeHappy.Keys)
             {
-                curCard.StartBlinking(BlinkType.Sad);
+                curCard.HighlightState(BlinkType.Happy, WouldMakeHappy[curCard]);
+            }
+
+            foreach (PlayingCard curCard in WouldMakeIncompleteable.Keys)
+            {
+                curCard.HighlightState(BlinkType.Sad, WouldMakeIncompleteable[curCard]);
             }
         }
         else
         {
             SetValidity(previousStatus);
 
-            foreach (PlayingCard curCard in WouldMakeHappy)
+            foreach (PlayingCard curCard in WouldAffectNeighbors.Keys)
             {
-                curCard.StartBlinking(BlinkType.None);
+                curCard.HighlightState(BlinkType.None);
             }
 
-            foreach (PlayingCard curCard in WouldMakeIncompleteable)
+            foreach (PlayingCard curCard in WouldMakeHappy.Keys)
             {
-                curCard.StartBlinking(BlinkType.None);
+                curCard.HighlightState(BlinkType.None);
+            }
+
+            foreach (PlayingCard curCard in WouldMakeIncompleteable.Keys)
+            {
+                curCard.HighlightState(BlinkType.None);
             }
         }
     }

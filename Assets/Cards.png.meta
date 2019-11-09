@@ -32,6 +32,9 @@ TextureImporter:
   - first:
       213: 7973002580078367290
     second: OverlayCard
+  - first:
+      213: -7050129638846038990
+    second: Empty
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -337,7 +340,7 @@ TextureImporter:
         width: 32
         height: 49
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -345,6 +348,27 @@ TextureImporter:
       bones: []
       spriteID: 6d4394e81ab0a2040806e154b2cf2137
       internalID: 7973002580078367290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Empty
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cdceee988932824b8c1d67491933e29
+      internalID: -7050129638846038990
       vertices: []
       indices: 
       edges: []

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class NumberPlayingCard : PlayingCard
 {
-    public List<Sprite> CardSprites;
     public Sprite HappySprite;
     public SpriteRenderer CardSprite;
 

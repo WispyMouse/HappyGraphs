@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0fdedd11bbdf4b4fb8f145ebfba06c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayingCardPF: {fileID: 8653589864323272602, guid: c3b5f5b2539df764ca635318af5f8207,
+  PlayingCardPF: {fileID: 3103638013241334264, guid: 77c4b9b705d3e1f4db2bb98d0a7fc973,
     type: 3}
   PlayableSpotPF: {fileID: 4820855620055150978, guid: d47edbc2c4035b548bc4d5e1ac9205f1,
     type: 3}

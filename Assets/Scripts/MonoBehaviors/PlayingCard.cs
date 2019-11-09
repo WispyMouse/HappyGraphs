@@ -6,6 +6,8 @@ public enum DegreesOfSpeed { Instantly, Quickly, Slowly, None }
 public enum BlinkType { None, Happy, Sad }
 public abstract class PlayingCard : MonoBehaviour
 {
+    public List<Sprite> CardSprites;
+
     float QuicklyAnimationSpeed = 18.0f;
     float SlowlyAnimationSpeed = 9.0f;
 
@@ -58,6 +60,12 @@ public abstract class PlayingCard : MonoBehaviour
     public void SetHappiness(bool isHappy)
     {
         IsHappy = isHappy;
+
+        if (isHappy)
+        {
+            NeighborCount = RepresentingCard.FaceValue;
+        }
+
         UpdateVisual();
     }
 
@@ -133,10 +141,21 @@ public abstract class PlayingCard : MonoBehaviour
         NeighborCount = 0;
         ShowingActualValue = false;
 
+        ResetVisuals();
         UpdateVisual();
     }
 
-    public void StartBlinking(BlinkType toType)
+    protected virtual void ResetVisuals()
+    {
+        // Empty by default
+    }
+
+    public void HighlightState(BlinkType toType)
+    {
+        HighlightState(toType, NeighborCount);
+    }
+
+    public virtual void HighlightState(BlinkType toType, int possibleNeighbors)
     {
         CurBlinkType = toType;
         BlinkOverlaySpriteRenderer.color = Color.white;
@@ -158,6 +177,8 @@ public abstract class PlayingCard : MonoBehaviour
                 BlinkOverlaySpriteRenderer.color = blinkTargetColor;
                 break;
         }
+
+        UpdateVisual();
     }
 
     public void ActualValueToggle(bool toState)
