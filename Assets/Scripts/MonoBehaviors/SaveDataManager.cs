@@ -171,7 +171,7 @@ public class SaveDataManager : MonoBehaviour
                 return defaultMatchingRule;
             }
 
-            GameRules matchingRules = savedRules.FirstOrDefault(rules => rules.RuleSetGUID == lastUsedRuleSetGuid);
+            GameRules matchingRules = GetSavedRuleSets().FirstOrDefault(rules => rules.RuleSetGUID == lastUsedRuleSetGuid);
 
             if (matchingRules != null)
             {

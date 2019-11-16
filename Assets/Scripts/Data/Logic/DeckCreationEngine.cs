@@ -33,6 +33,8 @@ public static class DeckCreationEngine
             }
         }
 
+        return SimpleShuffle(newDeck, rules, seed);
+
         Stack<CardData> deck = PerfectSolveableShuffle(newDeck, rules, seed);
 
         if (deck == null)

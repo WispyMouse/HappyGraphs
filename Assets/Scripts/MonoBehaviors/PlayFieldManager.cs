@@ -12,6 +12,7 @@ public class PlayFieldManager : MonoBehaviour
     public PlayingCard PlayingCardPF;
 
     public CameraManager CameraManagerInstance;
+    public LoadingScreenDialogWindow LoadingScreenDialogWindowInstance;
 
     public Text DeckCountLabel;
     public Text TotalCardFaceValue;
@@ -42,6 +43,8 @@ public class PlayFieldManager : MonoBehaviour
 
     private void Start()
     {
+        LoadingScreenDialogWindowInstance.OpenDialog();
+
         if (DeckSeed == -1 || ActiveSeedMode == SeedMode.Random)
         {
             DeckSeed = Random.Range(1000, 9999);
@@ -61,6 +64,8 @@ public class PlayFieldManager : MonoBehaviour
 
         DealToPlayer(false);
         UpdateSeedPanel();
+
+        LoadingScreenDialogWindowInstance.CloseDialog();
     }
 
     private void Update()
