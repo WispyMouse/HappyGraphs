@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public static class DeckCreationEngine
 {
@@ -33,6 +34,18 @@ public static class DeckCreationEngine
             {
                 newDeck.Push(new CardData(rank));
             }
+        }
+
+        UnityWebRequest request = UnityWebRequest.Get("https://wispymouse.net/HappyGraphs/GetHelloWorld/");
+        yield return request.SendWebRequest();
+
+        if (request.isNetworkError || request.isHttpError)
+        {
+            Debug.Log(request.error);
+        }
+        else
+        {
+            Debug.Log(request.downloadHandler.text);
         }
 
         yield return new WaitForSeconds(1f);
