@@ -5,21 +5,21 @@ using UnityEngine.UI;
 
 public class RulePresetSelector : MonoBehaviour
 {
-    GameRulesManager GameRulesManagerInstance { get; set; }
+    RulesDialogWindow RulesDialogWindowInstance { get; set; }
     public GameRules RepresentedRules { get; set; }
     public Button SelectionButton;
     public Text RulesNameLabel;
 
     public Image SelectionArrowImage;
 
-    public void SetRepresentedRules(GameRules rulesData, GameRulesManager gameRulesManagerInstance)
+    public void SetRepresentedRules(GameRules rulesData, RulesDialogWindow rulesDialogWindowInstance)
     {
-        GameRulesManagerInstance = gameRulesManagerInstance;
+        RulesDialogWindowInstance = rulesDialogWindowInstance;
         RepresentedRules = rulesData;
         RulesNameLabel.text = rulesData.RuleSetName;
 
         SelectionButton.onClick.RemoveAllListeners();
-        SelectionButton.onClick.AddListener(() => { GameRulesManagerInstance.SetRulesFromPreset(RepresentedRules); });
+        SelectionButton.onClick.AddListener(() => { RulesDialogWindowInstance.SetRulesFromPreset(RepresentedRules); });
     }
 
     public void SetHighlightedState(bool toState)
