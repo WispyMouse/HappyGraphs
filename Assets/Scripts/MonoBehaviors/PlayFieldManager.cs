@@ -43,6 +43,17 @@ public class PlayFieldManager : MonoBehaviour
 
     private void Start()
     {
+        TotalCardFaceValue.text = "0";
+        IncompleteCardsValue.text = "0";
+        SatisfiedCountValue.text = "0";
+        SatisfiedFaceValue.text = "0";
+        UpdateSeedPanel();
+
+        StartCoroutine(StartupSequence());
+    }
+
+    IEnumerator StartupSequence()
+    {
         LoadingScreenDialogWindowInstance.OpenDialog();
 
         if (DeckSeed == -1 || ActiveSeedMode == SeedMode.Random)
@@ -50,20 +61,16 @@ public class PlayFieldManager : MonoBehaviour
             DeckSeed = Random.Range(1000, 9999);
         }
 
-        deck = DeckCreationEngine.GenerateDeck(GameRulesManager.ActiveGameRules, DeckSeed);
+        yield return DeckCreationEngine.GetDeckFromWeb(GameRulesManager.ActiveGameRules, DeckSeed);
+        deck = DeckCreationEngine.LastGeneratedDeck;
 
         GameRulesManager.ActiveGameRules.AdjustHandSizeRule(deck.Count);
 
-        TotalCardFaceValue.text = "0";
-        IncompleteCardsValue.text = "0";
-        SatisfiedCountValue.text = "0";
-        SatisfiedFaceValue.text = "0";
         totalDeckSize = deck.Count;
         totalDeckFaceValue = deck.Sum(card => card.FaceValue);
         NewPlayingField(false);
 
         DealToPlayer(false);
-        UpdateSeedPanel();
 
         LoadingScreenDialogWindowInstance.CloseDialog();
     }

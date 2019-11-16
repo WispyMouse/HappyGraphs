@@ -5,7 +5,9 @@ using UnityEngine;
 
 public static class DeckCreationEngine
 {
-    public static Stack<CardData> GenerateDeck(GameRules rules, int seed)
+    public static Stack<CardData> LastGeneratedDeck { get; set; }
+
+    public static IEnumerator GetDeckFromWeb(GameRules rules, int seed)
     {
         Stack<CardData> newDeck = new Stack<CardData>();
 
@@ -33,7 +35,38 @@ public static class DeckCreationEngine
             }
         }
 
-        return SimpleShuffle(newDeck, rules, seed);
+        yield return new WaitForSeconds(1f);
+
+        LastGeneratedDeck = SimpleShuffle(newDeck, rules, seed);
+    }
+
+    public static Stack<CardData> GenerateDeck(GameRules rules, int seed)
+    {
+        Stack<CardData> newDeck = new Stack<CardData>();
+
+        int maxCardValue;
+
+        switch (rules.GridTypeRule)
+        {
+            default:
+            case GridType.FourWay:
+                maxCardValue = 4;
+                break;
+            case GridType.SixWay:
+                maxCardValue = 6;
+                break;
+            case GridType.EightWay:
+                maxCardValue = 8;
+                break;
+        }
+
+        for (int rank = 1; rank <= maxCardValue; rank++)
+        {
+            for (int cardCount = 0; cardCount < rules.GetCardsPerRank(rank); cardCount++)
+            {
+                newDeck.Push(new CardData(rank));
+            }
+        }
 
         Stack<CardData> deck = PerfectSolveableShuffle(newDeck, rules, seed);
 

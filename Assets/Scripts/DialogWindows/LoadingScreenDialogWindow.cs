@@ -12,6 +12,11 @@ public class LoadingScreenDialogWindow : DialogWindow
     float loadingTicker { get; set; } = 0;
     int loadingTickerLevel { get; set; } = 0;
 
+    protected override void DialogOpened()
+    {
+        UpdateLoadingText();
+    }
+
     private void Update()
     {
         if (IsOpen)
@@ -23,20 +28,25 @@ public class LoadingScreenDialogWindow : DialogWindow
                 loadingTickerLevel = (loadingTickerLevel + 1) % 4;
                 loadingTicker -= .4f;
 
-                StringBuilder loadingTicks = new StringBuilder();
-
-                for (int ii = 0; ii < loadingTickerLevel; ii++)
-                {
-                    if (loadingTicks.Length > 0)
-                    {
-                        loadingTicks.Append(" ");
-                    }
-
-                    loadingTicks.Append(".");
-                }
-
-                LoadingText.text = $"Loading\r\n{loadingTicks.ToString()}";
+                UpdateLoadingText();
             }
         }
+    }
+
+    void UpdateLoadingText()
+    {
+        StringBuilder loadingTicks = new StringBuilder();
+
+        for (int ii = 0; ii < loadingTickerLevel; ii++)
+        {
+            if (loadingTicks.Length > 0)
+            {
+                loadingTicks.Append(" ");
+            }
+
+            loadingTicks.Append(".");
+        }
+
+        LoadingText.text = $"Loading\r\n{loadingTicks.ToString()}";
     }
 }
