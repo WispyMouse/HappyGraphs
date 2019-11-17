@@ -7,77 +7,43 @@ using UnityEngine;
 public class CoordinateCachingManager : MonoBehaviour
 {
     static Dictionary<Coordinate, HashSet<Coordinate>> NeighborsCache { get; set; } = new Dictionary<Coordinate, HashSet<Coordinate>>();
+    static Dictionary<Coordinate, Vector3> PositionCache { get; set; } = new Dictionary<Coordinate, Vector3>();
 
     void Awake()
     {
-        NeighborsCache.Clear();
+        CoordinateCache.ClearCache();
+        PositionCache.Clear();
     }
 
-    public static HashSet<Coordinate> GetNeighbors(Coordinate forCoordinate)
+    public static Vector3 GetWorldspacePosition(Coordinate forCoordinate)
     {
-        HashSet<Coordinate> neighbors;
+        Vector3 position;
 
-        if (NeighborsCache.TryGetValue(forCoordinate, out neighbors))
+        if (PositionCache.TryGetValue(forCoordinate, out position))
         {
-            return neighbors;
+            return position;
         }
 
-        neighbors = GenerateNeighbors(forCoordinate, GameRulesManager.ActiveGameRules.GridTypeRule);
-
-        NeighborsCache.Add(forCoordinate, neighbors);
-
-        return neighbors;
-    }
-
-    static HashSet<Coordinate> GenerateNeighbors(Coordinate forCoordinate, GridType forType)
-    {
-        switch (forType)
+        switch (GameRulesManager.ActiveGameRules.GridTypeRule)
         {
             default:
-            case GridType.FourWay:
-                return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y), new Coordinate(forCoordinate.X + 1, forCoordinate.Y),
-                    new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1) };
+                position = new Vector3((float)forCoordinate.X, (float)forCoordinate.Y * 1.5f);
+                break;
             case GridType.SixWay:
-                if (forCoordinate.X % 2 == 0)
-                {
-                    return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),
-                    new Coordinate(forCoordinate.X + 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X + 1, forCoordinate.Y),
-                new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y)};
-                }
-                else
-                {
-                    return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),
-                    new Coordinate(forCoordinate.X + 1, forCoordinate.Y), new Coordinate(forCoordinate.X + 1, forCoordinate.Y + 1),
-                new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y + 1)};
-                }
-            case GridType.EightWay:
-                return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y),
-                    new Coordinate(forCoordinate.X - 1, forCoordinate.Y + 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),
-                    new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X + 1, forCoordinate.Y - 1),
-                    new Coordinate(forCoordinate.X + 1, forCoordinate.Y), new Coordinate(forCoordinate.X + 1, forCoordinate.Y + 1)};
+                position = new Vector3((float)forCoordinate.X, (float)forCoordinate.Y * 1.5f + (Mathf.Abs(forCoordinate.X) % 2 == 1 ? .75f : 0f));
+                break;
         }
+
+        PositionCache.Add(forCoordinate, position);
+
+        return position;
     }
+}
 
-    public static HashSet<Coordinate> GetNeighborsInRadius(Coordinate forCoordinate, int radius)
+public static class CoordinateExtensions
+{
+    public static Vector3 GetWorldspacePosition(this Coordinate forCoordinate)
     {
-        HashSet<Coordinate> neighbors = new HashSet<Coordinate>();
-        HashSet<Coordinate> frontier = new HashSet<Coordinate>() { forCoordinate };
-
-        for (int ii = 0; ii < radius; ii++)
-        {
-            HashSet<Coordinate> newFrontier = new HashSet<Coordinate>();
-
-            foreach (Coordinate curCoordinate in frontier)
-            {
-                newFrontier.UnionWith(GetNeighbors(curCoordinate));
-            }
-
-            neighbors.UnionWith(frontier);
-            frontier = newFrontier;
-        }
-
-        neighbors.UnionWith(frontier);
-
-        return neighbors;
+        return CoordinateCachingManager.GetWorldspacePosition(forCoordinate);
     }
 }

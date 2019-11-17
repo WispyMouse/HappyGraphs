@@ -1,18 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
-public enum GridType { FourWay, SixWay, EightWay }
 public class GameRules
 {
-    // This is a string rather than a System.Guid, because FastJSON (the library used for serialization) seems to serialize Guids oddly
     public string RuleSetGUID;
 
     public string RuleSetName = "New Rule Set";
     public Dictionary<int, int> CardsPerRankRules = new Dictionary<int, int>();
     public int HandSizeRule = 1;
-    public GridType GridTypeRule  = GridType.FourWay;
+    public GridType GridTypeRule = GridType.FourWay;
     public bool StackDeck = true;
 
     public bool IsDefaultRule { get; set; }
@@ -43,7 +38,7 @@ public class GameRules
 
     public void AdjustHandSizeRule(int deckSize)
     {
-        HandSizeRule = Mathf.Min(HandSizeRule, deckSize - 1);
+        HandSizeRule = System.Math.Min(HandSizeRule, deckSize - 1);
     }
 
     public int GetCardsPerRank(int rank)
@@ -61,7 +56,7 @@ public class GameRules
 
     public void SetCardsPerRank(int rank, int toValue)
     {
-        toValue = Mathf.Max(0, toValue);
+        toValue = System.Math.Max(0, toValue);
 
         if (CardsPerRankRules.ContainsKey(rank))
         {

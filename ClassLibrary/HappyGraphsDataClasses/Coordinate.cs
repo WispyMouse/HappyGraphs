@@ -1,33 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public struct Coordinate
 {
     public int X;
     public int Y;
 
-    public Vector3 WorldspaceCoordinate;
-
     public Coordinate(int inX, int inY)
     {
         this.X = inX;
         this.Y = inY;
-
-        switch (GameRulesManager.ActiveGameRules.GridTypeRule)
-        {
-            default:
-                WorldspaceCoordinate = new Vector3((float)X, (float)Y * 1.5f);
-                break;
-            case GridType.SixWay:
-                WorldspaceCoordinate = new Vector3((float)X, (float)Y * 1.5f + (Mathf.Abs(X) % 2 == 1 ? .75f : 0f));
-                break;
-        }
     }
 
     public HashSet<Coordinate> GetNeighbors()
     {
-        return CoordinateCachingManager.GetNeighbors(this);
+        return CoordinateCache.GetNeighbors(this);
     }
 
     public override bool Equals(object obj)

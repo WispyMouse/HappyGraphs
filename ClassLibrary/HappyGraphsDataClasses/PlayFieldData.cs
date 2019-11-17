@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 // This class is intended to be a serializable representation of the board state
 // If someone were to save their playing field, or given one, it should be seeded from this class
@@ -99,7 +97,8 @@ public class PlayFieldData
     {
         if (!PlayedCards.ContainsKey(forCoordinate))
         {
-            Debug.LogError($"Asked if coordinate {forCoordinate.ToString()} should be happy, but that coordinate isn't in this play field.");
+            // TODO: Find a good way to log an error
+            // Debug.LogError($"Asked if coordinate {forCoordinate.ToString()} should be happy, but that coordinate isn't in this play field.");
             return false;
         }
 
@@ -184,7 +183,8 @@ public class PlayFieldData
     {
         if (!PlayedCards.ContainsKey(forCoordinate))
         {
-            Debug.LogError($"Asked if coordinate {forCoordinate.ToString()} should be incompleteable, but that coordinate isn't in this play field.");
+            // TODO: Find a good way to log an error
+            // Debug.LogError($"Asked if coordinate {forCoordinate.ToString()} should be incompleteable, but that coordinate isn't in this play field.");
             return false;
         }
 

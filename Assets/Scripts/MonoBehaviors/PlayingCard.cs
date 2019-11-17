@@ -42,7 +42,7 @@ public abstract class PlayingCard : MonoBehaviour
     {
         OnCoordinate = toCoordinate;
         CoordinateSet = true;
-        AnimateMovement(toCoordinate.WorldspaceCoordinate, speed);
+        AnimateMovement(toCoordinate.GetWorldspacePosition(), speed);
 
 #if UNITY_EDITOR
         name = $"PlayingCard {RepresentingCard.FaceValue} {toCoordinate.ToString()}";

@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public struct CardData
+﻿public struct CardData
 {
     public int FaceValue;
 

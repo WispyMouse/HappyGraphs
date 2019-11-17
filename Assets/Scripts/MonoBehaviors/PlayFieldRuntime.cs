@@ -223,8 +223,8 @@ public class PlayFieldRuntime : MonoBehaviour
         Coordinate bottomMost = PlayedCards.Select(x => x.OnCoordinate).OrderBy(x => x.Y).First();
         Coordinate topMost = PlayedCards.Select(x => x.OnCoordinate).OrderByDescending(x => x.Y).First();
 
-        return new Rect(leftMost.WorldspaceCoordinate.x, bottomMost.WorldspaceCoordinate.y,
-            rightMost.WorldspaceCoordinate.x - leftMost.WorldspaceCoordinate.x, topMost.WorldspaceCoordinate.y - bottomMost.WorldspaceCoordinate.y);
+        return new Rect(leftMost.GetWorldspacePosition().x, bottomMost.GetWorldspacePosition().y,
+            rightMost.GetWorldspacePosition().x - leftMost.GetWorldspacePosition().x, topMost.GetWorldspacePosition().y - bottomMost.GetWorldspacePosition().y);
     }
 
     public void GetNewHypotheticalPlacementEffects(PlayingCard forCard, Coordinate onCoordinate, 

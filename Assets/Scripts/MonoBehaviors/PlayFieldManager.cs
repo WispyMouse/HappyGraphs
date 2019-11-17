@@ -47,7 +47,6 @@ public class PlayFieldManager : MonoBehaviour
         IncompleteCardsValue.text = "0";
         SatisfiedCountValue.text = "0";
         SatisfiedFaceValue.text = "0";
-        UpdateSeedPanel();
 
         StartCoroutine(StartupSequence());
     }
@@ -60,6 +59,8 @@ public class PlayFieldManager : MonoBehaviour
         {
             DeckSeed = Random.Range(1000, 9999);
         }
+
+        UpdateSeedPanel();
 
         yield return DeckCreationEngine.GetDeckFromWeb(GameRulesManager.ActiveGameRules, DeckSeed);
         deck = DeckCreationEngine.LastGeneratedDeck;

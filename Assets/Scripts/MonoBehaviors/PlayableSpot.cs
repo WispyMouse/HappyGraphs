@@ -23,7 +23,7 @@ public class PlayableSpot : MonoBehaviour
     public void SetCoordinate(Coordinate toCoordinate)
     {
         OnCoordinate = toCoordinate;
-        transform.localPosition = toCoordinate.WorldspaceCoordinate;
+        transform.localPosition = toCoordinate.GetWorldspacePosition();
 
 #if UNITY_EDITOR
         name = $"PlayableSpot {toCoordinate.ToString()}";

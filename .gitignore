@@ -3,5 +3,8 @@
 /Temp/
 /obj/
 /Logs/Packages-Update.log
-*.csproj
+/[^/]*.csproj
 /Builds/
+obj/
+bin/
+.vs/
