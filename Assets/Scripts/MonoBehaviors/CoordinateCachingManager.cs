@@ -29,7 +29,7 @@ public class CoordinateCachingManager : MonoBehaviour
             default:
                 position = new Vector3((float)forCoordinate.X, (float)forCoordinate.Y * 1.5f);
                 break;
-            case GridType.SixWay:
+            case GridTypeEnum.SixWay:
                 position = new Vector3((float)forCoordinate.X, (float)forCoordinate.Y * 1.5f + (Mathf.Abs(forCoordinate.X) % 2 == 1 ? .75f : 0f));
                 break;
         }

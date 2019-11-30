@@ -8,7 +8,7 @@ namespace HappyGraphsDeckEngineTester
         static void Main(string[] args)
         {
             GameRules rules = new GameRules();
-            rules.GridTypeRule = GridType.FourWay;
+            rules.GridTypeRule = GridTypeEnum.FourWay;
             rules.StackDeck = true;
             rules.HandSizeRule = 1;
             Deck newDeck = DeckCreationEngine.GenerateDeck(rules, new Random().Next(1000, 9999));

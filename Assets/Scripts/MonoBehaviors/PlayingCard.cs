@@ -26,6 +26,8 @@ public abstract class PlayingCard : MonoBehaviour
     public SpriteRenderer BlinkOverlaySpriteRenderer;
     Color blinkTargetColor { get; set; }
 
+    protected Color FlavorColor { get; set; }
+
     protected int NeighborCount { get; set; } = 0;
 
     public void SetCardData(CardData toCardData)
@@ -33,8 +35,11 @@ public abstract class PlayingCard : MonoBehaviour
         RepresentingCard = toCardData;
 
 #if UNITY_EDITOR
-        name = $"PlayingCard {toCardData.FaceValue}";
+        name = $"PlayingCard {RepresentingCard.FaceValue}";
 #endif
+
+        FlavorColor = ConversionTools.UnityColorFromSystemDrawing(FlavorCodeTranslations.ColorFromFlavorCode(RepresentingCard));
+
         UpdateVisual();
     }
 
@@ -160,7 +165,7 @@ public abstract class PlayingCard : MonoBehaviour
         CurBlinkType = toType;
         BlinkOverlaySpriteRenderer.color = Color.white;
 
-        switch (toType)
+        switch (CurBlinkType)
         {
             default:
             case BlinkType.None:

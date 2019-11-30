@@ -1,0 +1,1 @@
+﻿public enum GridTypeEnum { FourWay, SixWay, EightWay }

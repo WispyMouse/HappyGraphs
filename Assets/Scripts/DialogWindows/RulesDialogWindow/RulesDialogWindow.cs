@@ -65,13 +65,13 @@ public class RulesDialogWindow : DialogWindow
         switch (CurrentlyWorkshoppedGameRules.GridTypeRule)
         {
             default:
-            case GridType.FourWay:
+            case GridTypeEnum.FourWay:
                 GridTypeDropdown.value = 0;
                 break;
-            case GridType.SixWay:
+            case GridTypeEnum.SixWay:
                 GridTypeDropdown.value = 1;
                 break;
-            case GridType.EightWay:
+            case GridTypeEnum.EightWay:
                 GridTypeDropdown.value = 2;
                 break;
         }
@@ -168,19 +168,19 @@ public class RulesDialogWindow : DialogWindow
 
     public void GridTypeRuleChanged()
     {
-        GridType newGridType;
+        GridTypeEnum newGridType;
 
         switch (GridTypeDropdown.value)
         {
             default:
             case 0:
-                newGridType = GridType.FourWay;
+                newGridType = GridTypeEnum.FourWay;
                 break;
             case 1:
-                newGridType = GridType.SixWay;
+                newGridType = GridTypeEnum.SixWay;
                 break;
             case 2:
-                newGridType = GridType.EightWay;
+                newGridType = GridTypeEnum.EightWay;
                 break;
         }
 

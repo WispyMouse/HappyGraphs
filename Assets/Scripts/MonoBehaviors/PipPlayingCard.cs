@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PipPlayingCard : PlayingCard
 {
-    public Sprite HappySprite;
     public Sprite BlankSprite;
+    public SpriteRenderer HappySpriteRenderer;
     public SpriteRenderer CardBaseSprite;
 
     public CardPip CardPipPF;
@@ -15,6 +15,8 @@ public class PipPlayingCard : PlayingCard
 
     protected override void UpdateVisual()
     {
+        HappySpriteRenderer.gameObject.SetActive(false);
+
         if (CardPips == null)
         {
             CardPips = new List<CardPip>();
@@ -51,8 +53,8 @@ public class PipPlayingCard : PlayingCard
 
         if (IsHappy)
         {
-            CardBaseSprite.color = Color.white;
-            CardBaseSprite.sprite = HappySprite;
+            CardBaseSprite.color = FlavorColor;
+            HappySpriteRenderer.gameObject.SetActive(true);
 
             foreach (CardPip pip in CardPips)
             {
@@ -66,11 +68,11 @@ public class PipPlayingCard : PlayingCard
 
         if (CannotBeCompleted)
         {
-            CardBaseSprite.color = Color.gray;
+            CardBaseSprite.color = Color.Lerp(FlavorColor, Color.gray, .25f);
         }
         else
         {
-            CardBaseSprite.color = Color.white;
+            CardBaseSprite.color = FlavorColor;
         }
 
         for (int index = 0; index < CardPips.Count; index++)
@@ -114,6 +116,7 @@ public class PipPlayingCard : PlayingCard
         }
 
         CardPips = null;
+        HappySpriteRenderer.gameObject.SetActive(false);
     }
 
     static List<Vector3> GetPipLocationOffsets(int numberOfPips)

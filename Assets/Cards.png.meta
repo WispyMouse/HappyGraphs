@@ -35,6 +35,9 @@ TextureImporter:
   - first:
       213: -7050129638846038990
     second: Empty
+  - first:
+      213: -2518849649601837799
+    second: JustSmile
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -369,6 +372,27 @@ TextureImporter:
       bones: []
       spriteID: 3cdceee988932824b8c1d67491933e29
       internalID: -7050129638846038990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JustSmile
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6903bf4e28388149bc27247b739ad53
+      internalID: -2518849649601837799
       vertices: []
       indices: 
       edges: []

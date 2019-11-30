@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public static class CoordinateCache
 {
-    public static GridType ActiveGridType { get; set; } = GridType.FourWay;
+    public static GridTypeEnum ActiveGridType { get; set; } = GridTypeEnum.FourWay;
     static Dictionary<Coordinate, HashSet<Coordinate>> NeighborsCache { get; set; } = new Dictionary<Coordinate, HashSet<Coordinate>>();
 
     public static void ClearCache()
@@ -32,10 +32,10 @@ public static class CoordinateCache
         switch (ActiveGridType)
         {
             default:
-            case GridType.FourWay:
+            case GridTypeEnum.FourWay:
                 return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y), new Coordinate(forCoordinate.X + 1, forCoordinate.Y),
                     new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1) };
-            case GridType.SixWay:
+            case GridTypeEnum.SixWay:
                 if (forCoordinate.X % 2 == 0)
                 {
                     return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),
@@ -48,7 +48,7 @@ public static class CoordinateCache
                     new Coordinate(forCoordinate.X + 1, forCoordinate.Y), new Coordinate(forCoordinate.X + 1, forCoordinate.Y + 1),
                 new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y + 1)};
                 }
-            case GridType.EightWay:
+            case GridTypeEnum.EightWay:
                 return new HashSet<Coordinate>() { new Coordinate(forCoordinate.X - 1, forCoordinate.Y - 1), new Coordinate(forCoordinate.X - 1, forCoordinate.Y),
                     new Coordinate(forCoordinate.X - 1, forCoordinate.Y + 1), new Coordinate(forCoordinate.X, forCoordinate.Y - 1),
                     new Coordinate(forCoordinate.X, forCoordinate.Y + 1), new Coordinate(forCoordinate.X + 1, forCoordinate.Y - 1),

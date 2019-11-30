@@ -29,7 +29,7 @@ public class SaveDataManager : MonoBehaviour
         {
             RuleSetName = "Basic 4s",
             HandSizeRule = 1,
-            GridTypeRule = GridType.FourWay,
+            GridTypeRule = GridTypeEnum.FourWay,
             StackDeck = true,
             // These default ruleset guids were generated once, and are effectively arbitrary
             // Having a GUID allows the reloading memory to work
@@ -51,7 +51,7 @@ public class SaveDataManager : MonoBehaviour
         {
             RuleSetName = "Basic 6s",
             HandSizeRule = 1,
-            GridTypeRule = GridType.SixWay,
+            GridTypeRule = GridTypeEnum.SixWay,
             StackDeck = true,
             RuleSetGUID = "03d8e8b1-0a9d-4f79-a538-993ab08ef1ef",
             IsDefaultRule = true
@@ -71,7 +71,7 @@ public class SaveDataManager : MonoBehaviour
         {
             RuleSetName = "Basic 8s",
             HandSizeRule = 1,
-            GridTypeRule = GridType.EightWay,
+            GridTypeRule = GridTypeEnum.EightWay,
             StackDeck = true,
             RuleSetGUID = "a4da6df5-5f40-4da0-ac9b-7e89fa208813",
             IsDefaultRule = true

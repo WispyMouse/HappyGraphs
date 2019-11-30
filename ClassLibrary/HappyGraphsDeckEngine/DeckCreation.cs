@@ -15,13 +15,13 @@ public static class DeckCreationEngine
         switch (rules.GridTypeRule)
         {
             default:
-            case GridType.FourWay:
+            case GridTypeEnum.FourWay:
                 maxCardValue = 4;
                 break;
-            case GridType.SixWay:
+            case GridTypeEnum.SixWay:
                 maxCardValue = 6;
                 break;
-            case GridType.EightWay:
+            case GridTypeEnum.EightWay:
                 maxCardValue = 8;
                 break;
         }

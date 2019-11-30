@@ -7,8 +7,9 @@ public class GameRules
     public string RuleSetName = "New Rule Set";
     public Dictionary<int, int> CardsPerRankRules = new Dictionary<int, int>();
     public int HandSizeRule = 1;
-    public GridType GridTypeRule = GridType.FourWay;
+    public GridTypeEnum GridTypeRule = GridTypeEnum.FourWay;
     public bool StackDeck = true;
+    public FlavorTypeEnum FlavorType = FlavorTypeEnum.Color;
 
     public bool IsDefaultRule { get; set; }
 
@@ -32,13 +33,9 @@ public class GameRules
         newRules.GridTypeRule = GridTypeRule;
         newRules.StackDeck = StackDeck;
         newRules.IsDefaultRule = IsDefaultRule;
+        newRules.FlavorType = FlavorType;
 
         return newRules;
-    }
-
-    public void AdjustHandSizeRule(int deckSize)
-    {
-        HandSizeRule = System.Math.Min(HandSizeRule, deckSize - 1);
     }
 
     public int GetCardsPerRank(int rank)

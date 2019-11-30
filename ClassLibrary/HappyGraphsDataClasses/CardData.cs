@@ -1,10 +1,12 @@
 ﻿public struct CardData
 {
     public int FaceValue;
+    public int FlavorCode;
 
-    public CardData(int ofFaceValue)
+    public CardData(int ofFaceValue, int ofFlavorCode = -1)
     {
         this.FaceValue = ofFaceValue;
+        this.FlavorCode = ofFlavorCode;
     }
 
     public override bool Equals(object obj)

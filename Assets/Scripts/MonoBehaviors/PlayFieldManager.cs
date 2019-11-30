@@ -65,8 +65,6 @@ public class PlayFieldManager : MonoBehaviour
         yield return DeckCreationEngine.GetDeckFromWeb(GameRulesManager.ActiveGameRules, DeckSeed);
         deck = DeckCreationEngine.LastGeneratedDeck;
 
-        GameRulesManager.ActiveGameRules.AdjustHandSizeRule(deck.DeckStack.Count);
-
         totalDeckSize = deck.DeckStack.Count;
         totalDeckFaceValue = deck.DeckStack.Sum(card => card.FaceValue);
         NewPlayingField(false);
