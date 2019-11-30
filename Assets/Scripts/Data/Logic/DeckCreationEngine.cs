@@ -7,12 +7,12 @@ using UnityEngine.Networking;
 
 public static class DeckCreationEngine
 {
-    public static Stack<CardData> LastGeneratedDeck { get; set; }
+    public static Deck LastGeneratedDeck { get; set; }
 
     public static IEnumerator GetDeckFromWeb(GameRules rules, int seed)
     {
         // Unity will mangle the Json somewhat if we don't start it as a PUT and change it to a POST
-        UnityWebRequest request = UnityWebRequest.Put($"https://wispymouse.net/HappyGraphs/GenerateDeck/{seed}", JsonConvert.SerializeObject(rules));
+        UnityWebRequest request = UnityWebRequest.Put($"https://wispymouse.net/HappyGraphs/GenerateDeckPile/{seed}", JsonConvert.SerializeObject(rules));
         request.method = "POST";
         request.uploadHandler.contentType = "application/json";
         request.SetRequestHeader("Content-Type", "application/json");
@@ -25,21 +25,18 @@ public static class DeckCreationEngine
         }
         else
         {
-            Debug.Log(request.downloadHandler.text);
-            LastGeneratedDeck = JsonConvert.DeserializeObject<Stack<CardData>>(request.downloadHandler.text);
-            // Frustratingly gives us the deck up side down, so flip it around
-            LastGeneratedDeck = new Stack<CardData>(LastGeneratedDeck);
-
-            System.Text.StringBuilder deckString = new System.Text.StringBuilder();
-            Debug.Log("The deck is:");
-
-            foreach (CardData cards in LastGeneratedDeck.ToList())
+            try
             {
-                deckString.Append(cards.FaceValue);
-                deckString.Append(", ");
+                CardData[] deckPile = JsonConvert.DeserializeObject<CardData[]>(request.downloadHandler.text);
+                Deck generatedDeck = new Deck();
+                generatedDeck.DeckStack = new Stack<CardData>(new Stack<CardData>(deckPile));
+                LastGeneratedDeck = generatedDeck;
             }
-
-            Debug.Log(deckString.ToString().TrimEnd(' ').TrimEnd(','));
+            catch (System.Exception e)
+            {
+                Debug.Log("Deck failure.");
+                Debug.Log(e);
+            }
         }
     }
 
@@ -48,6 +45,23 @@ public static class DeckCreationEngine
         foreach (Coordinate coordinate in activePlayField.PlayedCards.Keys)
         {
             Debug.Log($"{coordinate} - {activePlayField.PlayedCards[coordinate].FaceValue}");
+        }
+    }
+
+    public class ForceDeck
+    {
+        public CardData[] DeckStack;
+
+        public ForceDeck()
+        {
+
+        }
+
+        public Deck ConvertDeck()
+        {
+            Deck newDeck = new Deck();
+            newDeck.DeckStack = new Stack<CardData>(new Stack<CardData>(DeckStack));
+            return newDeck;
         }
     }
 }

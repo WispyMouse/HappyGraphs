@@ -4,11 +4,11 @@ using System.Linq;
 
 public static class DeckCreationEngine
 {
-    public static Stack<CardData> LastGeneratedDeck { get; set; }
+    public static Deck LastGeneratedDeck { get; set; }
 
-    public static Stack<CardData> GenerateDeck(GameRules rules, int seed)
+    public static Deck GenerateDeck(GameRules rules, int seed)
     {
-        Stack<CardData> newDeck = new Stack<CardData>();
+        Deck newDeck = new Deck();
 
         int maxCardValue;
 
@@ -30,7 +30,7 @@ public static class DeckCreationEngine
         {
             for (int cardCount = 0; cardCount < rules.GetCardsPerRank(rank); cardCount++)
             {
-                newDeck.Push(new CardData(rank));
+                newDeck.PushCard(new CardData(rank));
             }
         }
 
@@ -48,10 +48,10 @@ public static class DeckCreationEngine
         */
     }
 
-    public static Stack<CardData> SimpleShuffle(Stack<CardData> toShuffle, GameRules rules, int seed)
+    public static Deck SimpleShuffle(Deck toShuffle, GameRules rules, int seed)
     {
-        List<CardData> originalDeck = toShuffle.ToList();
-        toShuffle.Clear();
+        List<CardData> originalDeckCards = toShuffle.GetAllCards();
+        Deck shuffledDeck = new Deck();
 
         System.Random seededRandom = new System.Random(seed);
 
@@ -60,46 +60,46 @@ public static class DeckCreationEngine
         // The next card is either a 1 or a 2, the next is either a 1 or a 2 or a 3...
         if (rules.StackDeck)
         {
-            int maxCardRank = originalDeck.Max(value => value.FaceValue);
+            int maxCardRank = originalDeckCards.Max(value => value.FaceValue);
             int lastCardRank = 1;
 
             while (lastCardRank < maxCardRank)
             {
-                IEnumerable<CardData> matchingCards = originalDeck.Where(card => card.FaceValue <= lastCardRank).OrderBy(card => seededRandom.Next(0, 10000));
+                IEnumerable<CardData> matchingCards = originalDeckCards.Where(card => card.FaceValue <= lastCardRank).OrderBy(card => seededRandom.Next(0, 10000));
 
                 if (matchingCards.Any())
                 {
                     CardData usedCard = matchingCards.First();
-                    originalDeck.Remove(usedCard);
-                    toShuffle.Push(usedCard);
+                    originalDeckCards.Remove(usedCard);
+                    shuffledDeck.PushCard(usedCard);
                 }
 
                 lastCardRank++;
             }
         }
 
-        foreach (CardData card in originalDeck.OrderBy(card => seededRandom.Next(0, 10000)))
+        foreach (CardData card in originalDeckCards.OrderBy(card => seededRandom.Next(0, 10000)))
         {
-            toShuffle.Push(card);
+            shuffledDeck.PushCard(card);
         }
 
-        return toShuffle;
+        return shuffledDeck;
     }
 
-    public static Stack<CardData> PerfectSolveableShuffle(Stack<CardData> toShuffle, GameRules rules, int seed)
+    public static Deck PerfectSolveableShuffle(Deck toShuffle, GameRules rules, int seed)
     {
-        List<CardData> originalDeck = toShuffle.ToList();
+        List<CardData> originalDeckCards = toShuffle.GetAllCards();
         Queue<CardData> placedCards = new Queue<CardData>();
 
         System.Random seededRandom = new System.Random(seed);
 
         PlayFieldData activePlayField = new PlayFieldData();
 
-        Queue<CardData> cardOrder = PerfectSolveableShuffleIteration(originalDeck, placedCards, rules, seededRandom, activePlayField);
+        Queue<CardData> cardOrder = PerfectSolveableShuffleIteration(originalDeckCards, placedCards, rules, seededRandom, activePlayField);
 
         if (cardOrder != null)
         {
-            return new Stack<CardData>(new Stack<CardData>(cardOrder));
+            return new Deck(cardOrder);
         }
         else
         {

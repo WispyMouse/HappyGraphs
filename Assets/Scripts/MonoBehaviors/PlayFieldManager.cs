@@ -20,7 +20,7 @@ public class PlayFieldManager : MonoBehaviour
     public Text SatisfiedFaceValue;
     public Text SatisfiedCountValue;
 
-    Stack<CardData> deck;
+    Deck deck;
     List<PlayingCard> cardsInHand { get; set; } = new List<PlayingCard>();
 
     // The running total of previous play field's incomplete cards
@@ -65,10 +65,10 @@ public class PlayFieldManager : MonoBehaviour
         yield return DeckCreationEngine.GetDeckFromWeb(GameRulesManager.ActiveGameRules, DeckSeed);
         deck = DeckCreationEngine.LastGeneratedDeck;
 
-        GameRulesManager.ActiveGameRules.AdjustHandSizeRule(deck.Count);
+        GameRulesManager.ActiveGameRules.AdjustHandSizeRule(deck.DeckStack.Count);
 
-        totalDeckSize = deck.Count;
-        totalDeckFaceValue = deck.Sum(card => card.FaceValue);
+        totalDeckSize = deck.DeckStack.Count;
+        totalDeckFaceValue = deck.DeckStack.Sum(card => card.FaceValue);
         NewPlayingField(false);
 
         DealToPlayer(false);
@@ -126,15 +126,15 @@ public class PlayFieldManager : MonoBehaviour
 
     CardData DrawCard()
     {
-        CardData drawnCard = deck.Pop();
-        DeckCountLabel.text = $"x{deck.Count}";
+        CardData drawnCard = deck.PopCard();
+        DeckCountLabel.text = $"x{deck.DeckStack.Count}";
         
         return drawnCard;
     }
 
     void DealToPlayer(bool logAction = true)
     {
-        if (deck.Count > 0)
+        if (deck.DeckStack.Count > 0)
         {
             PlayingCard newPlayingCard = GeneratePlayingCard(DrawCard());
             newPlayingCard.transform.position = CameraManagerInstance.HandLocation;
@@ -185,7 +185,7 @@ public class PlayFieldManager : MonoBehaviour
 
     void NewPlayingField(bool logAction = true)
     {
-        if (deck.Count == 0)
+        if (deck.DeckStack.Count == 0)
         {
             Debug.Log("Trying to make a new playing field, but the deck is empty");
             return;
@@ -289,8 +289,8 @@ public class PlayFieldManager : MonoBehaviour
                 cardsInHand.Remove(matchingCardInHand);
                 ObjectPooler.ReturnObject(matchingCardInHand);
 
-                deck.Push(action.CardDrawn.Value);
-                DeckCountLabel.text = $"x{deck.Count}";
+                deck.PushCard(action.CardDrawn.Value);
+                DeckCountLabel.text = $"x{deck.DeckStack.Count}";
                 ResetCardsInHandPosition();
             }
         }
@@ -307,8 +307,8 @@ public class PlayFieldManager : MonoBehaviour
             {
                 ObjectPooler.ReturnObject(foundCard);
 
-                deck.Push(action.SeedCard.Value);
-                DeckCountLabel.text = $"x{deck.Count}";
+                deck.PushCard(action.SeedCard.Value);
+                DeckCountLabel.text = $"x{deck.DeckStack.Count}";
             }
         }
 
