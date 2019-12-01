@@ -39,14 +39,14 @@ public static class DeckCreationEngine
         }
 
         Deck shuffledDeck = SimpleShuffle(newDeck, rules, seededRandom);
-        Queue<CardData> coloredCards = new Queue<CardData>();
+        Stack<CardData> coloredCards = new Stack<CardData>();
 
         foreach (CardData card in shuffledDeck.DeckStack)
         {
-            coloredCards.Enqueue(new CardData(card.FaceValue, FlavorCodeTranslations.IntegerFromHexCode(FlavorCodeTranslations.GetShiftedHue(initialColor, coloredCards.Count, newDeck.DeckSize))));
+            coloredCards.Push(new CardData(card.FaceValue, FlavorCodeTranslations.IntegerFromHexCode(FlavorCodeTranslations.GetShiftedHue(initialColor, coloredCards.Count, newDeck.DeckSize))));
         }
 
-        return new Deck(coloredCards);
+        return new Deck(new Queue<CardData>(coloredCards));
 
         /*
         Stack<CardData> deck = PerfectSolveableShuffle(newDeck, rules, seed);
