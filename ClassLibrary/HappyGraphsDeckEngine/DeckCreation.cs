@@ -28,16 +28,25 @@ public static class DeckCreationEngine
         }
 
         Random seededRandom = new Random(seed);
+        string initialColor = FlavorCodeTranslations.GetSeedColor(seededRandom);
 
         for (int rank = 1; rank <= maxCardValue; rank++)
         {
             for (int cardCount = 0; cardCount < rules.GetCardsPerRank(rank); cardCount++)
             {
-                newDeck.PushCard(new CardData(rank, FlavorCodeTranslations.GetRandomColorHexCodeIndex(seededRandom)));
+                newDeck.PushCard(new CardData(rank));
             }
         }
 
-        return SimpleShuffle(newDeck, rules, seededRandom);
+        Deck shuffledDeck = SimpleShuffle(newDeck, rules, seededRandom);
+        Queue<CardData> coloredCards = new Queue<CardData>();
+
+        foreach (CardData card in shuffledDeck.DeckStack)
+        {
+            coloredCards.Enqueue(new CardData(card.FaceValue, FlavorCodeTranslations.IntegerFromHexCode(FlavorCodeTranslations.GetShiftedHue(initialColor, coloredCards.Count, newDeck.DeckSize))));
+        }
+
+        return new Deck(coloredCards);
 
         /*
         Stack<CardData> deck = PerfectSolveableShuffle(newDeck, rules, seed);

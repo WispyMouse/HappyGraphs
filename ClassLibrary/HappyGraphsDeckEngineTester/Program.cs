@@ -16,7 +16,7 @@ namespace HappyGraphsDeckEngineTester
             while (newDeck.DeckSize > 0)
             {
                 CardData nextCard = newDeck.PopCard();
-                Console.WriteLine(nextCard.FaceValue);
+                Console.WriteLine($"{nextCard.FaceValue} - {FlavorCodeTranslations.ColorFromFlavorCode(nextCard)}");
             }
         }
     }

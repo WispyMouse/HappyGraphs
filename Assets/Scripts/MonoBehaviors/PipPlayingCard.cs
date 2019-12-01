@@ -51,9 +51,11 @@ public class PipPlayingCard : PlayingCard
             return;
         }
 
+        CardBaseSprite.sprite = BlankSprite;
+        CardBaseSprite.color = FlavorColor;
+
         if (IsHappy)
         {
-            CardBaseSprite.color = FlavorColor;
             HappySpriteRenderer.gameObject.SetActive(true);
 
             foreach (CardPip pip in CardPips)
@@ -64,15 +66,9 @@ public class PipPlayingCard : PlayingCard
             return;
         }
 
-        CardBaseSprite.sprite = BlankSprite;
-
         if (CannotBeCompleted)
         {
-            CardBaseSprite.color = Color.Lerp(FlavorColor, Color.gray, .25f);
-        }
-        else
-        {
-            CardBaseSprite.color = FlavorColor;
+            CardBaseSprite.color = Color.Lerp(FlavorColor, Color.black, .25f);
         }
 
         for (int index = 0; index < CardPips.Count; index++)

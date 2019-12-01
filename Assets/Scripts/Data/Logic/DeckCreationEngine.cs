@@ -31,6 +31,10 @@ public static class DeckCreationEngine
                 Deck generatedDeck = new Deck();
                 generatedDeck.DeckStack = new Stack<CardData>(new Stack<CardData>(deckPile));
                 LastGeneratedDeck = generatedDeck;
+
+#if UNITY_EDITOR
+                Debug.Log(request.downloadHandler.text);
+#endif
             }
             catch (System.Exception e)
             {
@@ -45,23 +49,6 @@ public static class DeckCreationEngine
         foreach (Coordinate coordinate in activePlayField.PlayedCards.Keys)
         {
             Debug.Log($"{coordinate} - {activePlayField.PlayedCards[coordinate].FaceValue}");
-        }
-    }
-
-    public class ForceDeck
-    {
-        public CardData[] DeckStack;
-
-        public ForceDeck()
-        {
-
-        }
-
-        public Deck ConvertDeck()
-        {
-            Deck newDeck = new Deck();
-            newDeck.DeckStack = new Stack<CardData>(new Stack<CardData>(DeckStack));
-            return newDeck;
         }
     }
 }
