@@ -38,7 +38,7 @@ public abstract class PlayingCard : MonoBehaviour
         name = $"PlayingCard {RepresentingCard.FaceValue}";
 #endif
 
-        FlavorColor = ConversionTools.UnityColorFromSystemDrawing(FlavorCodeTranslations.ColorFromFlavorCode(RepresentingCard));
+        FlavorColor = ConversionTools.ColorFromHexCode(FlavorCodeTranslations.ColorFromFlavorCode(RepresentingCard));
 
         UpdateVisual();
     }

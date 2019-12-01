@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,15 +27,17 @@ public static class DeckCreationEngine
                 break;
         }
 
+        Random seededRandom = new Random(seed);
+
         for (int rank = 1; rank <= maxCardValue; rank++)
         {
             for (int cardCount = 0; cardCount < rules.GetCardsPerRank(rank); cardCount++)
             {
-                newDeck.PushCard(new CardData(rank));
+                newDeck.PushCard(new CardData(rank, FlavorCodeTranslations.GetRandomColorHexCodeIndex(seededRandom)));
             }
         }
 
-        return SimpleShuffle(newDeck, rules, seed);
+        return SimpleShuffle(newDeck, rules, seededRandom);
 
         /*
         Stack<CardData> deck = PerfectSolveableShuffle(newDeck, rules, seed);
@@ -48,12 +51,10 @@ public static class DeckCreationEngine
         */
     }
 
-    public static Deck SimpleShuffle(Deck toShuffle, GameRules rules, int seed)
+    public static Deck SimpleShuffle(Deck toShuffle, GameRules rules, Random randomEngine)
     {
         List<CardData> originalDeckCards = toShuffle.GetAllCards();
         Deck shuffledDeck = new Deck();
-
-        System.Random seededRandom = new System.Random(seed);
 
         // If we stack the deck, it means the last card in the deck should be the lowest value possible, preferably a 1
         // This is so that you don't get stuck in a situation where the last card needs more connections than you could have reasonably prepared for
@@ -65,7 +66,7 @@ public static class DeckCreationEngine
 
             while (lastCardRank < maxCardRank)
             {
-                IEnumerable<CardData> matchingCards = originalDeckCards.Where(card => card.FaceValue <= lastCardRank).OrderBy(card => seededRandom.Next(0, 10000));
+                IEnumerable<CardData> matchingCards = originalDeckCards.Where(card => card.FaceValue <= lastCardRank).OrderBy(card => randomEngine.Next(0, 10000));
 
                 if (matchingCards.Any())
                 {
@@ -78,7 +79,7 @@ public static class DeckCreationEngine
             }
         }
 
-        foreach (CardData card in originalDeckCards.OrderBy(card => seededRandom.Next(0, 10000)))
+        foreach (CardData card in originalDeckCards.OrderBy(card => randomEngine.Next(0, 10000)))
         {
             shuffledDeck.PushCard(card);
         }
@@ -86,16 +87,14 @@ public static class DeckCreationEngine
         return shuffledDeck;
     }
 
-    public static Deck PerfectSolveableShuffle(Deck toShuffle, GameRules rules, int seed)
+    public static Deck PerfectSolveableShuffle(Deck toShuffle, GameRules rules, Random randomEngine)
     {
         List<CardData> originalDeckCards = toShuffle.GetAllCards();
         Queue<CardData> placedCards = new Queue<CardData>();
 
-        System.Random seededRandom = new System.Random(seed);
-
         PlayFieldData activePlayField = new PlayFieldData();
 
-        Queue<CardData> cardOrder = PerfectSolveableShuffleIteration(originalDeckCards, placedCards, rules, seededRandom, activePlayField);
+        Queue<CardData> cardOrder = PerfectSolveableShuffleIteration(originalDeckCards, placedCards, rules, randomEngine, activePlayField);
 
         if (cardOrder != null)
         {
@@ -107,7 +106,7 @@ public static class DeckCreationEngine
         }
     }
 
-    static Queue<CardData> PerfectSolveableShuffleIteration(List<CardData> remainingCards, Queue<CardData> placedCards, GameRules rules, System.Random seededRandom, PlayFieldData activePlayField)
+    static Queue<CardData> PerfectSolveableShuffleIteration(List<CardData> remainingCards, Queue<CardData> placedCards, GameRules rules, Random seededRandom, PlayFieldData activePlayField)
     {
         foreach (CardData nextCard in RandomizeOptions(remainingCards, seededRandom))
         {
@@ -169,7 +168,7 @@ public static class DeckCreationEngine
         return validCoordinates;
     }
 
-    static Queue<T> RandomizeOptions<T>(IEnumerable<T> options, System.Random seededRandom)
+    static Queue<T> RandomizeOptions<T>(IEnumerable<T> options, Random seededRandom)
     {
         List<T> remainingOptions = new List<T>(options);
         Queue<T> orderedOptions = new Queue<T>();

@@ -1,7 +1,21 @@
-﻿public static class FlavorCodeTranslations
+﻿using System;
+
+public static class FlavorCodeTranslations
 {
-    public static System.Drawing.Color ColorFromFlavorCode(CardData toGet)
+    public static string[] ColorHexCodes = { "#4735ff", "#ffe26a", "#08faa7", "#ff10bd" };
+
+    public static string ColorFromFlavorCode(CardData toGet)
     {
-        return System.Drawing.Color.Red;
+        if (toGet.FlavorCode < 0 || toGet.FlavorCode > ColorHexCodes.Length)
+        {
+            return "#FFFFFF";
+        }
+
+        return ColorHexCodes[toGet.FlavorCode];
+    }
+
+    public static int GetRandomColorHexCodeIndex(Random randomEngine)
+    {
+        return randomEngine.Next(ColorHexCodes.Length);
     }
 }
