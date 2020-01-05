@@ -28,7 +28,6 @@ public static class DeckCreationEngine
         }
 
         Random seededRandom = new Random(seed);
-        string initialColor = FlavorCodeTranslations.GetSeedColor(seededRandom);
 
         for (int rank = 1; rank <= maxCardValue; rank++)
         {
@@ -41,9 +40,20 @@ public static class DeckCreationEngine
         Deck shuffledDeck = SimpleShuffle(newDeck, rules, seededRandom);
         Stack<CardData> coloredCards = new Stack<CardData>();
 
+        string previousColor = FlavorCodeTranslations.GetSeedColor(seededRandom);
+
+        int firstHue = 0;
+        int secondHue = 1;
         foreach (CardData card in shuffledDeck.DeckStack)
         {
-            coloredCards.Push(new CardData(card.FaceValue, FlavorCodeTranslations.IntegerFromHexCode(FlavorCodeTranslations.GetShiftedHue(initialColor, coloredCards.Count, newDeck.DeckSize))));
+            int targetHue = (firstHue + secondHue) % 360;
+
+            string newColor = FlavorCodeTranslations.GetColorWithHue(previousColor, targetHue);
+
+            firstHue = secondHue;
+            secondHue = targetHue;
+
+            coloredCards.Push(new CardData(card.FaceValue, FlavorCodeTranslations.IntegerFromHexCode(newColor)));
         }
 
         return new Deck(new Queue<CardData>(coloredCards));

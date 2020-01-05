@@ -33,6 +33,21 @@ public static class FlavorCodeTranslations
         return HexCodeFromColors(r, g, b);
     }
 
+    public static string GetColorWithHue(string baseColor, int targetHue)
+    {
+        int r = IntegerFromHexCode(baseColor.Substring(0, 2));
+        int g = IntegerFromHexCode(baseColor.Substring(2, 2));
+        int b = IntegerFromHexCode(baseColor.Substring(4, 2));
+
+        int hue;
+        float saturation, value;
+        GetHSV(r, g, b, out hue, out saturation, out value);
+        hue = targetHue;
+
+        GetRGB(hue, saturation, value, out r, out g, out b);
+        return HexCodeFromColors(r, g, b);
+    }
+
     public static int IntegerFromHexCode(string hex)
     {
         return int.Parse(hex, System.Globalization.NumberStyles.HexNumber);
