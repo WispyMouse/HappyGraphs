@@ -5,11 +5,12 @@ using UnityEngine.UI;
 
 public class MainPageState : State
 {
+    public GamePlayState GamePlayStateInstance;
+
     public Text EventDescription;
-    public PlayFieldManager PlayFieldManagerInstance;
     public Animator AnimatorInstance;
 
-    private void Awake()
+    public override void Clear()
     {
         EventDescription.gameObject.SetActive(false);
     }
@@ -23,6 +24,6 @@ public class MainPageState : State
     public void QuickPlayButtonSubmitted()
     {
         AnimatorInstance.SetBool("SlideOut", true);
-        PlayFieldManagerInstance.InitiateStartupSequence();
+        GamePlayStateInstance.StartUp();
     }
 }
