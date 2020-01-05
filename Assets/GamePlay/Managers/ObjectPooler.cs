@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ObjectPooler : MonoBehaviour
 {
-    public static ObjectPooler Singleton;
+    public static ObjectPooler Singleton { get; private set; }
 
     Dictionary<System.Type, List<MonoBehaviour>> ObjectPool = new Dictionary<System.Type, List<MonoBehaviour>>();
 

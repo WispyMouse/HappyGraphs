@@ -121,6 +121,7 @@ public class PlayFieldManager : MonoBehaviour
         GameActions.Push(GameAction.FromCardPlayed(playedCard.RepresentingCard, toCoordinate));
 
         CameraManagerInstance.UpdateCamera(ActivePlayField);
+        SoundPlayer.PlayCardSound();
 
         ActivePlayField.UpdateCardVisuals();
         ActivePlayField.SetPlayableSpaces();
