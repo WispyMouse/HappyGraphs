@@ -1894,7 +1894,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1484028811}
+      - m_Target: {fileID: 970970407}
         m_MethodName: Restart
         m_Mode: 1
         m_Arguments:
@@ -2313,7 +2313,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61c18fef9be82a14ebf7b38220c67d77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GamePlayStateInstance: {fileID: 0}
+  LaunchedAtStartup: 1
+  GamePlayStateInstance: {fileID: 970970407}
   EventDescription: {fileID: 522145189}
   AnimatorInstance: {fileID: 760791404}
 --- !u!95 &760791404
@@ -2760,6 +2761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b38e91124bfce04d9d9a860f8d08acb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LaunchedAtStartup: 0
   PlayFieldManagerInstance: {fileID: 1484028811}
 --- !u!4 &970970408
 Transform:

@@ -24,6 +24,10 @@ public class MainPageState : State
     public void QuickPlayButtonSubmitted()
     {
         AnimatorInstance.SetBool("SlideOut", true);
+
+        GamePlayStateInstance.WakeUp();
         GamePlayStateInstance.StartUp();
+
+        Sleep(AnimatorInstance.GetCurrentAnimatorStateInfo(0).length);
     }
 }

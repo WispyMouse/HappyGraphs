@@ -43,10 +43,23 @@ public class PlayFieldManager : MonoBehaviour
 
     private void Start()
     {
+        Clear();
+    }
+
+    public void Clear()
+    {
         TotalCardFaceValue.text = "0";
         IncompleteCardsValue.text = "0";
         SatisfiedCountValue.text = "0";
         SatisfiedFaceValue.text = "0";
+
+        for (int ii = cardsInHand.Count - 1; ii >= 0; ii--)
+        {
+            Destroy(cardsInHand[ii].gameObject);
+        }
+        cardsInHand.Clear();
+
+        deck = null;
     }
 
     public void InitiateStartupSequence()
@@ -223,11 +236,6 @@ public class PlayFieldManager : MonoBehaviour
     public void UpdateValidityOfPlayableSpots(PlayingCard forCard)
     {
         ActivePlayField.UpdateValidityOfPlayableSpots(forCard);
-    }
-
-    public void Restart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void UndoButton()

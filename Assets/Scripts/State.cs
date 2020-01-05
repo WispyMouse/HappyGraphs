@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class State : MonoBehaviour
 {
-    public bool LaunchedAtStartup { get; set; } = false;
+    public bool LaunchedAtStartup;
 
     private void Awake()
     {
@@ -26,6 +26,11 @@ public abstract class State : MonoBehaviour
         Clear();
     }
 
+    public void WakeUp()
+    {
+        gameObject.SetActive(true);
+    }
+
     public virtual void StartUp()
     {
 
@@ -34,5 +39,16 @@ public abstract class State : MonoBehaviour
     public virtual void Clear()
     {
 
+    }
+
+    public void Sleep(float afterSeconds = 0)
+    {
+        StartCoroutine(SleepAfterWait(afterSeconds));
+    }
+
+    IEnumerator SleepAfterWait(float afterSeconds)
+    {
+        yield return new WaitForSeconds(afterSeconds);
+        gameObject.SetActive(false);
     }
 }
