@@ -47,7 +47,10 @@ public class PlayFieldManager : MonoBehaviour
         IncompleteCardsValue.text = "0";
         SatisfiedCountValue.text = "0";
         SatisfiedFaceValue.text = "0";
+    }
 
+    public void InitiateStartupSequence()
+    {
         StartCoroutine(StartupSequence());
     }
 
