@@ -6,21 +6,6 @@ public abstract class State : MonoBehaviour
 {
     public bool LaunchedAtStartup;
 
-    private void Awake()
-    {
-        QuietInitialization();
-
-        if (LaunchedAtStartup)
-        {
-            gameObject.SetActive(true);
-            StartUp();
-        }
-        else
-        {
-            gameObject.SetActive(false);
-        }
-    }
-
     protected virtual void QuietInitialization()
     {
         Clear();
