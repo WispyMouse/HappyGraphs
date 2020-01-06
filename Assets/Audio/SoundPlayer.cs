@@ -7,34 +7,22 @@ public class SoundPlayer : MonoBehaviour
     public static SoundPlayer Singleton { get; private set; }
 
     public AudioSource AudioSourceInstance;
-    public AudioClip CardSound;
+    public List<AudioClip> CardSounds;
 
     private void Awake()
     {
         Singleton = this;
     }
 
-    public void PlaySound(AudioClip sound, float pitchBase = 1f)
+    public IEnumerator PersonalPlayCardSound(AudioClip sound)
     {
-        StartCoroutine(PlayThenDisableSound(sound, pitchBase));
+        AudioSourceInstance.PlayOneShot(sound);
+        yield return new WaitForSeconds(sound.length);
     }
 
-    IEnumerator PlayThenDisableSound(AudioClip sound, float pitchBase)
+    public static IEnumerator PlayCardSound(PlayingCard fromCard)
     {
-        AudioSource newAudioSource = gameObject.AddComponent<AudioSource>();
-        newAudioSource.pitch = pitchBase;
-        newAudioSource.PlayOneShot(sound);
-
-        while (newAudioSource.isPlaying)
-        {
-            yield return new WaitForEndOfFrame();
-        }
-
-        Destroy(newAudioSource);
-    }
-
-    public static void PlayCardSound()
-    {
-        Singleton.PlaySound(Singleton.CardSound);
+        int cardPersonalIndex = Mathf.Abs(Mathf.Abs(fromCard.RepresentingCard.FlavorCode) % Singleton.CardSounds.Count);
+        yield return Singleton.PersonalPlayCardSound(Singleton.CardSounds[cardPersonalIndex]);
     }
 }

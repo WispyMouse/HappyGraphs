@@ -41,6 +41,8 @@ public class PlayFieldManager : MonoBehaviour
     static SeedMode ActiveSeedMode { get; set; } = SeedMode.Random;
     static int DeckSeed { get; set; } = -1;
 
+    public RipplePlane RipplePlaneInstance;
+
     private void Start()
     {
         Clear();
@@ -121,7 +123,8 @@ public class PlayFieldManager : MonoBehaviour
         GameActions.Push(GameAction.FromCardPlayed(playedCard.RepresentingCard, toCoordinate));
 
         CameraManagerInstance.UpdateCamera(ActivePlayField);
-        SoundPlayer.PlayCardSound();
+        RipplePlaneInstance.CardPlayed(toCoordinate);
+        StartCoroutine(RipplePlayedSounds(toCoordinate));
 
         ActivePlayField.UpdateCardVisuals();
         ActivePlayField.SetPlayableSpaces();
@@ -377,5 +380,29 @@ public class PlayFieldManager : MonoBehaviour
         }
 
         UpdateSeedPanel();
+    }
+
+    IEnumerator RipplePlayedSounds(Coordinate centerCoordinate)
+    {
+        int neighborDistance = 0;
+
+        while (true)
+        {
+            HashSet<PlayingCard> rippledCards = ActivePlayField.GetCardsInRipple(centerCoordinate, neighborDistance);
+
+            if (rippledCards.Count == 0)
+            {
+                break;
+            }
+
+            foreach (PlayingCard curCard in rippledCards)
+            {
+                curCard.PlayCardSound();
+            }
+
+            yield return new WaitForSeconds(.15f);
+
+            neighborDistance++;
+        }
     }
 }

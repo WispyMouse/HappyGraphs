@@ -279,4 +279,9 @@ public class PlayFieldRuntime : MonoBehaviour
             currentCard.SetNeighborCount(CurrentPlayField.OccuppiedNeighborsAtCoordinate(currentCard.OnCoordinate));
         }
     }
+
+    public HashSet<PlayingCard> GetCardsInRipple(Coordinate centerCoordinate, int neighborDistance)
+    {
+        return new HashSet<PlayingCard>(PlayedCards.Where(card => Mathf.Abs(centerCoordinate.X - card.OnCoordinate.X) + Mathf.Abs(centerCoordinate.Y - card.OnCoordinate.Y) == neighborDistance));
+    }
 }

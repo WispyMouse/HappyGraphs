@@ -26,6 +26,9 @@ public abstract class PlayingCard : MonoBehaviour
     public SpriteRenderer BlinkOverlaySpriteRenderer;
     Color blinkTargetColor { get; set; }
 
+    public SpriteRenderer SoundResonanceRenderer;
+    float curSoundTime { get; set; } = 0;
+
     protected Color FlavorColor { get; set; }
 
     protected int NeighborCount { get; set; } = 0;
@@ -198,5 +201,17 @@ public abstract class PlayingCard : MonoBehaviour
     {
         NeighborCount = count;
         UpdateVisual();
+    }
+
+    public void PlayCardSound()
+    {
+        StartCoroutine(PlayCardSoundCoroutine());
+    }
+
+    IEnumerator PlayCardSoundCoroutine()
+    {
+        SoundResonanceRenderer.gameObject.SetActive(true);
+        yield return StartCoroutine(SoundPlayer.PlayCardSound(this));
+        SoundResonanceRenderer.gameObject.SetActive(false);
     }
 }
