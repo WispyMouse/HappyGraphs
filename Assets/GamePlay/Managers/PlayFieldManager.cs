@@ -13,6 +13,7 @@ public class PlayFieldManager : MonoBehaviour
 
     public CameraManager CameraManagerInstance;
     public LoadingScreenDialogWindow LoadingScreenDialogWindowInstance;
+    public GameRulesManager GameRulesManagerInstance;
 
     public Text DeckCountLabel;
     public Text TotalCardFaceValue;
@@ -78,8 +79,10 @@ public class PlayFieldManager : MonoBehaviour
 
         UpdateSeedPanel();
 
-        yield return DeckCreationEngine.GetDeckFromWeb(GameRulesManager.ActiveGameRules, DeckSeed);
-        deck = DeckCreationEngine.LastGeneratedDeck;
+        GameRulesManagerInstance.StartWithRules(GameRulesManager.FutureGameRules);
+
+        yield return DeckFetchingEngine.GetDeck(GameRulesManager.ActiveGameRules, DeckSeed);
+        deck = DeckFetchingEngine.LastGeneratedDeck;
 
         totalDeckSize = deck.DeckStack.Count;
         totalDeckFaceValue = deck.DeckStack.Sum(card => card.FaceValue);

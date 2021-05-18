@@ -12,14 +12,14 @@ public class GameRulesManager : MonoBehaviour
     public Text RuleSetTitle;
     public RulesDialogWindow RulesDialogWindow;
 
-    private void Awake()
+    public void StartWithRules(GameRules rules)
     {
-        if (FutureGameRules == null)
+        if (rules == null)
         {
-            FutureGameRules = SaveDataManager.GetInitialGameRule();
+            rules = SaveDataManager.GetInitialGameRule();
         }
 
-        ActiveGameRules = FutureGameRules.CloneRules();
+        ActiveGameRules = rules.CloneRules();
         RuleSetTitle.text = ActiveGameRules.RuleSetName;
         CoordinateCache.ActiveGridType = ActiveGameRules.GridTypeRule;
 

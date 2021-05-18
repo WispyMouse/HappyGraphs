@@ -1,13 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public static class DeckCreationEngine
+public static class DeckFetchingEngine
 {
     public static Deck LastGeneratedDeck { get; set; }
+
+    public static IEnumerator GetDeck(GameRules rules, int seed)
+    {
+        LastGeneratedDeck = DeckCreationEngine.GenerateDeck(rules, seed);
+        yield break;
+    }
 
     public static IEnumerator GetDeckFromWeb(GameRules rules, int seed)
     {
