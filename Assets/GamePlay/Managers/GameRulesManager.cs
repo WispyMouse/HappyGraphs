@@ -21,6 +21,8 @@ public class GameRulesManager : MonoBehaviour
 
         ActiveGameRules = rules.CloneRules();
         RuleSetTitle.text = ActiveGameRules.RuleSetName;
+        CoordinateCachingManager.ClearCache();
+        CoordinateCache.ClearCache();
         CoordinateCache.ActiveGridType = ActiveGameRules.GridTypeRule;
 
         RulesDialogWindow.CloseDialog();

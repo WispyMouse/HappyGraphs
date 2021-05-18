@@ -38,6 +38,12 @@ public class CoordinateCachingManager : MonoBehaviour
 
         return position;
     }
+
+    public static void ClearCache()
+    {
+        NeighborsCache.Clear();
+        PositionCache.Clear();
+    }
 }
 
 public static class CoordinateExtensions
