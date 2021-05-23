@@ -17,6 +17,17 @@ public class PipPlayingCard : PlayingCard
     {
         HappySpriteRenderer.gameObject.SetActive(false);
 
+        // If we already have CardPips, and the visual is reset, check to see if the number of pips matches our face value still
+        if (CardPips != null && CardPips.Count != RepresentingCard.FaceValue)
+        {
+            for (int ii = 0; ii < CardPips.Count; ii++)
+            {
+                ObjectPooler.ReturnObject(CardPips[ii]);
+            }
+
+            CardPips = null;
+        }
+
         if (CardPips == null)
         {
             CardPips = new List<CardPip>();
