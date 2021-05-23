@@ -259,9 +259,11 @@ public class PlayFieldManager : MonoBehaviour
         GameAction previousAction = GameActions.Pop();
         UndoAction(previousAction);
 
+        // If the previous thing on the stack is ContinueAfter, then recursively continue undoing
         if (previousAction.ActionUndoType == UndoType.ContinueAfter)
         {
             UndoButton();
+            return;
         }
 
         CameraManagerInstance.UpdateCamera(ActivePlayField);
@@ -338,12 +340,18 @@ public class PlayFieldManager : MonoBehaviour
 
     public void UpdateSeedPanel()
     {
-        if (string.IsNullOrWhiteSpace(SeedField.text))
+        if (ActiveSeedMode == SeedMode.Random)
         {
             SeedField.text = DeckSeed.ToString();
+
+            RandomSeedToggle.isOn = true;
+            SeedField.interactable = false;
         }
         else
         {
+            SetSeedToggle.isOn = true;
+            SeedField.interactable = true;
+
             int parsedSeed;
             if (int.TryParse(SeedField.text, out parsedSeed))
             {
@@ -353,17 +361,6 @@ public class PlayFieldManager : MonoBehaviour
             {
                 SeedField.text = DeckSeed.ToString();
             }
-        }
-        
-        if (ActiveSeedMode == SeedMode.Random)
-        {
-            RandomSeedToggle.isOn = true;
-            SeedField.interactable = false;
-        }
-        else
-        {
-            SetSeedToggle.isOn = true;
-            SeedField.interactable = true;
         }
     }
 

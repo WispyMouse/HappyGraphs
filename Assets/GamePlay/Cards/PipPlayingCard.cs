@@ -111,6 +111,7 @@ public class PipPlayingCard : PlayingCard
             ObjectPooler.ReturnObject(pip);
         }
 
+        HighlightNeighborCount = -1;
         CardPips = null;
         HappySpriteRenderer.gameObject.SetActive(false);
     }
